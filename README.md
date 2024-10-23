@@ -1,10 +1,14 @@
 # RIPPLE
 
+<img src="resources/task.png" alt="Task Configuration Preview" width="500"/>
+
 This codebase consists of the following components:
 
 - Python files
 - Unity assets
 - External files
+
+![Experiment Pipeline](resources/image.png)
 
 Your setup may work directly with the provided executable (`.exe` file). If not, you'll need to install Unity and build the project on your machine using the provided assets. The Python scripts can interact with the project in the Unity Editor, but this makes automated testing of LLMs more challenging, as the application needs to start and close for each task. There should be no need to modify the Unity assets or application code. Once the Unity application is built, everything else runs via Python.
 

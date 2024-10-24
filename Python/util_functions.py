@@ -258,7 +258,7 @@ def save_results_to_csv(experiment_path, i, win):
 
 if __name__ == "__main__":
     # Example usage
-    Unity_executable_path = 'D:\RIPPLE EXEC\RIPPLE.exe'
+    Unity_executable_path = r'D:\RIPPLE EXEC\RIPPLE.exe'
 
     # Start the Unity executable
     process = run_Unity_executable(Unity_executable_path)

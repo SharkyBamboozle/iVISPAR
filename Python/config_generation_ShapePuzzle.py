@@ -152,7 +152,7 @@ def generate_ShapePuzzle_configs(num_configs, board_size=3, num_landmarks=3):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
     # Create the game_configs directory in the parent directory if it doesn't exist
-    config_root_dir = os.path.join(base_dir, 'game_configs')
+    config_root_dir = os.path.join(base_dir, 'configs')
     if not os.path.exists(config_root_dir):
         os.makedirs(config_root_dir)
 

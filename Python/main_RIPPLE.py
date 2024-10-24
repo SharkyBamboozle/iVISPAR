@@ -10,7 +10,7 @@ max_game_length = 100  # Max amount of action-perception iterations with the env
 num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many different tasks have to be solved
 board_size = 5 # Size of the game board environment (square)
 num_landmarks = 9 # Number of different landmarks for the ShapePuzzle game
-unity_executable_path = 'D:\RIPPLE EXEC\RIPPLE.exe'
+unity_executable_path = r'C:\Users\Sharky\RIPPLE\Exec\RIPPLE.exe' # Replace with the path to your application build
 
 # Generate configuration files for the game environments specified in num_game_env
 for env_type, num_games in num_game_env.items():
@@ -50,7 +50,7 @@ for agent_type, agent in agents.items():
             try:
                 # Start the Unity executable
                 process = util.run_Unity_executable(unity_executable_path)
-                time.sleep(5)  # Wait for application startup to set up server
+                time.sleep(7)  # Wait for application startup to set up server
 
                 try:
                     # Run the action-perception loop

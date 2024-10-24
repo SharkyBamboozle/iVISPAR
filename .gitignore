@@ -1,0 +1,4 @@
+# Config files and experiment data 
+data/
+configs/
+debug_captures_Unity/

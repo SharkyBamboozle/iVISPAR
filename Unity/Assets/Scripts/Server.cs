@@ -9,6 +9,7 @@ using System;
 using UnityEngine.Events;
 using System.Linq;
 using GameLogic;  // Add this at the top of Server.cs
+using System.IO;  // Import System.IO for Directory and Path
 
 [System.Serializable]
 public class PlayerMoveEvent : UnityEvent<int,string>
@@ -293,10 +294,52 @@ public class Server:MonoBehaviour
         screenshotCamera.Render();
         byte[] screenshot = texture.GetRawTextureData();
         Debug.LogWarning("Texture size is " + texture.width.ToString() + " * " + texture.height.ToString() + " with total size of " + screenshot.Length + " bytes");
+
+        SaveScreenshotToFile("debug_screenshot.png", texture); //Debugging
+
         screenshotQueue.Enqueue(screenshot);
         Debug.LogWarning("screenshot queue size = " + screenshotQueue.Count.ToString());
         UnityEngine.Object.Destroy(texture);
         yield return null;
     }
+
+    // Debug function to check image on Unity side
+    public void SaveScreenshotToFile(string baseFileName, Texture2D texture)
+    {
+        // Get the path of the directory two levels above the executable
+        string execDirectory = Application.dataPath;
+        string parentDirectory = Directory.GetParent(Directory.GetParent(execDirectory).FullName).FullName;
+
+        // Define the "debug_captures_Unity" folder path two levels above the executable directory
+        string folderPath = Path.Combine(parentDirectory, "debug_captures_Unity");
+
+        // Check if the folder exists, and create it if not
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+            Debug.Log("Created directory: " + folderPath);
+        }
+
+        // Generate a procedural name based on the current date and time
+        string timestamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string fileName = baseFileName + "_" + timestamp + ".png";
+
+        // Construct the full file path including the folder and file name
+        string filePath = Path.Combine(folderPath, fileName);
+
+        // Encode the texture to PNG format
+        byte[] pngData = texture.EncodeToPNG();
+        if (pngData != null)
+        {
+            // Save the encoded PNG data to the file
+            System.IO.File.WriteAllBytes(filePath, pngData);
+            Debug.Log("Debug Screenshot saved to " + filePath);
+        }
+        else
+        {
+            Debug.LogError("Failed to encode texture to PNG.");
+        }
+    }
+
 
 }

@@ -295,7 +295,7 @@ public class Server:MonoBehaviour
         byte[] screenshot = texture.GetRawTextureData();
         Debug.LogWarning("Texture size is " + texture.width.ToString() + " * " + texture.height.ToString() + " with total size of " + screenshot.Length + " bytes");
 
-        SaveScreenshotToFile("debug_screenshot.png", texture); //Debugging
+        SaveScreenshotToFile(texture); //Debugging
 
         screenshotQueue.Enqueue(screenshot);
         Debug.LogWarning("screenshot queue size = " + screenshotQueue.Count.ToString());
@@ -304,7 +304,7 @@ public class Server:MonoBehaviour
     }
 
     // Debug function to check image on Unity side
-    public void SaveScreenshotToFile(string baseFileName, Texture2D texture)
+    public void SaveScreenshotToFile(Texture2D texture)
     {
         // Get the path of the directory two levels above the executable
         string execDirectory = Application.dataPath;
@@ -322,7 +322,7 @@ public class Server:MonoBehaviour
 
         // Generate a procedural name based on the current date and time
         string timestamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        string fileName = baseFileName + "_" + timestamp + ".png";
+        string fileName = "debug_screenshot_" + timestamp + ".png";
 
         // Construct the full file path including the folder and file name
         string filePath = Path.Combine(folderPath, fileName);

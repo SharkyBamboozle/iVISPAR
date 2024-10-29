@@ -35,7 +35,16 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
 
-        observation = s.recv(100 * 1024 * 1024)  # Receive up to 100MB of data
+        required_bytes = 1200 * 900 * 4  # Calculate the number of bytes required
+        observation = bytearray()  # Create a mutable byte array to store data
+
+        # Keep receiving until we have the required number of bytes
+        while len(observation) < required_bytes:
+            # Wait and receive observation data from Unity (blocking call until data arrives)
+            packet = s.recv(4096)  # Adjust chunk size as needed
+            if not packet:
+                raise ValueError("Connection closed before enough data was received.")
+            observation.extend(packet)  # Append the received packet to our byte array
 
         # Convert the raw bytes to an image RGB or RGBA
         image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
@@ -47,13 +56,25 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
         print(f"Saved image to {filename}")
         time.sleep(1)  # Wait for 1 second
 
-        action = 'start'
-        s.sendall(action.encode())
-
         try:
             for i in range(1, max_game_length + 1):
-                # Wait and receive observation data from Unity (blocking call until data arrives)
-                observation = s.recv(100 * 1024 * 1024)  # Receive up to 100MB of data
+                # Process the observation using the user_agent
+                action = user_agent.act(image)
+                s.sendall(action.encode())  # Send action encoded as bits back to Unity
+                time.sleep(1)  # Wait for 1 second
+
+
+                required_bytes = 1200 * 900 * 4  # Calculate the number of bytes required
+                observation = bytearray()  # Create a mutable byte array to store data
+
+                # Keep receiving until we have the required number of bytes
+                while len(observation) < required_bytes:
+                    # Wait and receive observation data from Unity (blocking call until data arrives)
+                    packet = s.recv(4096)  # Adjust chunk size as needed
+                    if not packet:
+                        raise ValueError("Connection closed before enough data was received.")
+                    observation.extend(packet)  # Append the received packet to our byte array
+
 
                 # Check if the server has closed the connection (observation will be empty)
                 if not observation:
@@ -71,10 +92,6 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
                 image.save(filename)  # Save the image as a PNG
                 print(f"Saved image to {filename}")
 
-                # Process the observation using the user_agent
-                action = user_agent.act(image)
-                s.sendall(action.encode())  # Send action encoded as bits back to Unity
-                time.sleep(1)  # Wait for 1 second
 
         except (ConnectionResetError, ValueError, socket.error, BrokenPipeError) as e:
             print("Connection error or game ended prematurely:", e)

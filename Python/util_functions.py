@@ -15,15 +15,15 @@ class UserInteractiveAgent:
 
     def act(self, observation):
         """
-        Simulates the process of responding to an observation by asking for user input.
+        Simulates the process of responding to an observation, which in this case
+        is a PIL Image object. The image is processed to perform some action.
 
         Args:
-            observation (str): A placeholder for the environment's observation. It is not used
-                               for decision-making in this class, but passed for compatibility
-                               with LLM-style interfaces.
+            observation (Image): A PIL Image object representing the observation to be processed.
 
         Returns:
-            str: The user's input, simulating the action.
+            str: The response after processing the observation. The nature of this response
+                 will depend on how the observation is handled within the method.
         """
         # Get user input (no validation)
         action = input("Enter action: ").strip()

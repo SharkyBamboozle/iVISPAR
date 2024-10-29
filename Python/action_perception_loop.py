@@ -1,9 +1,40 @@
 import os
 import socket
-import time
 from PIL import Image
 
 from util_functions import UserInteractiveAgent
+
+
+def merge_images(single_img_filename, obs_dir, bar_width=10):
+    # Path to the second image (always named obs_1_init in obs_dir)
+    second_image_path = os.path.join(obs_dir, "obs_1_init.png")
+
+    # Load the two images
+    img1 = Image.open(single_img_filename)
+    img2 = Image.open(second_image_path)
+
+    # Ensure both images have the same height
+    if img1.height != img2.height:
+        raise ValueError("Both images should have the same height for merging.")
+
+    # Create a new image with width = sum of both image widths + the white bar width
+    total_width = img1.width + img2.width + bar_width
+    result = Image.new('RGB', (total_width, img1.height), (255, 255, 255))  # White background
+
+    # Paste the two images onto the result image
+    result.paste(img1, (0, 0))  # Paste the first image on the left
+    result.paste(img2, (img1.width + bar_width, 0))  # Paste the second image on the right
+
+    # Split the filename and extension
+    file_root, file_ext = os.path.splitext(single_img_filename)
+    double_img_file_name = f"{file_root}_compare{file_ext}"
+
+    # Save the result back to the output directory with the modified name
+    output_path = os.path.join(obs_dir, os.path.basename(double_img_file_name))
+    result.save(output_path)
+
+    print(f"Merged image saved to {output_path}")
+
 
 
 def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0.1", PORT=1984):
@@ -63,7 +94,11 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
                 filename = os.path.join(obs_dir, f"obs_{i}_{action}.png")
                 image.save(filename)  # Save the image as a PNG
                 print(f"Saved image to {filename}")
-                time.sleep(1)  # Wait for 1 second
+
+                merge_images(filename, obs_dir)
+
+
+
 
                 # Process the observation using the user_agent
                 action = user_agent.act(image)

@@ -1,7 +1,6 @@
 import time
 
 import util_functions as util
-from config_generation_ShapePuzzle import generate_ShapePuzzle_configs
 from ShapePuzzleGenerator import ShapePuzzleGenerator
 from action_perception_loop import action_perception_loop
 from generate_episode_GIF import generate_episode_gif
@@ -17,7 +16,9 @@ unity_executable_path = r'C:\Users\Sharky\RIPPLE\Exec\RIPPLE.exe' # Replace with
 for env_type, num_games in num_game_env.items():
     if env_type == 'ShapePuzzle':
         # Generate ShapePuzzle configurations
-        shape_puzzle_generator = ShapePuzzleGenerator(board_size=board_size, num_landmarks=num_landmarks)
+        with open(r"./instruction_prompts/instruction_prompt_1.txt", 'r', encoding='utf-8') as file:
+            instruction_prompt = file.read()
+        shape_puzzle_generator = ShapePuzzleGenerator(board_size=board_size, num_landmarks=num_landmarks, instruction_prompt=instruction_prompt)
         configs_path =  shape_puzzle_generator.generate_configs(num_configs=num_games)
     else:
         print(f"No configuration generator available for environment type: {env_type}")

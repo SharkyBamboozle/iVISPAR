@@ -10,7 +10,7 @@ class ShapePuzzleGenerator:
     bodies = ['cube', 'ball', 'pyramid']
     colors = ['red', 'green', 'blue']
 
-    def __init__(self, board_size=3, num_landmarks=3):
+    def __init__(self, board_size=3, num_landmarks=3, instruction_prompt=""):
         # Board size needs to have more locations than landmarks
         if board_size < 2 or board_size * board_size <= num_landmarks:
             warnings.warn(f"Not enough space for {num_landmarks} landmarks, increasing board size.")
@@ -22,6 +22,8 @@ class ShapePuzzleGenerator:
         self.num_landmarks = max(1, min(num_landmarks, 9))
 
         self.config_id = datetime.now().strftime("%Y%m%d_%H%M%S")  # Setup ID directly assigned here
+
+        self.instruction_prompt = instruction_prompt
 
         # Set up directory
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -142,6 +144,7 @@ class ShapePuzzleGenerator:
             # Structure the output for JSON
             json_output = {
                 "config_instance_id": config_instance_id,
+                "instruction_prompt": self.instruction_prompt,
                 "grid_size": self.board_size,  # Assuming grid size is fixed and provided by the instance
                 "landmarks": landmarks  # The landmarks list generated
             }
@@ -164,5 +167,5 @@ class ShapePuzzleGenerator:
 
 
 if __name__ == "__main__":
-    generator = ShapePuzzleGenerator(board_size=3, num_landmarks=3)
+    generator = ShapePuzzleGenerator(board_size=3, num_landmarks=3, instruction_prompt="")
     generator.generate_configs(num_configs=5)

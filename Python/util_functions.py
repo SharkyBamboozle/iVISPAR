@@ -4,6 +4,8 @@ import subprocess
 import time
 import csv
 from datetime import datetime
+from PIL import Image, ImageDraw, ImageFont
+
 
 class UserInteractiveAgent:
     """
@@ -75,8 +77,6 @@ def close_Unity_process(process):
     else:
         print("No process to terminate.")
 
-
-import os
 
 def load_config_paths(config_dir):
     """
@@ -264,6 +264,88 @@ def save_results_to_csv(experiment_path, i, win):
         writer.writerow([i, win])
 
     print(f"Results saved to {csv_file_path}")
+
+
+from PIL import Image, ImageDraw, ImageFont
+import os
+
+
+def merge_images(single_img_filename, obs_dir, bar_width=40, bar_height=40, text_fraction=0.1):
+    """
+    Merges two images side by side with a white bar in between, and adds a white bar underneath
+    with centered text indicating "Current State" and "Goal State", dynamically adjusting font size.
+
+    Args:
+        single_img_filename (str): Path to the first image file.
+        obs_dir (str): Directory containing the second image file named "obs_1_init.png".
+        bar_width (int): Width of the white bar between the images.
+        bar_height (int): Height of the white bar below the images for text labels.
+        text_fraction (float): Portion of image width for the text size (0 < text_fraction <= 1).
+    """
+    # Path to the second image (always named obs_1_init in obs_dir)
+    second_image_path = os.path.join(obs_dir, "obs_1_init.png")
+
+    # Load the two images
+    img1 = Image.open(single_img_filename)
+    img2 = Image.open(second_image_path)
+
+    # Ensure both images have the same height
+    if img1.height != img2.height:
+        raise ValueError("Both images should have the same height for merging.")
+
+    # Create a new image with width = sum of both image widths + the white bar width
+    total_width = img1.width + img2.width + bar_width
+    total_height = img1.height + bar_height  # Additional space at the bottom for text labels
+    result = Image.new('RGB', (total_width, total_height), (255, 255, 255))  # White background
+
+    # Paste the two images onto the result image
+    result.paste(img1, (0, 0))  # Paste the first image on the left
+    result.paste(img2, (img1.width + bar_width, 0))  # Paste the second image on the right
+
+    # Draw the text labels on the white bar below the images
+    draw = ImageDraw.Draw(result)
+
+    # Text labels
+    text_current = "Current State"
+    text_goal = "Goal State"
+
+    # Dynamically adjust font size based on image width and text_fraction
+    fontsize = 1  # Start with font size 1
+    font_path = "arial.ttf"  # Use a default or available TTF font path on your system
+    font = ImageFont.truetype(font_path, fontsize)
+
+    # Increase font size until it fits the desired fraction of image width
+    while draw.textbbox((0, 0), text_current, font=font)[2] < text_fraction * img1.width:
+        fontsize += 1
+        font = ImageFont.truetype(font_path, fontsize)
+
+    # Optionally decrease by 1 to ensure it's less than or equal to the desired fraction
+    fontsize -= 1
+    font = ImageFont.truetype(font_path, fontsize)
+
+    # Calculate text width and position based on the new font size
+    current_text_width = draw.textbbox((0, 0), text_current, font=font)[2]  # Use textbbox
+    goal_text_width = draw.textbbox((0, 0), text_goal, font=font)[2]  # Use textbbox
+
+    # Calculate text positions to center them below each image
+    current_text_x = (img1.width - current_text_width) // 2
+    goal_text_x = img1.width + bar_width + (img2.width - goal_text_width) // 2
+
+    text_y = img1.height + (bar_height // 4)  # Adjust text height to be centered in the bar
+
+    # Draw the text labels
+    draw.text((current_text_x, text_y), text_current, fill="black", font=font)
+    draw.text((goal_text_x, text_y), text_goal, fill="black", font=font)
+
+    # Split the filename and extension
+    file_root, file_ext = os.path.splitext(single_img_filename)
+    double_img_file_name = f"{file_root}_compare{file_ext}"
+
+    # Save the result back to the output directory with the modified name
+    output_path = os.path.join(obs_dir, os.path.basename(double_img_file_name))
+    result.save(output_path)
+
+    print(f"Merged image saved to {output_path}")
 
 
 if __name__ == "__main__":

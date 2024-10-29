@@ -87,3 +87,12 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
 
     # Return number of actions used and whether the env was completed successfully
     return i, win
+
+
+if __name__ == "__main__":
+    # Example usage
+    user_interactive_agent = UserInteractiveAgent()
+    max_game_length = 100
+    experiment_path = r'C:\Users\Sharky\RIPPLE\data\experiment_ID_20241029_103746\experiment_UserInteractiveAgent_ShapePuzzle_1'
+
+    actions, win = action_perception_loop(user_interactive_agent, max_game_length, experiment_path)

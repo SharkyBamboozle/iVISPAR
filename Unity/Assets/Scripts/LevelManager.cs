@@ -80,8 +80,8 @@ void CreateLandmarks(Landmark[] landmarksData)
         }
 
         // Use the 'coordinate' array to set the object's position
-        int gridX = (int)landmark.coordinate[0];
-        int gridZ = (int)landmark.coordinate[1];
+        int gridX = (int)landmark.goal_coordinate[0];
+        int gridZ = (int)landmark.goal_coordinate[1];
         obj.transform.position = new Vector3(gridX, 0, gridZ);
         obj.transform.rotation = Quaternion.identity;
         obj.tag = "Commandable";  // Example tag for interactable objects
@@ -117,8 +117,9 @@ void CreateLandmarks(Landmark[] landmarksData)
         // Assuming TargetBehaviour is a script that manages positioning on a grid
         TargetBehaviour targetBehaviour = obj.GetComponent<TargetBehaviour>();
         // Assign the same GridBoard reference that LevelManager uses
-        targetBehaviour.setPositionOnGrid((int)landmark.coordinate[0], (int)landmark.coordinate[1]);
-        targetBehaviour.setGoalPos((int)landmark.coordinate[0], (int)landmark.coordinate[1]);
+        targetBehaviour.setPositionOnGrid((int)landmark.goal_coordinate[0], (int)landmark.goal_coordinate[1]);
+        targetBehaviour.setGoalPos((int)landmark.goal_coordinate[0], (int)landmark.goal_coordinate[1]);
+        targetBehaviour.setStartPos((int)landmark.start_coordinate[0], (int)landmark.start_coordinate[1]);
 
         int objectID = Animator.StringToHash(landmark.color.ToLower() + " " + landmark.body.ToLower());
         targetBehaviour.SetID(objectID);
@@ -126,7 +127,12 @@ void CreateLandmarks(Landmark[] landmarksData)
         // Set grid occupancy for this object using the GridBoard
         if (gridBoard != null)
         {
-            gridBoard.setOccupancy(gridX, gridZ, true); // Mark the grid cell as occupied
+        //    gridBoard.setOccupancy(gridX, gridZ, true); // Mark the grid cell as occupied
+            if (gridBoard.GetOccupany(gridX, gridZ) == true)
+            {   
+                Debug.LogError("Object was set on occupied position, probably error in config json file");
+            }
+
         }
     }
 }

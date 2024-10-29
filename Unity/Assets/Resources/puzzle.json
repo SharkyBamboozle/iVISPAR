@@ -1,77 +1,41 @@
 {
-    "experiment_id": "ShapePuzzle_config_ID_20241023_161904_1",
-    "grid_size": 5,
+    "config_instance_id": "ShapePuzzle_config_ID_20241029_102832_1",
+    "grid_size": 3,
     "landmarks": [
         {
-            "body": "pyramid",
-            "color": "green",
-            "coordinate": [
-                4,
+            "body": "ball",
+            "color": "blue",
+            "start_coordinate": [
+                0,
+                1
+            ],
+            "goal_coordinate": [
+                1,
                 1
             ]
         },
         {
             "body": "ball",
             "color": "green",
-            "coordinate": [
-                1,
-                4
-            ]
-        },
-        {
-            "body": "ball",
-            "color": "blue",
-            "coordinate": [
+            "start_coordinate": [
+                0,
+                2
+            ],
+            "goal_coordinate": [
                 0,
                 1
             ]
         },
         {
-            "body": "pyramid",
-            "color": "blue",
-            "coordinate": [
-                4,
-                2
-            ]
-        },
-        {
-            "body": "cube",
-            "color": "green",
-            "coordinate": [
-                2,
-                1
-            ]
-        },
-        {
-            "body": "ball",
-            "color": "red",
-            "coordinate": [
-                4,
-                3
-            ]
-        },
-        {
             "body": "cube",
             "color": "red",
-            "coordinate": [
+            "start_coordinate": [
+                1,
+                0
+            ],
+            "goal_coordinate": [
                 2,
-                2
-            ]
-        },
-        {
-            "body": "pyramid",
-            "color": "red",
-            "coordinate": [
-                2,
-                3
-            ]
-        },
-        {
-            "body": "cube",
-            "color": "blue",
-            "coordinate": [
-                3,
-                2
+                0
             ]
         }
     ]

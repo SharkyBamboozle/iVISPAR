@@ -76,10 +76,12 @@ def close_Unity_process(process):
         print("No process to terminate.")
 
 
+import os
+
 def load_config_paths(config_dir):
     """
-    Loads all JSON config file paths and their corresponding .png image file paths from the given directory.
-    Assumes image files have the same base name as the JSON files with a .png extension.
+    Loads all JSON config file paths and their corresponding .png image file paths (start and goal) from the given directory.
+    Assumes image files have the same base name as the JSON files, with _start.png and _goal.png extensions.
 
     Args:
         config_dir (str): The path to the directory containing the JSON config and image files.
@@ -87,7 +89,7 @@ def load_config_paths(config_dir):
     Returns:
         tuple: A tuple of two lists:
                - List of file paths to the JSON config files.
-               - List of file paths to the corresponding image files.
+               - List of dictionaries with paths to the corresponding start and goal image files.
     """
     # Lists to store file paths
     json_file_paths = []
@@ -101,13 +103,19 @@ def load_config_paths(config_dir):
             json_full_path = os.path.join(config_dir, file_name)
             json_file_paths.append(json_full_path)
 
-            # Construct the corresponding image file path (assuming .png extension)
+            # Construct the corresponding image file paths for start and goal images
             base_name = os.path.splitext(file_name)[0]  # Remove the .json extension
-            image_full_path = os.path.join(config_dir, base_name + ".png")
-            image_file_paths.append(image_full_path)
+            image_start_full_path = os.path.join(config_dir, base_name + "_start.png")
+            image_goal_full_path = os.path.join(config_dir, base_name + "_goal.png")
 
+            # Add the image file paths to the list, as a dictionary for start and goal
+            image_file_paths.append({
+                'start_image': image_start_full_path,
+                'goal_image': image_goal_full_path
+            })
 
     return json_file_paths, image_file_paths
+
 
 
 def copy_json_to_unity_resources(json_config_path, unity_executable_path):
@@ -199,13 +207,13 @@ def create_experiment_directories(num_game_env, agents):
     return experiment_subdirs
 
 
-def copy_files_to_experiment(json_file_path, image_file_path, experiment_path):
+def copy_files_to_experiment(json_file_path, image_file_paths, experiment_path):
     """
-    Copies the JSON and image file to the specified experiment path.
+    Copies the JSON and image files (start and goal) to the specified experiment path.
 
     Args:
         json_file_path (str): The full path of the JSON file to be copied.
-        image_file_path (str): The full path of the image file to be copied.
+        image_file_paths (dict): A dictionary containing the full paths of the start and goal image files to be copied.
         experiment_path (str): The path to the experiment directory where the files should be copied.
     """
     try:
@@ -218,13 +226,15 @@ def copy_files_to_experiment(json_file_path, image_file_path, experiment_path):
         shutil.copy(json_file_path, json_file_dest)
         print(f"JSON file copied to {json_file_dest}")
 
-        # Copy the image file to the experiment directory
-        image_file_dest = os.path.join(experiment_path, os.path.basename(image_file_path))
-        shutil.copy(image_file_path, image_file_dest)
-        print(f"Image file copied to {image_file_dest}")
+        # Copy the start and goal image files to the experiment directory
+        for key, image_file_path in image_file_paths.items():
+            image_file_dest = os.path.join(experiment_path, os.path.basename(image_file_path))
+            shutil.copy(image_file_path, image_file_dest)
+            print(f"{key.replace('_', ' ').capitalize()} copied to {image_file_dest}")
 
     except Exception as e:
         print(f"Error copying files: {e}")
+
 
 
 def save_results_to_csv(experiment_path, i, win):

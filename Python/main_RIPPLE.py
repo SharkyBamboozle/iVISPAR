@@ -2,25 +2,23 @@ import time
 
 import util_functions as util
 from config_generation_ShapePuzzle import generate_ShapePuzzle_configs
+from ShapePuzzleGenerator import ShapePuzzleGenerator
 from action_perception_loop import action_perception_loop
 from generate_episode_GIF import generate_episode_gif
 
 
 max_game_length = 100  # Max amount of action-perception iterations with the environment
 num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many different tasks have to be solved
-board_size = 5 # Size of the game board environment (square)
-num_landmarks = 9 # Number of different landmarks for the ShapePuzzle game
+board_size = 3 # Size of the game board environment (square)
+num_landmarks = 3 # Number of different landmarks for the ShapePuzzle game
 unity_executable_path = r'C:\Users\Sharky\RIPPLE\Exec\RIPPLE.exe' # Replace with the path to your application build
 
 # Generate configuration files for the game environments specified in num_game_env
 for env_type, num_games in num_game_env.items():
     if env_type == 'ShapePuzzle':
         # Generate ShapePuzzle configurations
-        configs_path = generate_ShapePuzzle_configs(
-            num_configs=num_games,  # Number of games for this environment
-            board_size=board_size,
-            num_landmarks=num_landmarks
-        )
+        shape_puzzle_generator = ShapePuzzleGenerator(board_size=board_size, num_landmarks=num_landmarks)
+        configs_path =  shape_puzzle_generator.generate_configs(num_configs=num_games)
     else:
         print(f"No configuration generator available for environment type: {env_type}")
 

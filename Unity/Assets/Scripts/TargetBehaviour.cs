@@ -21,7 +21,11 @@ public class TargetBehaviour : MonoBehaviour
 
     private int goal_x = -1;
 
-    private int goal_y = -1;
+    private int goal_z = -1;
+
+    private int start_x = -1;
+
+    private int start_z = -1;
 
     private UnityEvent GenerateScreenshotEvent;
 
@@ -40,7 +44,7 @@ public class TargetBehaviour : MonoBehaviour
             gridBoard = GameObject.FindGameObjectsWithTag("Grids")[0].GetComponent<GridBoard>();
             //Debug.LogError("GridBoard Not Selected");
         }
-        boundPosition = gridBoard.getBoundPos();
+        //boundPosition = gridBoard.getBoundPos();
         if(x == -1 && z == -1)
             gridBoard.GetRandomPostion(out x,out z);
         transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
@@ -69,12 +73,22 @@ public class TargetBehaviour : MonoBehaviour
     {
         this.x = x;
         this.z = z;
+        Debug.LogWarning("setPositionOnGrid x:" +x +", z: " +z);
+
     }
 
-        public void setGoalPos(int x, int z)
+    public void setGoalPos(int x, int z)
     {
         this.goal_x = x;
-        this.goal_y = z;
+        this.goal_z = z;
+        Debug.LogWarning("setGoalPos x:" +x +", z: " +z);
+    }
+
+    public void setStartPos(int x, int z)
+    {
+        this.start_x = x;
+        this.start_z = z;
+        Debug.LogWarning("setStartPos x:" +x +", z: " +z);
     }
 
     public void MovePlayer(int ID ,string direction)
@@ -100,24 +114,19 @@ public class TargetBehaviour : MonoBehaviour
     {
         Debug.Log("Randomizing object");
         //Debug.LogWarning("Move command invoked with direction " + direction);
-
         gridBoard.setOccupancy(x,z,false);
-        gridBoard.GetRandomPostion(out x,out z);
-
-
-        while (gridBoard.GetOccupany(x,z) == true)
-        {
-            gridBoard.GetRandomPostion(out x,out z);
-        }
-
-        transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
+            // Update the x and z coordinates before updating the position
+        x = start_x;
+        z = start_z;
+        transform.position = gridBoard.getGridWorldPos(x, z) + (transform.localScale /2);
         gridBoard.setOccupancy(x,z,true);
     }
 
 
     public void MoveForward(int units)
     {
-        if( 0 <= (z + units) &&  (z + units) < gridBoard.height && !gridBoard.GetOccupany(x,z+units)){
+        if( 0 <= (z + units) &&  (z + units) < gridBoard.height && !gridBoard.GetOccupany(x,z+units))
+        {
             gridBoard.setOccupancy(x,z,false);
             z += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
@@ -127,7 +136,8 @@ public class TargetBehaviour : MonoBehaviour
     }
     public void MoveRight(int units)
     {
-        if( 0 <= (x + units) &&  (x + units) < gridBoard.width && !gridBoard.GetOccupany(x+units,z)){
+        if( 0 <= (x + units) &&  (x + units) < gridBoard.width && !gridBoard.GetOccupany(x+units,z))
+        {
             gridBoard.setOccupancy(x,z,false);
             x += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
@@ -142,7 +152,7 @@ public class TargetBehaviour : MonoBehaviour
     {
         get
         {
-            return new Vector2(goal_x, goal_y);  // Assuming 2D check on x (for x-axis) and y (for z-axis)
+            return new Vector2(goal_x, goal_z);  // Assuming 2D check on x (for x-axis) and y (for z-axis)
         }
     }
 

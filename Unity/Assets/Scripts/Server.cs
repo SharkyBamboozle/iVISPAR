@@ -38,6 +38,7 @@ public class Server:MonoBehaviour
    private Queue<System.Action> CommandQueue = new Queue<System.Action>();
    private Queue<byte[]> screenshotQueue = new Queue<byte[]>();
     private GoalChecker goalChecker;  // Add reference to GoalChecker
+    private bool GameStarted = false;
 
    private void Start()
    {
@@ -104,7 +105,7 @@ public class Server:MonoBehaviour
             server = new TcpListener(localAddr, socketPort);
             server.Start();
 
-            byte[] buffer = new byte[100 * 1024 * 1024]; //  *1 Mbyte
+            byte[] buffer = new byte[10 * 1200 * 900]; 
             string data = null;
 
             while (true)
@@ -155,36 +156,40 @@ public class Server:MonoBehaviour
                                 {
                                     Debug.Log("processing command Queue: " +command[0]);
                                     Jump();
+                                    this.GameStarted = true;
                                     //GenerateScreenshot();
                                 }
 
-                                if(command[0] == "done")
+                                if (this.GameStarted)
                                 {
-                                    Debug.Log("processing command Queue: " + command[0]);
-                                    // Check if all objects have reached their goals
+                                    if(command[0] == "done")
+                                    {
+                                        Debug.Log("processing command Queue: " + command[0]);
+                                        // Check if all objects have reached their goals
+                                        
+                                        bool isDone = goalChecker.CheckAllObjects();
+                                        //#if UNITY_EDITOR
+                                        //    UnityEditor.EditorApplication.isPlaying = false;
+                                        //#else
+                                        //    Application.Quit();
+                                        //#endif
+                                        if (isDone)
+                                        {
+                                            Debug.Log("All objects have reached their goals!");
+                                            client.Close();  // Close the client connection if done
+                                        }
+                                        else
+                                        {
+                                            Debug.Log("Not all objects are at their goals yet.");
+                                        }
+                                    }
                                     
-                                    bool isDone = goalChecker.CheckAllObjects();
-                                    //#if UNITY_EDITOR
-                                    //    UnityEditor.EditorApplication.isPlaying = false;
-                                    //#else
-                                    //    Application.Quit();
-                                    //#endif
-                                    if (isDone)
-                                    {
-                                        Debug.Log("All objects have reached their goals!");
-                                        client.Close();  // Close the client connection if done
+                                    if(command.Count == 4)
+                                    {   
+                                        Debug.Log("processing command Queue: " +data.ToString());
+                                        int id = Animator.StringToHash(command[1] + " " + command[2]);
+                                        Move(id, command[3]);
                                     }
-                                    else
-                                    {
-                                        Debug.Log("Not all objects are at their goals yet.");
-                                    }
-                                }
-                                
-                                if(command.Count == 4)
-                                {   
-                                    Debug.Log("processing command Queue: " +data.ToString());
-                                    int id = Animator.StringToHash(command[1] + " " + command[2]);
-                                    Move(id, command[3]);
                                 }
 
                                 else

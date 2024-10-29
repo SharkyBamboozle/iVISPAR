@@ -203,7 +203,7 @@ def generate_episode_gif(experiment_path, duration=500):
 
     # Generate the GIF
     gif_path = os.path.join(experiment_path, "experiment_results.gif")
-    init_image_path = os.path.join(experiment_path, "obs/obs_0_init.png")
+    init_image_path = os.path.join(experiment_path, "obs/obs_1_init.png")
     output_gif_path = os.path.join(experiment_path, "experiment_results_compare.gif")
 
     generate_gif_from_images_and_actions(images, actions,
@@ -216,5 +216,6 @@ def generate_episode_gif(experiment_path, duration=500):
 
 
 if __name__ == "__main__":
-    experiment_path = r"C:\Users\Sharky\Desktop\py_project_RIPPLE\data\experiment_ID_20241023_150158\experiment_UserInteractiveAgent_ShapePuzzle_1"
+    experiment_path = r"C:\Users\Sharky\RIPPLE\data\experiment_ID_20241025_202021\experiment_UserInteractiveAgent_ShapePuzzle_1"
+
     generate_episode_gif(experiment_path)

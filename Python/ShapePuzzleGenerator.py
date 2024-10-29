@@ -11,10 +11,10 @@ class ShapePuzzleGenerator:
     colors = ['red', 'green', 'blue']
 
     def __init__(self, board_size=3, num_landmarks=3, instruction_prompt=""):
-        # Board size needs to have more locations than landmarks
-        if board_size < 2 or board_size * board_size <= num_landmarks:
-            warnings.warn(f"Not enough space for {num_landmarks} landmarks, increasing board size.")
-        self.board_size = int((num_landmarks + 1) ** 0.5) + 1
+        # Ensure board_size is the maximum of either 2 or the size required to fit all landmarks
+        self.board_size = max(board_size, int((num_landmarks + 1) ** 0.5) + 1, 2)
+        if self.board_size != board_size:
+            warnings.warn(f"Board size adjusted to {self.board_size} to fit {num_landmarks} landmarks.")
 
         # Number of landmarks can be within 1-9
         if num_landmarks < 1 or num_landmarks > 9:

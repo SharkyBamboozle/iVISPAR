@@ -9,8 +9,10 @@ from generate_episode_GIF import generate_episode_gif
 max_game_length = 100  # Max amount of action-perception iterations with the environment
 num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many different tasks have to be solved
 board_size = 3 # Size of the game board environment (square)
-num_landmarks = 3 # Number of different landmarks for the ShapePuzzle game
+num_landmarks = 2# Number of different landmarks for the ShapePuzzle game
 unity_executable_path = r'C:\Users\Sharky\RIPPLE\Exec\RIPPLE.exe' # Replace with the path to your application build
+single_images = False
+COT= True
 
 # Generate configuration files for the game environments specified in num_game_env
 for env_type, num_games in num_game_env.items():
@@ -26,7 +28,11 @@ for env_type, num_games in num_game_env.items():
 json_file_paths, image_file_paths = util.load_config_paths(configs_path)
 
 # Load LLMs and game configs for experiment
-agents = {'UserInteractiveAgent': util.UserInteractiveAgent()} # Replace with LLMs here with same API as UserInteractiveAgent
+agents = {#'UserInteractiveAgent': util.UserInteractiveAgent(),
+         'GPT4Agent': util.GPT4Agent(single_images= single_images, COT=COT),
+#          'ClaudeAgent': util.ClaudeAgent(single_images= single_images, COT=COT)
+#          'GeminiAgent': util.GeminiAgent(single_images= single_images, COT=COT)
+          }  # Replace with LLMs here with same API as UserInteractiveAgent
 
 experiment_paths = util.create_experiment_directories(num_game_env, agents)
 
@@ -53,7 +59,7 @@ for agent_type, agent in agents.items():
 
                 try:
                     # Run the action-perception loop
-                    actions, win = action_perception_loop(agent, max_game_length, experiment_path)
+                    actions, win = action_perception_loop(agent, max_game_length, experiment_path, single_images = single_images)
 
                     print(f"number of actions used: {actions}")
                     print(f"game was won: {win}")

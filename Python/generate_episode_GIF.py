@@ -18,8 +18,8 @@ def load_images_and_actions(obs_dir):
     images = []
     actions = []
 
-    # Get all image files from the 'obs' directory
-    files = [f for f in os.listdir(obs_dir) if f.endswith(".png")]
+    # Get all image files from the 'obs' directory, excluding files that end with "_compare.png"
+    files = [f for f in os.listdir(obs_dir) if f.endswith(".png") and not f.endswith("_compare.png")]
 
     # Sort files numerically based on the number in the filename
     files.sort(key=lambda f: int(re.search(r'\d+', f).group()))
@@ -146,16 +146,17 @@ def generate_gif_from_images_and_actions(images, actions, gif_path, duration=500
         print(f"Error saving GIF: {e}")
 
 
-def combine_gif_with_init(gif_path, init_image_path, output_gif_path, duration=1000):
+def combine_gif_with_init(gif_path, init_image_path, output_gif_path, duration=1000, white_bar_width=20):
     """
-    Combines the GIF with the 'init' image by placing the init image to the right of each GIF frame.
-    Saves the combined frames as a new GIF.
+    Combines the GIF with the 'init' image by placing the init image to the right of each GIF frame,
+    separated by a white bar. Saves the combined frames as a new GIF.
 
     Args:
         gif_path (str): The path to the input GIF file.
         init_image_path (str): The path to the 'init' image.
         output_gif_path (str): The path to save the new combined GIF.
         duration (int): The duration (in milliseconds) for each frame in the GIF.
+        white_bar_width (int): The width of the white bar separating the two images.
     """
     # Load the 'init' image
     init_image = Image.open(init_image_path)
@@ -171,16 +172,16 @@ def combine_gif_with_init(gif_path, init_image_path, output_gif_path, duration=1
         # Ensure the frame has the same mode as the init image
         frame = frame.convert("RGBA")
 
-        # Create a new blank image with enough width to hold both the GIF frame and the init image
-        combined_width = frame.width + init_image.width
+        # Create a new blank image with enough width to hold both the GIF frame and the init image, plus the white bar
+        combined_width = frame.width + init_image.width + white_bar_width
         combined_height = max(frame.height, init_image.height)
-        combined_frame = Image.new("RGBA", (combined_width, combined_height))
+        combined_frame = Image.new("RGBA", (combined_width, combined_height), (255, 255, 255, 255))  # White background
 
         # Paste the GIF frame on the left
         combined_frame.paste(frame, (0, 0))
 
-        # Paste the 'init' image on the right
-        combined_frame.paste(init_image, (frame.width, 0))
+        # Paste the 'init' image on the right, leaving space for the white bar
+        combined_frame.paste(init_image, (frame.width + white_bar_width, 0))
 
         # Add the combined frame to the list
         combined_frames.append(combined_frame)

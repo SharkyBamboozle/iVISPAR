@@ -270,7 +270,7 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 
 
-def merge_images(single_img_filename, obs_dir, bar_width=40, bar_height=40, text_fraction=0.1):
+def merge_images(single_img_filename, obs_dir, bar_width=20, bar_height=80, text_fraction=0.3):
     """
     Merges two images side by side with a white bar in between, and adds a white bar underneath
     with centered text indicating "Current State" and "Goal State", dynamically adjusting font size.

@@ -1,5 +1,6 @@
 import time
 
+import agent
 import util_functions as util
 from ShapePuzzleGenerator import ShapePuzzleGenerator
 from action_perception_loop import action_perception_loop
@@ -10,11 +11,11 @@ max_game_length = 100  # Max amount of action-perception iterations with the env
 num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many different tasks have to be solved
 
 
-board_size = 5 # Size of the game board environment (square)
-num_landmarks = 9 # Number of different landmarks for the ShapePuzzle game
+board_size = 3 # Size of the game board environment (square)
+num_landmarks = 3 # Number of different landmarks for the ShapePuzzle game
 unity_executable_path = r'C:\Users\Sharky\RIPPLE\Exec\RIPPLE.exe' # Replace with the path to your application build
 instruction_prompt_file_path = r"./instruction_prompts/instruction_prompt_1.txt"
-single_images = False
+single_images = True
 COT= True
 
 # Generate configuration files for the game environments specified in num_game_env
@@ -31,10 +32,10 @@ for env_type, num_games in num_game_env.items():
 json_file_paths, image_file_paths = util.load_config_paths(configs_path)
 
 # Load LLMs and game configs for experiment
-agents = {#'UserInteractiveAgent': util.UserInteractiveAgent(),
-         'GPT4Agent': util.GPT4Agent(single_images= single_images, COT=COT),
-#          'ClaudeAgent': util.ClaudeAgent(single_images= single_images, COT=COT)
-#          'GeminiAgent': util.GeminiAgent(single_images= single_images, COT=COT)
+agents = {#'UserInteractiveAgent': agent.UserInteractiveAgent(),
+         'GPT4Agent': agent.GPT4Agent(single_images= single_images, COT=COT),
+#          'ClaudeAgent': agent.ClaudeAgent(single_images= single_images, COT=COT)
+#          'GeminiAgent': agent.GeminiAgent(single_images= single_images, COT=COT)
           }  # Replace with LLMs here with same API as UserInteractiveAgent
 
 experiment_paths = util.create_experiment_directories(num_game_env, agents)

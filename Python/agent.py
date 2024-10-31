@@ -1,0 +1,243 @@
+import base64
+import requests
+import io
+from anthropic import Anthropic
+import google.generativeai as genai
+
+
+class UserInteractiveAgent:
+    """
+    A simple interactive agent that simulates the role of an LLM for user interaction.
+
+    Instead of generating responses automatically, it prompts the user for manual input
+    and returns that input as the action.
+    """
+
+    def act(self, observation):
+        """
+        Simulates the process of responding to an observation by asking for user input.
+
+        Args:
+            observation (str): A placeholder for the environment's observation. It is not used
+                               for decision-making in this class, but passed for compatibility
+                               with LLM-style interfaces.
+
+        Returns:
+            str: The user's input, simulating the action.
+        """
+        # Get user input (no validation)
+        action = input("Enter action: ").strip()
+
+        return action
+
+
+class LLMAgent:
+    """Parent class for LLM-based agents"""
+
+    def __init__(self, single_images=True, COT=False):
+        self.goal_state = None
+        self.single_images = single_images
+        self.COT = COT
+        self.system_prompt = """
+You are an AI solving a shape puzzle game. Your task is to move objects on the board, 
+to match the goal state shown in the image. Study the goal state carefully. Every object can occupy only one tile on the board at a time (so if you try
+to ask for an action and nothing moves, that means the action is not allowed; either blocked by another object or our of the board move).
+Available actions:
+- "move {object color} {object shape} {direction}": Moves an object of a specific color and shape in the specified direction (do not use quotation marks ) 
+- "done": Write done when you think the current state matches the goal state (if you write done, and the game does not end, this means that you did not succefully solve it, keep trying)
+
+Colors: green, red, blue
+Shapes: cube, ball, pyramid
+Directions: up, down, left, right
+""" + ("Please explain your reasoning, then end with 'action: <your action>',"
+       "no matter what always end with action: <your action> (dont add additional character"
+       "after the word action)" if COT else "Please output only the action, no explanations needed.")
+
+    def encode_image_from_pil(self, pil_image):
+        """Convert PIL Image to base64 string for API consumption."""
+        buffer = io.BytesIO()
+        pil_image.save(buffer, format="PNG")
+        return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+    def process_goal_state(self, observation):
+        """Process and store the goal state"""
+        print("\n=== Receiving Goal State ===")
+        self.goal_state = observation
+        return "start"
+
+    def parse_action(self, response):
+        """Extract action from model response"""
+        action = response.strip().lower()
+        if self.COT:
+            action = action.split("action:")[1].strip()
+        return action
+
+
+class GPT4Agent(LLMAgent):
+    def __init__(self, single_images=True, COT=False):
+        super().__init__(single_images, COT)
+        self.api_key = "your_api_key"
+        self.headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+        self.model = "gpt-4o"
+
+    def act(self, observation):
+        try:
+            if self.goal_state is None:
+                return self.process_goal_state(observation)
+
+            print("\n=== Processing Current State ===")
+            current_base64 = self.encode_image_from_pil(observation)
+
+            if self.single_images:
+                goal_base64 = self.encode_image_from_pil(self.goal_state)
+                content = [
+                    {"type": "text", "text": """The first image shows the goal state, and the second image shows
+                      the current state. What action should be taken (so if you try to ask for an action and 
+                     nothing moves, that means the action is not allowed; either blocked by another object or
+                      our of the board move)?"""},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{goal_base64}"}},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
+                ]
+            else:
+                content = [
+                    {"type": "text", "text": """In this image you will see two boards, the one on the left is 
+                     your current state (written in the bottom of the board) and the one on the right is your
+                      goal state(written in the bottom of the board), what action you should take to match the
+                      current state to the goal state?"""},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
+                ]
+
+            payload = {
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": self.system_prompt},
+                    {"role": "user", "content": content}
+                ],
+                "max_tokens": 150
+            }
+
+            response = requests.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers=self.headers,
+                json=payload
+            )
+            print(response.json())
+            action = self.parse_action(response.json()['choices'][0]['message']['content'])
+            print(f"\nGPT-4 Vision suggested action: {action}")
+            return action
+
+        except Exception as e:
+            print(f"\nError calling OpenAI API: {e}")
+            return "error"
+
+
+class ClaudeAgent(LLMAgent):
+    def __init__(self, single_images=True, COT=False):
+        super().__init__(single_images, COT)
+        self.client = Anthropic(api_key="your_api_key")
+        self.model = "claude-3-5-sonnet-20241022"
+
+    def act(self, observation):
+        try:
+            if self.goal_state is None:
+                return self.process_goal_state(observation)
+
+            print("\n=== Processing Current State ===")
+            current_base64 = self.encode_image_from_pil(observation)
+
+            if self.single_images:
+                goal_base64 = self.encode_image_from_pil(self.goal_state)
+                content = [
+                    {"type": "text", "text": "obs_0_init"},
+                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": goal_base64}},
+                    {"type": "text", "text": "Current state:"},
+                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": current_base64}},
+                    {"type": "text", "text": """What action should be taken to match the goal state? 
+                     (Keep in mind. if you ask for an action and nothing moves, that means the action is not allowed;
+                      either blocked by another object or out of the board move, if you think all objects match
+                      their position with the original, write done, if you write done, and the game continues, 
+                     that means the objects are not placed in the correct positions, keep moving pieces around)"""}
+                ]
+            else:
+
+                content = [
+                    {"type": "text", "text": """In this image you will see two boards, the one on the left 
+                    is your current state (written in the bottom of the board) and
+                    the one on the right is your goal state(written in the bottom of the board).
+                    Keep in mind, if you ask for an action and nothing moves,
+                    that means the action is not allowed, either blocked by another object or out of the board move,if you think all objects match
+                    their position with the original, write done, if you write done, and the game continues, 
+                    that means the objects are not placed in the correct positions, keep moving pieces around.
+                    what action you should take to match the current state to the goal state?"""},
+                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": current_base64}}
+                ]
+
+            message = self.client.messages.create(
+                model=self.model,
+                max_tokens=150,
+                system=self.system_prompt,
+                temperature=0.5,  # maybe needs too be tuned
+                messages=[{"role": "user", "content": content}]
+            )
+
+            action = self.parse_action(message.content[0].text)
+            print(f"\nClaude suggested action: {action}")
+            return action
+
+        except Exception as e:
+            print(f"\nError calling Claude API: {e}")
+            return "error"
+
+
+class GeminiAgent(LLMAgent):
+    def __init__(self, single_images=True, COT=False):
+        super().__init__(single_images, COT)
+        self.api_key = "your_api_key"  # Replace with your actual API key
+        genai.configure(api_key=self.api_key)
+        self.model = genai.GenerativeModel(model_name="gemini-1.5-flash", system_instruction=self.system_prompt)
+
+    def act(self, observation):
+        try:
+            if self.goal_state is None:
+                return self.process_goal_state(observation)
+
+            print("\n=== Processing Current State ===")
+            # Convert PIL images to format expected by Gemini
+            current_image = observation
+
+            if self.single_images:
+                goal_image = self.goal_state
+                content = [
+                    """What action should be taken to match the goal state? 
+                     (Keep in mind. if you ask for an action and nothing moves, that means the action is not allowed;
+                      either blocked by another object or out of the board move, if you think all objects match
+                      their position with the original, write done, if you write done, and the game continues, 
+                     that means the objects are not placed in the correct positions, keep moving pieces around)""",
+                    goal_image,
+                    current_image
+                ]
+            else:
+                content = [
+                    """In this image you will see two boards, the one on the left 
+                    is your current state (written in the bottom of the board) and
+                    the one on the right is your goal state(written in the bottom of the board).
+                    Keep in mind, if you ask for an action and nothing moves,
+                    that means the action is not allowed, either blocked by another object or out of the board move,if you think all objects match
+                    their position with the original, write done, if you write done, and the game continues, 
+                    that means the objects are not placed in the correct positions, keep moving pieces around.
+                    what action you should take to match the current state to the goal state?""",
+                    current_image
+                ]
+
+            response = self.model.generate_content(content)
+            print(response.text)
+            action = self.parse_action(response.text)
+            print(f"\nGemini suggested action: {action}")
+            return action
+
+        except Exception as e:
+            print(f"\nError calling Gemini API: {e}")
+            return "error"

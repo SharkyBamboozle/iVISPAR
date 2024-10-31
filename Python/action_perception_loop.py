@@ -4,7 +4,7 @@ from PIL import Image
 
 import util_functions as util
 
-def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0.1", PORT=1984):
+def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0.1", PORT=1984, single_images=True):
     """
     Connects to the server via a socket and handles the receiving of observations and sending of actions
     over TCP to simulate the action-perception loop between the Unity environment and the multimodal-LLM.
@@ -12,6 +12,7 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
     Args:
         user_agent (UserInteractiveAgent): The user agent for interacting with the environment.
         max_game_length (int): Maximum number of actions in the game loop.
+        single_images (bool): If False, uses merged comparison images for agent decisions. If True, gets two states seperatly.
         save_path (str): The directory path where the observations will be saved.
         HOST (str): The server's hostname or IP address (default is localhost).
         PORT (int): The server's port (default is 1984).
@@ -63,6 +64,12 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
                 print(f"Saved image to {filename}")
 
                 util.merge_images(filename, obs_dir)
+                if not single_images:
+                    # Construct the path to the merged image
+                    file_root, file_ext = os.path.splitext(filename)
+                    merged_image_path = os.path.join(obs_dir, f"{os.path.basename(file_root)}_compare{file_ext}")
+                    # Load the merged image
+                    image = Image.open(merged_image_path)
 
 
 

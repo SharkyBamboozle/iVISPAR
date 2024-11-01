@@ -38,20 +38,18 @@ class LLMAgent:
         self.goal_state = None
         self.single_images = single_images
         self.COT = COT
-        self.system_prompt = """
-You are an AI solving a shape puzzle game. Your task is to move objects on the board, 
-to match the goal state shown in the image. Study the goal state carefully. Every object can occupy only one tile on the board at a time (so if you try
-to ask for an action and nothing moves, that means the action is not allowed; either blocked by another object or our of the board move).
-Available actions:
-- "move {object color} {object shape} {direction}": Moves an object of a specific color and shape in the specified direction (do not use quotation marks ) 
-- "done": Write done when you think the current state matches the goal state (if you write done, and the game does not end, this means that you did not succefully solve it, keep trying)
-
-Colors: green, red, blue
-Shapes: cube, ball, pyramid
-Directions: up, down, left, right
-""" + ("Please explain your reasoning, then end with 'action: <your action>',"
-       "no matter what always end with action: <your action> (dont add additional character"
-       "after the word action)" if COT else "Please output only the action, no explanations needed.")
+        
+        # Load system prompt from file
+        with open('./instruction_prompts/instruction_prompt_2.txt', 'r') as f:
+            self.system_prompt = f.read()
+        
+        # Add COT instruction if needed
+        if COT:
+            self.system_prompt += ("\nPlease explain your reasoning, then end with 'action: <your action>',"
+                                 "no matter what always end with action: <your action> (dont add additional character"
+                                 "after the word action)")
+        else:
+            self.system_prompt += "\nPlease output only the action, no explanations needed."
 
     def encode_image_from_pil(self, pil_image):
         """Convert PIL Image to base64 string for API consumption."""
@@ -73,10 +71,23 @@ Directions: up, down, left, right
         return action
 
 
+
+def load_api_keys():
+        """Load API keys from file"""
+        keys = {}
+        with open('./instruction_prompts/api-keys.txt', 'r') as f:
+            for line in f:
+                if '=' in line:
+                    key, value = line.strip().split('=')
+                    keys[key] = value
+        return keys
+
+
 class GPT4Agent(LLMAgent):
     def __init__(self, single_images=True, COT=False):
         super().__init__(single_images, COT)
-        self.api_key = "your_api_key"
+        api_keys = load_api_keys()
+        self.api_key = api_keys['GPT4_API_KEY']
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
@@ -137,7 +148,8 @@ class GPT4Agent(LLMAgent):
 class ClaudeAgent(LLMAgent):
     def __init__(self, single_images=True, COT=False):
         super().__init__(single_images, COT)
-        self.client = Anthropic(api_key="your_api_key")
+        api_keys = load_api_keys()
+        self.client = Anthropic(api_key=api_keys['CLAUDE_API_KEY'])
         self.model = "claude-3-5-sonnet-20241022"
 
     def act(self, observation):
@@ -195,7 +207,8 @@ class ClaudeAgent(LLMAgent):
 class GeminiAgent(LLMAgent):
     def __init__(self, single_images=True, COT=False):
         super().__init__(single_images, COT)
-        self.api_key = "your_api_key"  # Replace with your actual API key
+        api_keys = load_api_keys()
+        self.api_key = api_keys['GEMINI_API_KEY']
         genai.configure(api_key=self.api_key)
         self.model = genai.GenerativeModel(model_name="gemini-1.5-flash", system_instruction=self.system_prompt)
 

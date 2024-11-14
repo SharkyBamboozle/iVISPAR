@@ -3,6 +3,7 @@ import socket
 from PIL import Image
 
 import util_functions as util
+import agent
 
 def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0.1", PORT=1984, single_images=True):
     """
@@ -91,8 +92,8 @@ def action_perception_loop(user_agent, max_game_length, save_path, HOST="127.0.0
 
 if __name__ == "__main__":
     # Example usage
-    user_interactive_agent = util.UserInteractiveAgent()
+    user_interactive_agent = agent.UserInteractiveAgent()
     max_game_length = 100
-    experiment_path = r'C:\Users\Sharky\RIPPLE\data\experiment_ID_20241029_103746\experiment_UserInteractiveAgent_ShapePuzzle_1'
+    experiment_path = r'C:\Users\Sharky\RIPPLE\data\experiment_ID_20241101_161534\2'
 
     actions, win = action_perception_loop(user_interactive_agent, max_game_length, experiment_path)

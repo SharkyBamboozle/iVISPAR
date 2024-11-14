@@ -11,7 +11,7 @@ max_game_length = 100  # Max amount of action-perception iterations with the env
 num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many different tasks have to be solved
 
 
-board_size = 3 # Size of the game board environment (square)
+board_size = 5 # Size of the game board environment (square)
 num_landmarks = 3 # Number of different landmarks for the ShapePuzzle game
 unity_executable_path = r'C:\Users\Sharky\RIPPLE\Exec\RIPPLE.exe' # Replace with the path to your application build
 instruction_prompt_file_path = r"./instruction_prompts/instruction_prompt_1.txt"

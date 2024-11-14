@@ -163,7 +163,7 @@ class ShapePuzzleGenerator:
             self._visualize_landmarks(landmarks, plot_filename_goal, coordinate_type='goal')
 
         print(f"ShapePuzzle configs generated to {config_dir}")
-        return config_dir
+        return json_output , config_dir
 
 
 if __name__ == "__main__":

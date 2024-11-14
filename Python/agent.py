@@ -76,7 +76,7 @@ Directions: up, down, left, right
 class GPT4Agent(LLMAgent):
     def __init__(self, single_images=True, COT=False):
         super().__init__(single_images, COT)
-        self.api_key = "your_api_key"
+        self.api_key = "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"
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"

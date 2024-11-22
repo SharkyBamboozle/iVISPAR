@@ -56,14 +56,13 @@ public class LevelManager : MonoBehaviour
         foreach (var landmark in landmarksData)
         {
             GameObject obj = null;
-
             // Determine the object type (cube, ball, capsule, etc.)
             switch (landmark.body.ToLower())
             {
                 case "cube":
                     obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     break;
-                case "ball":
+                case "sphere":
                     obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                     break;
                 case "pyramid":
@@ -84,7 +83,7 @@ public class LevelManager : MonoBehaviour
             obj.transform.rotation = Quaternion.identity;
             obj.tag = "Commandable";  // Example tag for interactable objects
             obj.AddComponent<TargetBehaviour>();  // Assuming you have this script
-
+            obj.GetComponent<TargetBehaviour>().SetInfo(landmark.body.ToLower(),landmark.color);
             // Set object color based on the 'color' property in the landmark data
             Material mat = new Material(Shader.Find("Standard"));
             Color objectColor;
@@ -139,5 +138,6 @@ public class LevelManager : MonoBehaviour
     public void StartLevel()
     {
         EventHandler.Instance.InvokeCommand("capture_send_screenshot");
+        //EventHandler.Instance.InvokeCommand("init_target");
     }
 }

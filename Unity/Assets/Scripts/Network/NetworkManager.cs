@@ -34,7 +34,7 @@ public class NetworkManger : MonoBehaviour
     {
         EventHandler.Instance.RegisterEvent("Handshake", HandShake);
         EventHandler.Instance.RegisterEvent("Echo", EchoDump);
-        //EventHandler.Instance.RegisterEvent("UserMessage", ResponseAck);
+        EventHandler.Instance.RegisterEvent("Ack", ResponseAck);
              
     }
     public async void ConnectToServer(string serverAddress)
@@ -87,7 +87,7 @@ public class NetworkManger : MonoBehaviour
         data.command = "Echo";
         data.to = network_id;
         data.from = network_id;
-        data.message = "";
+        data.messages = new List<string>();
         data.PrepareForSerialization();
         SendWebSocketMessage(JsonUtility.ToJson(data));
         //await websocket.SendText(JsonUtility.ToJson(data));
@@ -99,7 +99,7 @@ public class NetworkManger : MonoBehaviour
         data.command = "ClientClose";
         data.to = server_id;
         data.from = network_id;
-        data.message = "";
+        data.messages = new List<string>();
         data.PrepareForSerialization();
         SendWebSocketMessage(JsonUtility.ToJson(data));
 
@@ -151,7 +151,7 @@ public class NetworkManger : MonoBehaviour
         if(data.from != server_id)
         {
             partner_id = data.from;
-            Debug:Debug.LogFormat("Patner ID = {0}", partner_id);
+            Debug.LogFormat("Patner ID = {0}", partner_id);
             
             response.to =  partner_id;
             
@@ -159,21 +159,21 @@ public class NetworkManger : MonoBehaviour
         else
         {
             network_id = data.to;
-            Debug:Debug.LogFormat("registered network ID = {0}", network_id);
+            Debug.LogFormat("registered network ID = {0}", network_id);
             response.to = server_id;
         }
         response.from = network_id;
-        response.message = "Handshake Acknowledged!";
+        response.messages = new List<string>{"Handshake Acknowledged!"};
         ResponseAck(response);
         
     }
-    public DataPacket PackData(string command, string message, byte[] payload)
+    public DataPacket PackData(string command, List<string> messages, byte[] payload)
     {
         DataPacket data = new DataPacket();
         data.from = network_id;
         data.to = partner_id;
         data.command = command;
-        data.message = message;
+        data.messages = messages;
         data.data = payload;
         data.PrepareForSerialization();
         return data;

@@ -9,7 +9,7 @@ public class DataPacket
     public string command; 
     public string from;
     public string to;
-    public string message;
+    public List<string> messages;
     [NonSerialized]
     public byte[] data;
 
@@ -22,7 +22,7 @@ public class DataPacket
         this.command = "";
         this.from = "";
         this.to = "";
-        this.message = "";
+        this.messages = new List<string>();
         
     }
     public void PrepareForSerialization()

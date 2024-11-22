@@ -7,7 +7,7 @@ from matplotlib.patches import Rectangle, Circle, Polygon
 import warnings
 
 class ShapePuzzleGenerator:
-    bodies = ['cube', 'ball', 'pyramid']
+    bodies = ['cube', 'sphere', 'pyramid']
     colors = ['red', 'green', 'blue']
 
     def __init__(self, board_size=3, num_landmarks=3, instruction_prompt=""):
@@ -115,7 +115,7 @@ class ShapePuzzleGenerator:
             # Draw the landmark based on its body type
             if landmark['body'] == 'cube':
                 ax.add_patch(Rectangle((x, y), 1, 1, color=color, alpha=0.6))
-            elif landmark['body'] == 'ball':
+            elif landmark['body'] == 'sphere':
                 ax.add_patch(Circle((x + 0.5, y + 0.5), 0.5, color=color, alpha=0.6))
             elif landmark['body'] == 'pyramid':
                 ax.add_patch(Polygon([[x + 0.5, y + 1], [x, y], [x + 1, y]], color=color, alpha=0.6))

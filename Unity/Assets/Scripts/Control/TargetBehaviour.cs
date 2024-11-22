@@ -27,19 +27,17 @@ public class TargetBehaviour : MonoBehaviour
 
     private int start_z = -1;
 
-    private UnityEvent GenerateScreenshotEvent;
-
-    private int objectID;
+        private int objectID;
     public void SetID(int ID)
     {
         objectID = ID;
-    }    
+    }
+    private string objectType;
+    private string objectColor;
+
     void Start()
     {
-        if (GenerateScreenshotEvent == null)
-            GenerateScreenshotEvent = new UnityEvent();
-        //GenerateScreenshotEvent.AddListener(GameObject.FindWithTag("Server").GetComponent<Server>().GenerateScreenshot);
-        //GenerateScreenshotEvent.AddListener(GameObject.FindWithTag("Server").GetComponent<ControlServer>().GenerateScreenshot);
+        
         if(gridBoard == null)
         {
             gridBoard = GameObject.FindGameObjectsWithTag("Grids")[0].GetComponent<GridBoard>();
@@ -49,23 +47,22 @@ public class TargetBehaviour : MonoBehaviour
         if(x == -1 && z == -1)
             Debug.LogError("Position of target " + objectID.ToString() + " is not correctly set");
         transform.position = gridBoard.getGridWorldPos(x,z) + (Vector3.one *  0.5f);
-          
+        EventHandler.Instance.RegisterEvent("move",MovePlayer);
+        EventHandler.Instance.RegisterEvent("init_target",InitTargets);
     }
-
+    public string getObjectStatus()
+    {
+        return string.Format("{0} {1} is at ({2},{3})",objectColor,objectType,x,z);
+    }
+    public void SetInfo(string type, string color)
+    {
+        objectType = type;
+        objectColor = color;
+    }
     // Update is called once per frame
     void Update()
     {
-        if(isPlayer)
-        {
-            if(Input.GetKeyDown(KeyCode.UpArrow))
-                MoveForward(1);
-            if(Input.GetKeyDown(KeyCode.DownArrow))
-                MoveForward(-1); 
-            if(Input.GetKeyDown(KeyCode.RightArrow))
-                MoveRight(1);   
-            if(Input.GetKeyDown(KeyCode.LeftArrow))
-                MoveRight(-1);
-        }        
+             
     }
     public void setPositionOnGrid(int x, int z)
     {
@@ -91,7 +88,6 @@ public class TargetBehaviour : MonoBehaviour
 
     public void MovePlayer(int ID ,string direction)
     {
-        //Debug.LogWarning("Move command invoked with direction " + direction);
         if(objectID == ID)
         {
             if(direction == "up")
@@ -101,10 +97,8 @@ public class TargetBehaviour : MonoBehaviour
             if(direction == "right")
                 MoveRight(1);   
             if(direction == "left")
-                MoveRight(-1); 
-            //GenerateScreenshotEvent.Invoke();
-        } 
-        
+                MoveRight(-1);        
+        }        
     }
 
 
@@ -129,8 +123,11 @@ public class TargetBehaviour : MonoBehaviour
             z += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
             gridBoard.setOccupancy(x,z,true);
-            //camcorder.CaptureFrame("Captures/" + Time.realtimeSinceStartup);
+            EventHandler.Instance.InvokeCommand("LegalMove");
+            
         }
+        else
+            EventHandler.Instance.InvokeCommand("IlegalMove");
     }
     public void MoveRight(int units)
     {
@@ -140,10 +137,11 @@ public class TargetBehaviour : MonoBehaviour
             x += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
             gridBoard.setOccupancy(x,z,true);
-            //camcorder.CaptureFrame("Captures/" + Time.realtimeSinceStartup);
+            EventHandler.Instance.InvokeCommand("LegalMove");        
         }
-        //if(transform.position < boundPosition && transform.position > gridBoard.transform.position)
-        //transform.position += (transform.right * units);
+        else
+            EventHandler.Instance.InvokeCommand("IlegalMove");
+        
     }
 
     public Vector2 goalCoordinate

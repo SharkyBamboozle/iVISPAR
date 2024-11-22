@@ -19,14 +19,14 @@ instruction_prompt_file_path = r"./instruction_prompts/instruction_prompt_1.txt"
 
 async def client():
     uri = "ws://localhost:1984"  # Replace with your server's URI
-    async with websockets.connect(uri,max_size=10000000) as websocket:
+    async with websockets.connect(uri,max_size=10000000,ping_interval=10, ping_timeout=360) as websocket:
         print(f"Connecting to server. Type 'exit' to close the connection.")
         try:
             response = await websocket.recv()
             message_data = json.loads(response)
             if message_data.get("command") == "Handshake":
                 network_id = message_data.get("to")
-                print(message_data.get("message"))
+                print(message_data.get("messages"))
                 isConnected = False
                 while not isConnected:
                     partner_id = input("Please enter the remote client id :")
@@ -34,7 +34,7 @@ async def client():
                         "command": "Handshake",
                         "from": network_id,
                         "to": partner_id,  # Server ID or specific target ID
-                        "message": "Action Perception client attempting to register partner id with the game",
+                        "messages": ["Action Perception client attempting to register partner id with the game"],
                         "payload": base64.b64encode(b"nothing here").decode("utf-8")
                     }
                     await websocket.send(json.dumps(message_data))
@@ -42,7 +42,7 @@ async def client():
                     response = await websocket.recv()
                     message_data = json.loads(response)
                     command = message_data.get("command")
-                    msg = message_data.get("message")
+                    msg = message_data.get("messages")
                     print(f"Received {command} : {msg}")
                     if command == "ACK":
                         partner_id =  message_data.get("from")
@@ -62,7 +62,7 @@ async def client():
                         "command": "Setup",
                         "from": network_id,
                         "to": partner_id,  # Server ID or specific target ID
-                        "message": json.dumps(setup),
+                        "messages": [json.dumps(setup)],
                         "payload": base64.b64encode(b"nothing here").decode("utf-8")
                     }
                     await websocket.send(json.dumps(message_data))
@@ -73,10 +73,9 @@ async def client():
             response = await websocket.recv()
             message_data = json.loads(response)
             command = message_data.get("command")
-            msg = message_data.get("message")
-            print(f"Received {command} : {msg}")
+            msg = message_data.get("messages")
             if command == "Screenshot":
-                print(message_data.get("message"))
+                print(message_data.get("messages"))
                 encoded_data = message_data.get("payload")
                 observation = base64.b64decode(encoded_data)
                 image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
@@ -86,7 +85,7 @@ async def client():
             #old logic
             user_message = ""
             while user_message != "exit":
-                user_message = input("Enter message to send to server: ")
+                user_message = input("Enter command to send: ")
 
                 # Exit the loop if the user wants to close the connection
                 if user_message.lower() == "exit":
@@ -94,13 +93,14 @@ async def client():
                     await websocket.close()
                     print("Connection closed")
                     break
-
+                message_list = [msg.strip() for msg in user_message.split(",")]
                 # Create a JSON-formatted message
+                print(message_list)
                 message_data = {
-                    "command": "UserMessage",
+                    "command": "GameInteraction",
                     "from": network_id,
                     "to": partner_id,  # Server ID or specific target ID
-                    "message": user_message,
+                    "messages": message_list,
                     "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
                 }
 
@@ -109,13 +109,24 @@ async def client():
                 print(f"Sending data")
 
                 # Wait for a response from the server
-                response = await asyncio.wait_for(websocket.recv(), 10)
-                message_data = json.loads(response)
-                text = message_data.get("message")
-                print(f"Received from client: {text}")
 
-        except websockets.ConnectionClosed:
-            print("Connection with server was closed.")
+                #response = await asyncio.wait_for(websocket.recv(), 10)
+                response = await websocket.recv()
+                message_data = json.loads(response)
+                command = message_data.get("command")
+                msg = message_data.get("messages")
+                #print(f"Received {command} : {msg}")
+                if command == "ActionAck":
+                    print(message_data.get("messages"))
+                    encoded_data = message_data.get("payload")
+                    observation = base64.b64decode(encoded_data)
+                    image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
+                    image = image.transpose(Image.FLIP_TOP_BOTTOM)
+                    image.show()
+
+        except websockets.ConnectionClosed as e:
+            #print("Connection with server was closed.")
+            print(f"Connection closed with code {e.code}, reason: {e.reason}")
         except KeyboardInterrupt:
             print("Interrupted by user. Closing connection.")
             await websocket.close()

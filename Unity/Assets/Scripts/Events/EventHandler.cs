@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,7 +10,7 @@ public class EventHandler : MonoBehaviour
     public static EventHandler Instance { get; private set; }
     public Dictionary<string,UnityEvent<DataPacket>> eventRegistery;
     public Dictionary<string,UnityEvent> internalEventRegistery;
-    public Dictionary<string,UnityEvent<string>> actionEventRegistery;
+    public Dictionary<string,UnityEvent<int,string>> actionEventRegistery;
     // Start is called before the first frame update
     void Awake()
     {
@@ -22,6 +23,7 @@ public class EventHandler : MonoBehaviour
         { 
             eventRegistery = new Dictionary<string, UnityEvent<DataPacket>>();
             internalEventRegistery = new Dictionary<string, UnityEvent>();
+            actionEventRegistery = new Dictionary<string, UnityEvent<int, string>>();
             Instance = this; 
             DontDestroyOnLoad(gameObject);  // Persist this object across scenes
         }    
@@ -72,7 +74,7 @@ public class EventHandler : MonoBehaviour
             return false;
         }
     }
-    public bool RegisterEvent(string command, UnityAction<string> callback)
+    public bool RegisterEvent(string command, UnityAction<int,string> callback)
     {
         if (actionEventRegistery != null)
         {
@@ -83,7 +85,7 @@ public class EventHandler : MonoBehaviour
             }
             else
             {
-                actionEventRegistery.Add(command,new UnityEvent<string>());
+                actionEventRegistery.Add(command,new UnityEvent<int,string>());
                 actionEventRegistery[command].AddListener(callback);
                 return true;
             }
@@ -183,13 +185,13 @@ public class EventHandler : MonoBehaviour
             return false;
         }
     }
-    public bool InvokeCommand(string command, string message)
+    public bool InvokeCommand(string command,int objectID, string message)
     {
         if (actionEventRegistery != null)
         {
             if(actionEventRegistery.ContainsKey(command))
             {
-                actionEventRegistery[command]?.Invoke(message);
+                actionEventRegistery[command]?.Invoke(objectID,message);
                 return true;
             }
             else

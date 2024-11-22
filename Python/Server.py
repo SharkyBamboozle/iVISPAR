@@ -5,7 +5,6 @@ import json
 import base64
 
 connected_clients = {}
-timeout = 30
 
 async def handle_client(websocket, path):
 
@@ -23,7 +22,7 @@ async def handle_client(websocket, path):
         "command" : "Handshake",
         "from" : "0000-0000-0000-0000",
         "to" : client_id,
-        "message" : "welcome to Microcomsim action perception server V1.0. \n your network id is registered",
+        "messages" : ["welcome to Microcomsim action perception server V1.0.","your network id is registered"],
         "payload" : encoded_byte_array
     }
     #websocket.send(f"Handshake")
@@ -32,7 +31,7 @@ async def handle_client(websocket, path):
         # Continuously listen for messages from the client
         #async for message in websocket:
         while True:
-            #message = await asyncio.wait_for(websocket.recv(), timeout)
+
             message = await websocket.recv()
 
             print(message)
@@ -55,7 +54,7 @@ async def handle_client(websocket, path):
                         "command": "Error",
                         "from": "0000-0000-0000-0000",  # Server ID
                         "to": from_client_id,
-                        "message": f"Target client {to_client_id} is not connected.",
+                        "messages": [f"Target client {to_client_id} is not connected."],
                         "payload": ""
                     }
                     await websocket.send(json.dumps(error_message))
@@ -74,7 +73,7 @@ async def handle_client(websocket, path):
 
 async def start_server():
     # Define the host and port for the server
-    server = await websockets.serve(handle_client, "localhost", 1984,max_size=10000000)  # Replace "localhost" and 8765 if needed
+    server = await websockets.serve(handle_client, "localhost", 1984,max_size=10000000,ping_interval=10, ping_timeout=360)  # Replace "localhost" and 8765 if needed
 
     print("WebSocket server started on ws://localhost:1984")
     #await server.wait_closed()

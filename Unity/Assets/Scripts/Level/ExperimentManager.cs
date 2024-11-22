@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEditor;
 using UnityEngine;
@@ -41,8 +42,9 @@ public class ExperimentManager : MonoBehaviour
     public void SetupExperiment(DataPacket setup_data)
     {
         Debug.LogFormat("setup command recieved from {0}, processing do load...",setup_data.from);
-        string configData = setup_data.message;
-        Deserialize(configData);
+        List<string> configDatas = setup_data.messages;
+        Debug.Log(configDatas);
+        Deserialize(configDatas[0]);
         SceneManager.LoadScene(experimentType, LoadSceneMode.Single);
     }
     // Public getter for landmark data

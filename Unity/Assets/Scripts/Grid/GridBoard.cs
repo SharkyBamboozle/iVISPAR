@@ -11,14 +11,15 @@ public class GridBoard : MonoBehaviour
     public Grid grid;
     public int width; //length of the grid board in one dimension (doesn't effect the grid yet because meta file is read first)
     public int height; //length of the grid board in another dimension (doesn't effect the grid yet because meta file is read first)
-
+    
     [Range(0.0f, 100.0f)]
     public float cellSize = 1.0f; //scale size of each cell
     [Header("Debug parameters")]
     public Color lineColor = Color.red; //color of the line, only visible in the editor
     public float lineWidth = 500f;
 
-    public CameraAdjustment camAdjustmet;
+    public CameraController cameraController;
+    public float cameraAnchorOffset = 0.5f;
     public void setGridSize(int width, int height)
     {
         this.width = width;
@@ -45,7 +46,8 @@ public class GridBoard : MonoBehaviour
         grid = new Grid(width,height,cellSize,transform.position,lineColor,lineWidth);
 
         Vector3 centerPos = grid.GetWorldPosition((int)(width/2) ,  (int)(height/2));
-        camAdjustmet.SetPostition(centerPos.x,centerPos.z - (height));
+        Vector3 gridHeight =  grid.GetWorldPosition(0 ,  height/2);
+        cameraController.SetPosition(centerPos.x + cameraAnchorOffset,centerPos.z + cameraAnchorOffset, gridHeight.z);
         
     }
   

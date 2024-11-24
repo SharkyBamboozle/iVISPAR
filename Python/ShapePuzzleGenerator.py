@@ -7,12 +7,17 @@ from matplotlib.patches import Rectangle, Circle, Polygon
 import warnings
 
 class ShapePuzzleGenerator:
-    bodies = ['cube', 'sphere', 'pyramid']
-    colors = ['red', 'green', 'blue']
+    bodies = ['cube', 'sphere', 'pyramid','cylinder','cone','prism']
+    colors = ['red', 'green', 'blue','yellow','purple','orange']
+    labels = ['none', 'cell', 'edge', 'both']
 
-    def __init__(self, board_size=3, num_landmarks=3, instruction_prompt=""):
+    def __init__(self , board_size=3, num_landmarks=3, instruction_prompt="",experiment_type = 'Puzzle', grid_label= 'none',camera_offset = [0.0,0.0,0.0], screenshot_alpha=1.0):
         # Ensure board_size is the maximum of either 2 or the size required to fit all landmarks
         self.board_size = max(board_size, int((num_landmarks + 1) ** 0.5) + 1, 2)
+        self.experiment_type = experiment_type
+        self.grid_label = grid_label
+        self.camera_offset = camera_offset
+        self.screenshot_alpha = screenshot_alpha
         if self.board_size != board_size:
             warnings.warn(f"Board size adjusted to {self.board_size} to fit {num_landmarks} landmarks.")
 
@@ -144,8 +149,12 @@ class ShapePuzzleGenerator:
             # Structure the output for JSON
             json_output = {
                 "config_instance_id": config_instance_id,
+                "experiment_type": self.experiment_type,
                 "instruction_prompt": self.instruction_prompt,
                 "grid_size": self.board_size,  # Assuming grid size is fixed and provided by the instance
+                "grid_label": self.grid_label,
+                "camera_offset": self.camera_offset,
+                "screenshot_alpha": self.screenshot_alpha,
                 "landmarks": landmarks  # The landmarks list generated
             }
 

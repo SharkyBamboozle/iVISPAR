@@ -13,7 +13,7 @@ public class TargetBehaviour : MonoBehaviour
     public GridBoard gridBoard; 
     //public CaptureCamera camcorder; not used
     //public List<Material> mats; not used
-    public bool isPlayer = true;
+    public bool isInitialized = false;
     // Start is called before the first frame update
     private Vector3 boundPosition;
     private int x = -1;
@@ -78,7 +78,14 @@ public class TargetBehaviour : MonoBehaviour
         this.goal_z = z;
         Debug.LogWarning("setGoalPos x:" +x +", z: " +z);
     }
-
+    public bool evaluateGoal()
+    {
+        Debug.LogFormat("for {0} object foal coordinates are ({1},{2}) , current cordinate is ({3},{4})",Debugger.Instance.objectList[objectID], this.goal_x, this.goal_z, this.x, this.z);
+        if((this.goal_x == this.x) && (this.goal_z == this.z))
+            return true;
+        else
+            return false;
+    }
     public void setStartPos(int x, int z)
     {
         this.start_x = x;
@@ -88,16 +95,23 @@ public class TargetBehaviour : MonoBehaviour
 
     public void MovePlayer(int ID ,string direction)
     {
-        if(objectID == ID)
+        if(isInitialized)
         {
-            if(direction == "up")
-                MoveForward(1);
-            if(direction == "down")
-                MoveForward(-1); 
-            if(direction == "right")
-                MoveRight(1);   
-            if(direction == "left")
-                MoveRight(-1);        
+            if(objectID == ID)
+            {
+                if(direction == "up")
+                    MoveForward(1);
+                if(direction == "down")
+                    MoveForward(-1); 
+                if(direction == "right")
+                    MoveRight(1);   
+                if(direction == "left")
+                    MoveRight(-1);        
+            }
+        }
+        else
+        {
+            Debugger.Instance.AppendLastLog(" - you can not move before start action");
         }        
     }
 
@@ -111,7 +125,9 @@ public class TargetBehaviour : MonoBehaviour
         z = start_z;
         transform.position = gridBoard.getGridWorldPos(x, z) + (transform.localScale /2);
         gridBoard.setOccupancy(x,z,true);
+        isInitialized = true;
         Debug.Log(gridBoard.GridOccupanyLog());
+        Debugger.Instance.AppendLastLog(" - set objects position to initial positions"); 
     }
 
 
@@ -123,11 +139,10 @@ public class TargetBehaviour : MonoBehaviour
             z += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
             gridBoard.setOccupancy(x,z,true);
-            EventHandler.Instance.InvokeCommand("LegalMove");
-            
+            Debugger.Instance.AppendLastLog(" - is legal move");  
         }
         else
-            EventHandler.Instance.InvokeCommand("IlegalMove");
+            Debugger.Instance.AppendLastLog(" - is not legal move");
     }
     public void MoveRight(int units)
     {
@@ -137,11 +152,10 @@ public class TargetBehaviour : MonoBehaviour
             x += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
             gridBoard.setOccupancy(x,z,true);
-            EventHandler.Instance.InvokeCommand("LegalMove");        
+            Debugger.Instance.AppendLastLog(" - is legal move");         
         }
         else
-            EventHandler.Instance.InvokeCommand("IlegalMove");
-        
+            Debugger.Instance.AppendLastLog(" - is not legal move"); 
     }
 
     public Vector2 goalCoordinate
@@ -150,6 +164,11 @@ public class TargetBehaviour : MonoBehaviour
         {
             return new Vector2(goal_x, goal_z);  // Assuming 2D check on x (for x-axis) and y (for z-axis)
         }
+    }
+    private void OnDestroy() 
+    {
+        EventHandler.Instance.UnregisterEvent("move",MovePlayer);
+        EventHandler.Instance.UnregisterEvent("init_target",InitTargets);
     }
 
 }

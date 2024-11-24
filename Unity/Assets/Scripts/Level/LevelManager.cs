@@ -9,8 +9,13 @@ public class LevelManager : MonoBehaviour
     
     private (int, int) gridSize;
     private List<GameObject> landmarks = new List<GameObject>();
-
+    public GameObject Cube;
+    public GameObject Sphere;
     public GameObject Pyramid;
+    public GameObject Cylinder;
+    public GameObject Cone;
+    public GameObject Prism;
+    public float hedronOffset = -0.2f;
     [Range(0f,1f)]
     public float metallic = 0.7f;
     [Range(0f,1f)]
@@ -56,18 +61,44 @@ public class LevelManager : MonoBehaviour
         foreach (var landmark in landmarksData)
         {
             GameObject obj = null;
+            int gridX = (int)landmark.goal_coordinate[0];
+            int gridZ = (int)landmark.goal_coordinate[1];
             // Determine the object type (cube, ball, capsule, etc.)
             switch (landmark.body.ToLower())
             {
                 case "cube":
-                    obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    if(Cube != null)
+                        obj = GameObject.Instantiate(Cube);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;
                 case "sphere":
-                    obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    if(Sphere != null)
+                        obj = GameObject.Instantiate(Sphere);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
+                case "cylinder":
+                    if(Cylinder != null)
+                        obj = GameObject.Instantiate(Cylinder);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;
                 case "pyramid":
                     if(Pyramid != null)
                         obj = GameObject.Instantiate(Pyramid);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
+                case "cone":
+                    if(Cone != null)
+                        obj = GameObject.Instantiate(Cone);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
+                case "prism":
+                    if(Prism != null)
+                        obj = GameObject.Instantiate(Prism);
                     else
                         obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;
@@ -77,8 +108,7 @@ public class LevelManager : MonoBehaviour
             }
 
             // Use the 'coordinate' array to set the object's position
-            int gridX = (int)landmark.goal_coordinate[0];
-            int gridZ = (int)landmark.goal_coordinate[1];
+            
             obj.transform.position = new Vector3(gridX, 0, gridZ);
             obj.transform.rotation = Quaternion.identity;
             obj.tag = "Commandable";  // Example tag for interactable objects
@@ -117,8 +147,8 @@ public class LevelManager : MonoBehaviour
             targetBehaviour.setPositionOnGrid((int)landmark.goal_coordinate[0], (int)landmark.goal_coordinate[1]);
             targetBehaviour.setGoalPos((int)landmark.goal_coordinate[0], (int)landmark.goal_coordinate[1]);
             targetBehaviour.setStartPos((int)landmark.start_coordinate[0], (int)landmark.start_coordinate[1]);
-
             int objectID = Animator.StringToHash(landmark.color.ToLower() + " " + landmark.body.ToLower());
+            Debugger.Instance.objectList.Add(objectID, landmark.color.ToLower() + " " + landmark.body.ToLower());
             targetBehaviour.SetID(objectID);
 
             // Set grid occupancy for this object using the GridBoard
@@ -138,6 +168,9 @@ public class LevelManager : MonoBehaviour
     public void StartLevel()
     {
         EventHandler.Instance.InvokeCommand("capture_send_screenshot");
-        //EventHandler.Instance.InvokeCommand("init_target");
+    }
+    private void OnDestroy() {
+        if(Debugger.Instance != null)
+            Debugger.Instance.ClearObjectList();
     }
 }

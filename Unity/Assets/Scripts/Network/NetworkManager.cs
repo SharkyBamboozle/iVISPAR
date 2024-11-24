@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
-
+using System.Runtime.InteropServices;
 using NativeWebSocket;
 using System;
 using System.Data.SqlTypes;
+using TMPro;
 public class NetworkManger : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -16,7 +17,8 @@ public class NetworkManger : MonoBehaviour
     private string partner_id;
     private WebSocket websocket;
         
-    
+    [DllImport("__Internal")]
+    private static extern void CopyToClipboard(string text);
     void Awake()
     {
         // Singleton pattern
@@ -43,6 +45,7 @@ public class NetworkManger : MonoBehaviour
         websocket = new WebSocket(serverAddress);
         websocket.OnOpen += () =>
         {
+            ExperimentManager.Instance.isConnected = true;
             Debug.Log("Connection established!");
         };
 
@@ -53,7 +56,7 @@ public class NetworkManger : MonoBehaviour
 
         websocket.OnClose += (e) =>
         {
-            
+            ExperimentManager.Instance.isConnected = false;
             Debug.Log("Connection closed!");
         };
 
@@ -161,6 +164,9 @@ public class NetworkManger : MonoBehaviour
             network_id = data.to;
             Debug.LogFormat("registered network ID = {0}", network_id);
             response.to = server_id;
+            GameObject obj = GameObject.FindWithTag("inputField");
+            if(obj != null)
+                obj.GetComponent<TMP_InputField>().text = network_id;
         }
         response.from = network_id;
         response.messages = new List<string>{"Handshake Acknowledged!"};
@@ -182,6 +188,15 @@ public class NetworkManger : MonoBehaviour
     public void EchoDump(DataPacket data)
     {
         Debug.Log("command : " + data.command);
+    }
+    public void CopyIdToClipboard()
+    {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        CopyToClipboard(network_id); // Call the JS function when running in WebGL
+        #else
+        GUIUtility.systemCopyBuffer = network_id;
+        #endif
+        
     }
     
 }

@@ -11,6 +11,7 @@ public class EventHandler : MonoBehaviour
     public Dictionary<string,UnityEvent<DataPacket>> eventRegistery;
     public Dictionary<string,UnityEvent> internalEventRegistery;
     public Dictionary<string,UnityEvent<int,string>> actionEventRegistery;
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -119,7 +120,7 @@ public class EventHandler : MonoBehaviour
             return false;
         }
     }
-    public bool UnregisterEvent(string command, UnityAction<string> callback)
+    public bool UnregisterEvent(string command, UnityAction<int,string> callback)
     {
         if (actionEventRegistery != null)
         {

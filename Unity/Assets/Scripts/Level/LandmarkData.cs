@@ -12,7 +12,13 @@ public class Landmark
 [System.Serializable]
 public class LandmarkData
 {
-    public string experiment_id;      // Unique experiment ID
+    public string experiment_id; 
+    public string experiment_type;
+    
     public int grid_size;             // Size of the grid (grid_size x grid_size)
+
+    public string grid_label;
+    public float[] camera_offset;
+    public float screenshot_alpha;
     public Landmark[] landmarks;      // Array of landmarks
 }

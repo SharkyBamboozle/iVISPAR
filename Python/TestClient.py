@@ -10,12 +10,17 @@ partner_id = ""
 network_id = ""
 max_game_length = 100  # Max amount of action-perception iterations with the environment
 num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many different tasks have to be solved
-
-
-board_size = 5 # Size of the game board environment (square)
-num_landmarks = 3 # Number of different landmarks for the ShapePuzzle game
+experiment_type = 'Puzzle'
+#choices are between 'edge', 'cell' , 'both' and 'none'
+grid_label = 'both'
+camera_offset = [0,0,0]
+screenshot_alpha = 1.0
+board_size = 3 # Size of the game board environment (square)
+num_landmarks = 1 # Number of different landmarks for the ShapePuzzle game
 instruction_prompt_file_path = r"./instruction_prompts/instruction_prompt_1.txt"
 
+screenshotWidth = 0
+screenshotHeight = 0
 
 async def client():
     uri = "ws://localhost:1984"  # Replace with your server's URI
@@ -55,7 +60,11 @@ async def client():
                     with open(instruction_prompt_file_path, 'r', encoding='utf-8') as file:
                         instruction_prompt = file.read()
                     shape_puzzle_generator = ShapePuzzleGenerator(board_size=board_size, num_landmarks=num_landmarks,
-                                                                  instruction_prompt=instruction_prompt)
+                                                                  instruction_prompt=instruction_prompt,
+                                                                  experiment_type = experiment_type,
+                                                                  grid_label=grid_label,
+                                                                  camera_offset = camera_offset,
+                                                                  screenshot_alpha = screenshot_alpha)
                     setup , configs_path = shape_puzzle_generator.generate_configs(num_configs=num_games)
 
                     message_data = {
@@ -74,11 +83,14 @@ async def client():
             message_data = json.loads(response)
             command = message_data.get("command")
             msg = message_data.get("messages")
+            print(f"screenshot size is {msg[0]}*{msg[1]}")
+            screenshotWidth = int(msg[0])
+            screenshotHeight = int(msg[1])
             if command == "Screenshot":
                 print(message_data.get("messages"))
                 encoded_data = message_data.get("payload")
                 observation = base64.b64decode(encoded_data)
-                image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
+                image = Image.frombytes('RGBA', (screenshotWidth, screenshotHeight), observation, 'raw')
                 image = image.transpose(Image.FLIP_TOP_BOTTOM)
                 image.show()
 
@@ -88,25 +100,45 @@ async def client():
                 user_message = input("Enter command to send: ")
 
                 # Exit the loop if the user wants to close the connection
+                if user_message.lower() == "reset":
+                    message_data = {
+                        "command": "Reset",
+                        "from": network_id,
+                        "to": partner_id,  # Server ID or specific target ID
+                        "messages": ["reset to main menu"],
+                        "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+                    }
+                    await websocket.send(json.dumps(message_data))
+                    print(f"Sending data")
                 if user_message.lower() == "exit":
                     print("Closing connection...")
+                    message_data = {
+                        "command": "Reset",
+                        "from": network_id,
+                        "to": partner_id,  # Server ID or specific target ID
+                        "messages": ["reset to main menu"],
+                        "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+                    }
+                    await websocket.send(json.dumps(message_data))
+                    print(f"Sending data")
                     await websocket.close()
                     print("Connection closed")
                     break
-                message_list = [msg.strip() for msg in user_message.split(",")]
-                # Create a JSON-formatted message
-                print(message_list)
-                message_data = {
-                    "command": "GameInteraction",
-                    "from": network_id,
-                    "to": partner_id,  # Server ID or specific target ID
-                    "messages": message_list,
-                    "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
-                }
+                else:
+                    message_list = [msg.strip() for msg in user_message.split(",")]
+                    # Create a JSON-formatted message
+                    print(message_list)
+                    message_data = {
+                        "command": "GameInteraction",
+                        "from": network_id,
+                        "to": partner_id,  # Server ID or specific target ID
+                        "messages": message_list,
+                        "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+                    }
 
-                # Send the JSON message to the server
-                await websocket.send(json.dumps(message_data))
-                print(f"Sending data")
+                    # Send the JSON message to the server
+                    await websocket.send(json.dumps(message_data))
+                    print(f"Sending data")
 
                 # Wait for a response from the server
 

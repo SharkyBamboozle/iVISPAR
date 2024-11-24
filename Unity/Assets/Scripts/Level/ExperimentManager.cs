@@ -8,10 +8,11 @@ public class ExperimentManager : MonoBehaviour
     public static ExperimentManager Instance { get; private set; }
     
     public LandmarkData loadedLandmarkData;
-    private string experimentType = "puzzle";  // Default experiment type
+    //private string experimentType = "puzzle";  // Default experiment type
     //public string serverAdress =  "ws://localhost:1984";
     public string url = "localhost";
     public string socketPort = "1984";
+    public bool isConnected = false;
     void Awake()
     {
         // Singleton pattern
@@ -29,7 +30,9 @@ public class ExperimentManager : MonoBehaviour
         Screen.SetResolution(800,600,true);
         
     }
-
+    public void Reset() {
+         SceneManager.LoadScene("Main", LoadSceneMode.Single);
+    }
     void Start()
     {
         // Load the scene after the configuration has been loaded
@@ -45,7 +48,7 @@ public class ExperimentManager : MonoBehaviour
         List<string> configDatas = setup_data.messages;
         Debug.Log(configDatas);
         Deserialize(configDatas[0]);
-        SceneManager.LoadScene(experimentType, LoadSceneMode.Single);
+        SceneManager.LoadScene(loadedLandmarkData.experiment_type, LoadSceneMode.Single);
     }
     // Public getter for landmark data
     public void Deserialize(string config)

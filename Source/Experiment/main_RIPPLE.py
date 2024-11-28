@@ -14,7 +14,7 @@ num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many diffe
 board_size = 5 # Size of the game board environment (square)
 num_landmarks = 3 # Number of different landmarks for the ShapePuzzle game
 unity_executable_path = r'C:\Users\Sharky\RIPPLE\Exec\RIPPLE.exe' # Replace with the path to your application build
-instruction_prompt_file_path = r"../../Resource/instruction_prompts/instruction_prompt_1.txt"
+instruction_prompt_file_path = r"../../Resources/instruction_prompts/instruction_prompt_1.txt"
 single_images = True
 COT= True
 

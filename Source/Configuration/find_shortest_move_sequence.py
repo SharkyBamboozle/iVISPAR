@@ -125,12 +125,6 @@ def a_star(n, initial_state, goal_state):
     return None  # No solution found
 
 
-
-
-
-
-
-
 def solve_with_timing(n, initial_state, goal_state):
     """
     Solve the sliding tile puzzle and measure the time taken.

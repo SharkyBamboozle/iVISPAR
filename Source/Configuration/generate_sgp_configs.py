@@ -1,3 +1,7 @@
+"""
+Main file to generate a set of config files for the Sliding Geom Puzzle (SGP).
+"""
+
 # Import statements
 import os
 import random
@@ -7,24 +11,26 @@ import time
 from datetime import datetime
 
 from find_shortest_move_sequence import a_star, manhattan_heuristic
-from puzzle_config_visualizer import visualize_config_stats
+from encode_config_to_json import convert_to_landmarks
 
 
-def convert_to_landmarks(init_state, goal_state, geoms):
-    # Prepare the landmarks list
-    landmarks = []
-    for geom_nr, (start, goal, (body, color)) in enumerate(zip(init_state, goal_state, geoms), start=1):
-        landmark = {
-            "geom_nr": geom_nr,
-            "body": body,
-            "color": color,
-            "start_coordinate": [int(x) for x in start],  # Convert each element to native Python int             #try np.array([[1, 0], [2, 1]], dtype=np.int32).tolist()
-            "goal_coordinate": [int(x) for x in goal]  # Convert each element to native Python int
-        }
-        landmarks.append(landmark)
+def _prepare_generate_configs(puzzle_type, board_size, num_geoms, shapes, colors):
 
-    # Return the JSON structure
-    return landmarks
+    geoms = [(shape, color) for shape in shapes for color in colors]
+    config_id = datetime.now().strftime("%Y%m%d_%H%M%S")  # Setup ID directly assigned here
+
+    # Validate parameters
+    if num_geoms > board_size ** 2:
+        raise ValueError("Number of geoms exceeds the total cells on the board.")
+    if num_geoms > len(geoms):
+        raise ValueError("Number of geoms exceeds the total number of geoms available.")
+
+    # Set up directories
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    config_dir = os.path.join(base_dir, 'Data', 'Configs', f"{puzzle_type}_ID_{config_id}")
+    os.makedirs(config_dir, exist_ok=True)
+
+    return geoms, config_id, config_dir
 
 
 def build_SGP_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, geoms, config_id, config_dir):
@@ -111,7 +117,6 @@ def build_SGP_configs(board_size, num_geoms, complexity_min_max, complexity_bin_
         # End the timer and calculate elapsed time
         if time.time() - last_checked_time >= interval:  # Check if 5 minutes have passed
             print(f"Checking at 5-minute interval: {i}")
-            visualize_config_stats(config_dir)
 
             # Evaluate condition for breaking the loop
             if total_bin_values == sum(complexity_bins.values()):
@@ -127,3 +132,26 @@ def build_SGP_configs(board_size, num_geoms, complexity_min_max, complexity_bin_
         if all(complexity_bins[c] >= complexity_bin_size for c in complexity_bins):
             print("Finished building all configurations")
             break
+
+
+def generate_SGP_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors):
+
+    # Prepare config generation
+    geoms, config_id, config_dir = _prepare_generate_configs("SGP", board_size, num_geoms, shapes, colors)
+
+    # Generate configs
+    build_SGP_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, geoms, config_id, config_dir)
+
+
+if __name__ == "__main__":
+
+    # Parameters
+    board_size = 5
+    num_geoms = 5
+    complexity_min_max = [0, 50]  # smallest and highest complexity to be considered
+    complexity_bin_size = 100*1000  # how many puzzles per complexity
+    shapes = ['cube', 'sphere', 'pyramid']#, 'cylinder', 'cone'] #prism
+    colors = ['red', 'green', 'blue', 'yellow', 'purple'] #orange
+
+    # Generate Sliding Geom Puzzle (SGP) configuration files
+    generate_SGP_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors)

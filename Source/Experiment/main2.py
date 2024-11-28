@@ -170,7 +170,7 @@ if __name__ == "__main__":
     grid_label = 'none' #need to add to JSON
     camera_offset = [0,0,0] #need to add to JSON
     screenshot_alpha = 0.0 #need to add to JSON
-    instruction_prompt_file_path = r"../../Resources/instruction_prompts/instruction_prompt_1.txt"
+    instruction_prompt_file_path = r"../../Resource/instruction_prompts/instruction_prompt_1.txt"
     screenshotWidth = 0
     screenshotHeight = 0
 

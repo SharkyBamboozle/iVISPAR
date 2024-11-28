@@ -2,18 +2,20 @@ import asyncio
 import websockets
 import json
 import base64
+import time
 from PIL import Image
 
 import agent
 import util_functions as util
 from ShapePuzzleGenerator import ShapePuzzleGenerator
+from Source.main import config_id
 from action_perception_loop import action_perception_loop
 from generate_episode_GIF import generate_episode_gif
+from WebglServer2 import run_WebGL_server_in_background
+from Server import run_WebSocket_server_in_background
 
-from WebglServer import run_server_in_background
 
-
-async def client():
+async def client(setup , configs_path):
     uri = "ws://localhost:1984"  # Replace with your server's URI
     async with websockets.connect(uri,max_size=10000000,ping_interval=10, ping_timeout=360) as websocket:
         print(f"Connecting to server. Type 'exit' to close the connection.")
@@ -47,17 +49,6 @@ async def client():
 
             for env_type, num_games in num_game_env.items():
                 if env_type == 'ShapePuzzle':
-                    # Generate ShapePuzzle configurations
-                    with open(instruction_prompt_file_path, 'r', encoding='utf-8') as file:
-                        instruction_prompt = file.read()
-                    shape_puzzle_generator = ShapePuzzleGenerator(board_size=board_size, num_landmarks=num_landmarks,
-                                                                  instruction_prompt=instruction_prompt,
-                                                                  experiment_type = experiment_type,
-                                                                  grid_label=grid_label,
-                                                                  camera_offset = camera_offset,
-                                                                  screenshot_alpha = screenshot_alpha)
-                    setup , configs_path = shape_puzzle_generator.generate_configs(num_configs=num_games)
-
                     message_data = {
                         "command": "Setup",
                         "from": network_id,
@@ -155,19 +146,124 @@ async def client():
             await websocket.close()
 
 
-def run_experiment():
+def expand_config_file(experiment_paths, grid_label, camera_offset, screenshot_alpha):
+    """
+    Load JSON configs from a list of file paths, add additional values to them,
+    and save the updated JSONs back to the same files.
 
+    Parameters:
+        experiment_paths (list): List of file paths to JSON configuration files.
+        grid_label (str): One of ['edge', 'cell', 'both', 'none'] to add to the JSON.
+        camera_offset (list): A list of three numbers [x, y, z] to add to the JSON.
+        screenshot_alpha (float): A float value to add to the JSON.
+    """
+    # Check for valid grid_label
+    valid_grid_labels = {'edge', 'cell', 'both', 'none'}
+    if grid_label not in valid_grid_labels:
+        raise ValueError(f"Invalid grid_label '{grid_label}'. Must be one of {valid_grid_labels}.")
+
+    for path in experiment_paths:
+        if not path.endswith('.json'):
+            print(f"Skipping non-JSON file: {path}")
+            continue
+
+        try:
+            # Load the JSON config
+            with open(path, 'r') as file:
+                config = json.load(file)
+
+            # Add the new values
+            config["grid_label"] = grid_label
+            config["camera_offset"] = camera_offset
+            config["screenshot_alpha"] = screenshot_alpha
+
+            # Save the updated JSON back to the file
+            with open(path, 'w') as file:
+                json.dump(config, file, indent=4)
+
+            print(f"Updated and saved: {path}")
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"Error processing file {path}: {e}")
+
+
+def run_experiment(agents, grid_label, camera_offset, screenshot_alpha,
+                   max_game_length,instruction_prompt_file_path, num_game_env):
+
+
+    #replace this with new one file generation
+    json_file_paths, image_file_paths = util.load_config_paths_from_ID(config_id)
+
+    experiment_paths = util.create_experiment_directories(num_game_env, agents)
+
+    # Run the server
+    print("starting WebSocket Server")
+    run_WebSocket_server_in_background()
+
+    # run WebGL Server
+    print("starting WebGL Server")
+    run_WebGL_server_in_background()
+
+    # Loop over the agents, game environments, and game instances
+    for agent_type, agent in agents.items():
+        for env_type, num_games in num_game_env.items():
+            for game_num in range(1, num_games + 1):
+                print(f"Agent: {agent_type}, Environment: {env_type}, Game Instance: {game_num}")
+
+                experiment_path = experiment_paths[agent_type][env_type][game_num]
+
+                # Move the JSON and image files to the experiment path using the new utility function
+                util.copy_files_to_experiment(json_file_paths[game_num - 1],
+                                              image_file_paths[game_num - 1],
+                                              experiment_path)
+
+                expand_config_file(experiment_path, grid_label, camera_offset, screenshot_alpha)
+
+                # move config to Unity
+                #util.copy_json_to_unity_resources(json_file_paths[game_num - 1], unity_executable_path)
+
+                try:
+                    # Start the Unity executable
+                    #process = util.run_Unity_executable(unity_executable_path)
+                    time.sleep(7)  # Wait for application startup to set up server
+
+                    try:
+                        # Run the action-perception loop
+                        #actions, win = action_perception_loop(agent, max_game_length, experiment_path, single_images=single_images)
+
+                        # Run the client
+                        print("Start Action-Perception Client")
+                        asyncio.run(client(agent, max_game_length, experiment_path, single_images=single_images))
+
+
+                        #print(f"number of actions used: {actions}")
+                        #print(f"game was won: {win}")
+
+                        # Save results to CSV
+                        #util.save_results_to_csv(experiment_path, actions, win)
+
+                        print(experiment_path)
+                        generate_episode_gif(experiment_path)
+
+                    except Exception as e:
+                        # Handle any errors that occur within the action-perception loop
+                        print(f"An error occurred during the action-perception loop: {e}")
+                        raise  # Re-raise the exception to propagate it after logging
+
+                finally:
+                    # Ensure the Unity process is closed even if an error occurs
+                    # util.close_Unity_process(process)
+                    pass
 
 
 if __name__ == "__main__":
     # Generate a unique client ID for this session
     partner_id = ""
     network_id = ""
+
     max_game_length = 100  # Max amount of action-perception iterations with the environment
     num_game_env = {'ShapePuzzle': 1}  # Number of game environments, how many different tasks have to be solved
-    experiment_type = 'Puzzle'
-    #choices are between 'edge', 'cell' , 'both' and 'none'
-    grid_label = 'none' #need to add to JSON
+    #experiment_type = 'Puzzle'
+    grid_label = 'none' #choices are between 'edge', 'cell' , 'both' and 'none'
     camera_offset = [0,0,0] #need to add to JSON
     screenshot_alpha = 0.0 #need to add to JSON
     instruction_prompt_file_path = r"../../Resources/instruction_prompts/instruction_prompt_1.txt"
@@ -178,24 +274,13 @@ if __name__ == "__main__":
     single_images = True
     COT = True
 
-    #probably unnecssary Params
-    board_size = 5 # Size of the game board environment (square)
-    num_landmarks = 7 # Number of different landmarks for the ShapePuzzle game
-
-    #replace this with new one file generation
-    json_file_paths, image_file_paths = util.load_config_paths(configs_path)
-
-    # Start the server in the background
-    run_server_in_background()
-
     # Load LLMs and game configs for experiment
-    agents = {  # 'UserInteractiveAgent': agent.UserInteractiveAgent(),
-        'GPT4Agent': agent.GPT4Agent(single_images=single_images, COT=COT),
+    agents = { 'UserInteractiveAgent': agent.UserInteractiveAgent(),
+        #'AstarAgent': agent.AstarAgent(),
+        #'GPT4Agent': agent.GPT4Agent(single_images=single_images, COT=COT),
         #          'ClaudeAgent': agent.ClaudeAgent(single_images= single_images, COT=COT)
         #          'GeminiAgent': agent.GeminiAgent(single_images= single_images, COT=COT)
     }  # Replace with LLMs here with same API as UserInteractiveAgent
 
-    experiment_paths = util.create_experiment_directories(num_game_env, agents)
-
-    # Run the client
-    asyncio.run(client())
+    run_experiment(agents, grid_label, camera_offset, screenshot_alpha, max_game_length,
+                   instruction_prompt_file_path, num_game_env)

@@ -1,4 +1,5 @@
-from Configuration.puzzle_config_main import generate_SUP_configs, generate_SGP_configs
+from Configuration.generate_sgp_configs import generate_sgp_configs
+from Visualisation.visualise_config_set_statistics import visualize_config_stats
 from Experiment.main2 import run_experiment
 from Evaluation.evaluate_results_main import evaluate
 
@@ -7,19 +8,17 @@ from Evaluation.evaluate_results_main import evaluate
 # Parameters
 board_size = 5
 num_geoms = 5
-complexity_min_max = [5, 20]  # smallest and highest complexity to be considered
-complexity_bin_size = 10  # how many puzzles per complexity
-shapes = ['cube', 'sphere', 'pyramid', 'cylinder', 'cone']
-colors = ['red', 'green', 'blue', 'yellow', 'purple']
+complexity_min_max = {"c1": {"min": 10, "max": 15},  # smallest and highest c1 complexity to be considered
+                      "c2": {"min": 0, "max": 1}}  # smallest and highest c2 complexity to be considered
+complexity_bin_size = 2  # amount of puzzle configs per complexity bin
+shapes = ['cube', 'sphere', 'pyramid']  # , 'cylinder', 'cone', 'prism']
+colors = ['red', 'green', 'blue']  # , 'yellow', 'purple', 'orange']
 
 # Generate Sliding Geom Puzzle (SGP) configuration files
-generate_SGP_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors)
+config_id = generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors)
+print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
+visualize_config_stats(config_id)
 
-# Parameters
-num_geoms_min_max = [1, 10]
-
-# Generate Scene Understanding Problem (SUP) configuration files
-generate_SUP_configs(board_size, num_geoms_min_max, complexity_bin_size, shapes, colors)
 
 # Run the experiment
 run_experiment()

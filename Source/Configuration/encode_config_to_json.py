@@ -64,7 +64,6 @@ def encode_config_to_json(board_size, state_combination, geoms_sample,
         }
         landmarks.append(landmark)
 
-
     # Structure the output for JSON
     json_output = {
         "config_instance_id": config_instance_id,

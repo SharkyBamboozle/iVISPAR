@@ -1,6 +1,6 @@
 # RIPPLE
 
-<img src="resources/task.jpeg" alt="Task Configuration Preview" width="500"/>
+<img src="Resources/task.jpeg" alt="Task Configuration Preview" width="500"/>
 
 This codebase consists of the following components:
 
@@ -8,13 +8,13 @@ This codebase consists of the following components:
 - Unity assets
 - External files
 
-<img src="resources/image.png" alt="Task Configuration Preview" width="500"/>
+<img src="Resources/image.png" alt="Task Configuration Preview" width="500"/>
 
 Your setup may work directly with the provided executable (`.exe` file). If not, you'll need to install Unity and build the project on your machine using the provided assets. The Python scripts can interact with the project in the Unity Editor, but this makes automated testing of LLMs more challenging, as the application needs to start and close for each task. There should be no need to modify the Unity assets or application code. Once the Unity application is built, everything else runs via Python.
 
 The diagram below illustrates the experimental pipeline and the key files involved. Python scripts can be run individually for more control or all at once using the main Python script.
 
-![Experiment Pipeline](resources/experiment_results_compare.gif)
+![Experiment Pipeline](Resources/experiment_results_compare.gif)
 
 ## Task Generation
 
@@ -23,7 +23,7 @@ The diagram below illustrates the experimental pipeline and the key files involv
 3. The Unity application uses this JSON configuration file.
 4. It also generates a quick visual preview of the task configuration.
 
-<img src="resources/ShapePuzzle_config_ID_20241023_153744_1.png" alt="Task Configuration Preview" width="300"/>
+<img src="Resources/ShapePuzzle_config_ID_20241023_153744_1.png" alt="Task Configuration Preview" width="300"/>
 
 ## LLM Integration
 

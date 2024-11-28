@@ -237,5 +237,5 @@ def visualize_landmarks(self, landmarks, filename, coordinate_type='start'):
     # Save the plot to a file
     plt.savefig(filename)
 
-
-#visualize_config_stats(r'C:\Users\Sharky\RIPPLE\Data\Configs\SGP_ID_20241127_121145')
+if __name__ == "__main__":
+    visualize_config_stats(r'C:\Users\Sharky\RIPPLE\Data\Configs\SGP_ID_20241127_121145')

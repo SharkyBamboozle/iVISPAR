@@ -5,6 +5,11 @@ from anthropic import Anthropic
 import google.generativeai as genai
 
 
+class AstarAgent():
+
+    def act(self):
+        pass
+
 class UserInteractiveAgent:
     """
     A simple interactive agent that simulates the role of an LLM for user interaction.

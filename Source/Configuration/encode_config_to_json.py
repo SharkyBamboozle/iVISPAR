@@ -15,13 +15,13 @@ def translate_moves_to_commands(shortest_move_sequence, landmarks):
         list: A list of text commands for the moves.
     """
     directions = {
-        (-1, 0): "up",     # Decrease in row index
-        (1, 0): "down",    # Increase in row index
-        (0, -1): "left",   # Decrease in column index
-        (0, 1): "right"    # Increase in column index
+        (-1, 0): "left",    # Decrease in row index
+        (1, 0): "right",    # Increase in row index
+        (0, -1): "down",    # Decrease in column index
+        (0, 1): "up"        # Increase in column index
     }
 
-    commands = []
+    commands = ["start"]
     num_steps = len(shortest_move_sequence)
 
     # Iterate through each step (state transitions) in the shortest move sequence
@@ -42,6 +42,7 @@ def translate_moves_to_commands(shortest_move_sequence, landmarks):
                     command = f"move {landmark['color']} {landmark['body']} {direction}"
                     commands.append(command)
 
+    commands.append("done")
     return commands
 
 
@@ -67,7 +68,7 @@ def encode_config_to_json(board_size, state_combination, geoms_sample,
     # Structure the output for JSON
     json_output = {
         "config_instance_id": config_instance_id,
-        "experiment_type": "SGP",
+        "experiment_type": "SlidingGeomPuzzle",
         "complexity_c1": complexity['c1'],
         "complexity_c2": complexity['c2'],
         "grid_size": board_size,
@@ -76,6 +77,6 @@ def encode_config_to_json(board_size, state_combination, geoms_sample,
     }
 
     # Save the configuration to a JSON file
-    json_filename = os.path.join(config_dir, f"{config_instance_id}.json")
+    json_filename = os.path.join(config_dir, f"config_{config_instance_id}.json")
     with open(json_filename, 'w') as json_file:
         json.dump(json_output, json_file, indent=4)

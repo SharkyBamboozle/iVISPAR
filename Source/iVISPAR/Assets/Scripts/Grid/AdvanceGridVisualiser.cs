@@ -31,6 +31,7 @@ public class AdvanceGridVisualiser : MonoBehaviour
     public Color labelDarkColor = Color.black;
 
     public LabelType labelType = LabelType.none;
+
     void Start()
     {
         grid = GetComponent<GridBoard>();
@@ -42,6 +43,7 @@ public class AdvanceGridVisualiser : MonoBehaviour
         Vector2[] uv;
         int[] triangles;
         int colorIndex = 0;
+        int counter = 0;
         MeshUtils.CreateEmptyMeshArrays(grid.width * grid.height, out vertices,out vertexColors,out uv ,out triangles);
         if(ExperimentManager.Instance != null)
             SetLabelType(ExperimentManager.Instance.loadedLandmarkData.grid_label);
@@ -81,7 +83,7 @@ public class AdvanceGridVisualiser : MonoBehaviour
                 }
                 if(labelType == LabelType.cell || labelType == LabelType.both)
                 {
-                    string lable = ConvertNumberToLetter(z+1) + (x+1).ToString();
+                    string lable = ConvertNumberToLetter(x+1) + (z+1).ToString();
                     GameObject myTextObject = new GameObject(lable);
                     myTextObject.transform.rotation.eulerAngles.Set(90,0,0);
                     myTextObject.AddComponent<TextMeshPro>();
@@ -97,16 +99,17 @@ public class AdvanceGridVisualiser : MonoBehaviour
                     textMeshComponent.text = lable;
                     textMeshComponent.fontSize = cellFontSize;
                     textMeshComponent.fontStyle = FontStyles.Bold;
-                    int cellIndex = x * grid.height + z;
-                    if (cellIndex%2 == 0)
+
+                    if (colorIndex%2 == 0)
                         textMeshComponent.color = labelLightColor;
                     else
                         textMeshComponent.color = labelDarkColor;
                 }
-                
                 int index = x * grid.height + z;
                 Vector3 baseSize = new Vector3(1, 0 ,1) * grid.cellSize;
                 Color vertexColor = Color.black;
+                
+                
                 if (colorIndex%2 == 0)
                     vertexColor = darkColor;
                 else
@@ -117,8 +120,12 @@ public class AdvanceGridVisualiser : MonoBehaviour
                 
                 MeshUtils.AddToMeshArrays(vertices,vertexColors, uv, triangles, index, grid.getGridWorldPos(x, z) - transform.position + (baseSize * 0.5f) , 0f, baseSize , u0, u1,vertexColor);
                 colorIndex++;
-                if(colorIndex % grid.width == 0 && grid.width % 2 == 0)
+                counter++;
+                if(counter  % grid.width ==  0 && grid.width % 2 == 0)
+                {
+                    counter = 0;
                     colorIndex++;
+                }               
            }
         
         mesh.vertices = vertices;

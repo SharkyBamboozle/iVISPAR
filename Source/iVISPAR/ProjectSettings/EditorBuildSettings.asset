@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Main.unity
     guid: 3e0c8f48084ed7548a137e4c8eb1b7f4
   - enabled: 1
-    path: Assets/Scenes/Puzzle.unity
+    path: Assets/Scenes/SlidingGeomPuzzle.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}

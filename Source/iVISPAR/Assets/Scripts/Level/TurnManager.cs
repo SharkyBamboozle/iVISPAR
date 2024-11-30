@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
@@ -14,6 +15,8 @@ public class TurnManager : MonoBehaviour
     int currentCommand = 0;
     bool isPuzzleSolved = false;
     bool recievedDoneCommand = false;
+    private int command_count = 0;
+    private int action_count = 0;
     void Start()
     {
         turnCommands = new List<string>();
@@ -28,18 +31,25 @@ public class TurnManager : MonoBehaviour
     public void ActionDecoder(DataPacket data)
     {    
         turnCommands = data.messages;
+        command_count++;
         
         foreach (string command in turnCommands)
         {
+            Debugger.Instance.CreateNewAction();
+            Debugger.Instance.SetCommandCount(command_count);       
             Debugger.Instance.Log("command is : " + command);
+            Debugger.Instance.SetPrompt(command);
+            action_count++;
+            Debugger.Instance.SetActionCount(action_count);
             if(command.Contains("move"))
             {
+                
                 Debug.Log("processing command Queue: " +command.ToString());
                 string[] Tokens = command.Split(" ");
                 int id = Animator.StringToHash(Tokens[1] + " " + Tokens[2]);
                 if(!Debugger.Instance.isValidObject(id))
                 {
-                    Debugger.Instance.AppendLastLog(" - " + Tokens[1] + " " + Tokens[2] + " is not a valid object");
+                    Debugger.Instance.SetValidity("Tokens[1]" + " " + Tokens[2] + " is not a valid object");
                 }
                 int repetition = 1;
                 if(Tokens.Length > 4)
@@ -51,38 +61,45 @@ public class TurnManager : MonoBehaviour
                     catch(Exception ex)
                     {
                         Debug.LogError("tocken not an intiger. Error " + ex.Message);
+
                     }
                 }
                 for(int i = 0 ; i < repetition; i++)
                 {
+                    
                     EventHandler.Instance.InvokeCommand("move",id,Tokens[3]);
+
                 }               
             }
-            if(command.Contains("start"))
+            else if(command.Contains("start"))
             {
         
                 EventHandler.Instance.InvokeCommand("init_target");
+                Debugger.Instance.SetValidity("valid command. start of experiment");
             }
-            if(command.Contains("done"))
+            else if(command.Contains("done"))
             {
                 recievedDoneCommand = true;
                 isPuzzleSolved = true;
                 GameObject[] targets = GameObject.FindGameObjectsWithTag("Commandable");
+                Debugger.Instance.SetValidity("valid command. evaluating the board");
                 foreach (GameObject target in targets)
                 {
                     isPuzzleSolved  &= isPuzzleSolved &  target.GetComponent<TargetBehaviour>().evaluateGoal();
                 }
                 
             }
-            else
-            {
-                Debugger.Instance.AppendLastLog(" - is not a legal command");
-            }
-            if(command.Contains("reset"))
+            else if(command.Contains("reset"))
             {
                 ExperimentManager.Instance.Reset();
             }
+            else
+            {
+                Debug.LogError(command);
+                Debugger.Instance.SetValidity("not a legal command");
+            }
         }
+        
         EventHandler.Instance.InvokeCommand("capture_screenshot_for_ack"); 
     }
     public void ResponseAck(DataPacket response)
@@ -90,22 +107,27 @@ public class TurnManager : MonoBehaviour
         GameObject[] boardObjects = GameObject.FindGameObjectsWithTag("Commandable");
         foreach (GameObject boardObject in boardObjects)
         {
-            response.messages.Add(boardObject.GetComponent<TargetBehaviour>().getObjectStatus());
+            string status = boardObject.GetComponent<TargetBehaviour>().getObjectStatus();
+            //response.messages.Add(status);
+            Debugger.Instance.SetBoardStatus(status);
         }
-        response.messages.AddRange(Debugger.Instance.getLogs());
+        Debugger.Instance.SetGameStatus(isPuzzleSolved);
+        //response.messages.AddRange(Debugger.Instance.getLogs());
+        response.messages.Add(Debugger.Instance.GetJSONLog());
+        Debug.Log(Debugger.Instance.GetJSONLog());
         if(recievedDoneCommand)
         {
             recievedDoneCommand = false;
             if(isPuzzleSolved)
             {
-                response.messages.Insert(0,"Puzzle is soveled correctly");
+                Debugger.Instance.SetValidity("Puzzle is soveled correctly");
                 NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));
                 EmptyLog();
                 ExperimentManager.Instance.Reset();
             }
             else
             {
-                response.messages.Insert(0,"Puzzle is not solved correctly, try again");
+                Debugger.Instance.SetValidity("Puzzle is not solved correctly, try again");
             }
         }
         NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));

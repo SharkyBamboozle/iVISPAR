@@ -1,6 +1,6 @@
+# Import statements
 import heapq
 import numpy as np
-import time
 
 
 def manhattan_heuristic(initial_states, goal_states):
@@ -14,6 +14,7 @@ def manhattan_heuristic(initial_states, goal_states):
 
     # Return cumulative Manhattan distance
     return int(distances.sum())
+
 
 def get_neighbors(state, n):
     """
@@ -31,52 +32,6 @@ def get_neighbors(state, n):
                 new_state[i] = [new_x, new_y]
                 neighbors.append(new_state)
     return neighbors
-
-def a_star_2(n, initial_state, goal_state):
-    """
-    Solve the n x n sliding tile puzzle using A* algorithm.
-
-    :param n: Board size (n x n)
-    :param initial_state: np.array of shape (5, 2) for the starting tile positions
-    :param goal_state: np.array of shape (5, 2) for the goal tile positions
-    :return: List of states from initial to goal, or None if no solution
-    """
-    initial_state = np.array(initial_state)
-    goal_state = np.array(goal_state)
-
-    # Priority queue for A* search
-    open_set = []
-    heapq.heappush(open_set, (0, tuple(map(tuple, initial_state))))
-    came_from = {}  # Map to reconstruct the path
-    g_score = {tuple(map(tuple, initial_state)): 0}
-    f_score = {tuple(map(tuple, initial_state)): manhattan_heuristic(initial_state, goal_state)}
-
-    while open_set:
-        _, current_tuple = heapq.heappop(open_set)
-        current_state = np.array(current_tuple)
-
-        # Check if the current state is the goal state
-        if np.array_equal(current_state, goal_state):
-            path = []
-            while current_tuple in came_from:
-                path.append(current_state.tolist())
-                current_tuple = came_from[current_tuple]
-                current_state = np.array(current_tuple)
-            path.append(initial_state.tolist())
-            return path[::-1]
-
-        # Explore neighbors
-        for neighbor in get_neighbors(current_state, n):
-            neighbor_tuple = tuple(map(tuple, neighbor))
-            tentative_g_score = g_score[current_tuple] + 1
-
-            if tentative_g_score < g_score.get(neighbor_tuple, float('inf')):
-                came_from[neighbor_tuple] = current_tuple
-                g_score[neighbor_tuple] = tentative_g_score
-                f_score[neighbor_tuple] = tentative_g_score + manhattan_heuristic(neighbor, goal_state)
-                heapq.heappush(open_set, (f_score[neighbor_tuple], neighbor_tuple))
-
-    return None  # No solution found
 
 
 def a_star(n, initial_state, goal_state):
@@ -125,18 +80,8 @@ def a_star(n, initial_state, goal_state):
     return None  # No solution found
 
 
-def solve_with_timing(n, initial_state, goal_state):
-    """
-    Solve the sliding tile puzzle and measure the time taken.
-    """
-    start_time = time.time()  # Start the timer
-    solution = a_star(n, initial_state, goal_state)
-    end_time = time.time()  # End the timer
-    elapsed_time = end_time - start_time
-    return solution, elapsed_time
-
 if __name__ == "__main__":
-    n = 5  # Board size
+    board_size = 5
     initial_state = np.array([
         [1, 0],
         [4, 1],
@@ -152,13 +97,4 @@ if __name__ == "__main__":
         [1, 0],
     ])
 
-    solution, elapsed_time = solve_with_timing(n, initial_state, goal_state)
-
-    if solution:
-        print("Solution found!")
-        print(f"Time taken: {elapsed_time:.4f} seconds")
-        for step in solution:
-            print(step)
-    else:
-        print("No solution exists.")
-        print(f"Time taken: {elapsed_time:.4f} seconds")
+    solution = a_star(board_size, initial_state, goal_state)

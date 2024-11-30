@@ -111,7 +111,7 @@ public class TargetBehaviour : MonoBehaviour
         }
         else
         {
-            Debugger.Instance.AppendLastLog(" - you can not move before start action");
+            Debugger.Instance.SetValidity("you can not move before start action");
         }        
     }
 
@@ -127,7 +127,7 @@ public class TargetBehaviour : MonoBehaviour
         gridBoard.setOccupancy(x,z,true);
         isInitialized = true;
         Debug.Log(gridBoard.GridOccupanyLog());
-        Debugger.Instance.AppendLastLog(" - set objects position to initial positions"); 
+        Debugger.Instance.SetValidity("set objects position to initial positions");
     }
 
 
@@ -139,10 +139,12 @@ public class TargetBehaviour : MonoBehaviour
             z += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
             gridBoard.setOccupancy(x,z,true);
-            Debugger.Instance.AppendLastLog(" - is legal move");  
+            Debugger.Instance.SetValidity("was legal move");  
         }
+        else if(gridBoard.GetOccupany(x,z+units)) 
+            Debugger.Instance.SetValidity("Destination occupied");
         else
-            Debugger.Instance.AppendLastLog(" - is not legal move");
+            Debugger.Instance.SetValidity("Destination out of bounds");
     }
     public void MoveRight(int units)
     {
@@ -152,10 +154,12 @@ public class TargetBehaviour : MonoBehaviour
             x += units;
             transform.position = gridBoard.getGridWorldPos(x,z) + (transform.localScale /2);
             gridBoard.setOccupancy(x,z,true);
-            Debugger.Instance.AppendLastLog(" - is legal move");         
+            Debugger.Instance.SetValidity("was legal move");          
         }
+        else if(gridBoard.GetOccupany(x+units,z)) 
+            Debugger.Instance.SetValidity("Destination occupied");
         else
-            Debugger.Instance.AppendLastLog(" - is not legal move"); 
+            Debugger.Instance.SetValidity("Destination out of bounds");
     }
 
     public Vector2 goalCoordinate

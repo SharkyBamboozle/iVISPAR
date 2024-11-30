@@ -10,6 +10,7 @@ from datetime import datetime
 
 from find_shortest_move_sequence import a_star, manhattan_heuristic
 from encode_config_to_json import encode_config_to_json
+from visualise_configs_statistics import visualise_config_stats
 
 
 def generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors):
@@ -49,7 +50,7 @@ def generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_b
     total_bin_values = 0
     total_bin_size = complexity_bin_size *  sum(len(c2_bins) for c2_bins in complexity_bins.values())
 
-    print(f"Generating config_id: {total_bin_size} samples of SGP configs for {board_size}x{board_size} with {num_geoms} geoms")
+    print(f"Generating {config_id}: {total_bin_size} samples of SGP configs for {board_size}x{board_size} with {num_geoms} geoms")
 
     # Track used combinations
     seen_state_combinations = set()
@@ -60,7 +61,7 @@ def generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_b
         idx % board_size), axis=1)
 
     # Timer settings
-    interval = 30
+    interval = 600
     last_checked_time = time.time()  # Initialize the last checked time
 
     # Sample initial and goal states until complexity bins are filled with bin size amount of samples
@@ -70,12 +71,10 @@ def generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_b
             # Evaluate condition for breaking the loop
             if total_bin_values_checkpoint == total_bin_values:
                 warnings.warn(f"Abort generating further SGP configs, no configs found for {interval} seconds")
-                break
-            else:
-                print(f"Checking at {interval} sec interval: {total_bin_values}/{total_bin_size} new configs")
-                total_bin_values_checkpoint = total_bin_values
+                #break
 
-            # Reset last checked time
+            print(f"Checking at {datetime.now().strftime('%H:%M')}: {total_bin_values}/{total_bin_size} new configs")
+            total_bin_values_checkpoint = total_bin_values
             last_checked_time = time.time()
 
         # Sample initial and goal states
@@ -126,14 +125,17 @@ def generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_b
 
 if __name__ == "__main__":
     # Parameters
-    board_size = 5
-    num_geoms = 5
-    complexity_min_max = {"c1": {"min": 10, "max": 15},  # smallest and highest c1 complexity to be considered
-                          "c2": {"min": 0, "max": 1}}  # smallest and highest c2 complexity to be considered
-    complexity_bin_size = 2 # amount of puzzle configs per complexity bin
+    board_size = 4
+    num_geoms = 4
+    complexity_min_max = {"c1": {"min": 4, "max": 12},  # smallest and highest c1 complexity to be considered
+                          "c2": {"min": 0, "max": 0}}  # smallest and highest c2 complexity to be considered
+    complexity_bin_size = 1 # amount of puzzle configs per complexity bin
     shapes = ['cube', 'sphere', 'pyramid']#, 'cylinder', 'cone', 'prism']
     colors = ['red', 'green', 'blue']#, 'yellow', 'purple', 'orange']
 
     # Generate Sliding Geom Puzzle (SGP) configuration files
     config_id = generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors)
     print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
+
+    # Visualise config stats
+    visualise_config_stats(config_id)

@@ -31,7 +31,7 @@ class AStarAgent(Agent):
 
     def act(self, observation):
         if not self.shortest_move_sequence:
-            return "exit"
+            return "reset"
         else:
             return self.shortest_move_sequence.pop(0)
 

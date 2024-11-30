@@ -3,8 +3,111 @@ import shutil
 import subprocess
 import time
 import csv
+import json
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
+
+def load_single_json_from_directory(directory_path):
+    """
+    Finds and loads a single JSON file from the specified directory.
+
+    Parameters:
+        directory_path (str): Path to the directory containing the JSON file.
+
+    Returns:
+        dict: Parsed JSON content as a dictionary.
+
+    Raises:
+        FileNotFoundError: If no JSON files are found in the directory.
+        ValueError: If more than one JSON file is found in the directory.
+        json.JSONDecodeError: If the file content is not valid JSON.
+    """
+    if not os.path.isdir(directory_path):
+        raise FileNotFoundError(f"The directory does not exist: {directory_path}")
+
+    # Find all JSON files in the directory
+    json_files = [f for f in os.listdir(directory_path) if f.endswith('.json')]
+
+    if len(json_files) == 0:
+        raise FileNotFoundError(f"No JSON files found in the directory: {directory_path}")
+    if len(json_files) > 1:
+        raise ValueError(f"Multiple JSON files found in the directory: {json_files}. Specify the exact file.")
+
+    # Load the single JSON file
+    file_path = os.path.join(directory_path, json_files[0])
+    try:
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            return data
+    except json.JSONDecodeError as e:
+        raise json.JSONDecodeError(f"Error decoding JSON file: {file_path}. Details: {str(e)}")
+
+# Example usage:
+directory_path = "/path/to/your/json_directory"
+try:
+    json_data = load_single_json_from_directory(directory_path)
+    print("JSON data loaded successfully:", json_data)
+except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+    print(e)
+
+
+def expand_config_file(experiment_dic, grid_label, camera_offset, screenshot_alpha):
+    """
+    Traverse a dictionary containing nested paths or process a single directory path,
+    locate JSON files, update them with additional values, and save the updated JSONs back to the same files.
+
+    Parameters:
+        experiment_dic (dict or str): A nested dictionary of paths or a single directory path.
+        grid_label (str): One of ['edge', 'cell', 'both', 'none'] to add to the JSON.
+        camera_offset (list): A list of three numbers [x, y, z] to add to the JSON.
+        screenshot_alpha (float): A float value to add to the JSON.
+    """
+    # Check for valid grid_label
+    valid_grid_labels = {'edge', 'cell', 'both', 'none'}
+    if grid_label not in valid_grid_labels:
+        raise ValueError(f"Invalid grid_label '{grid_label}'. Must be one of {valid_grid_labels}.")
+
+    # If a single path string is passed, wrap it into a dictionary-like structure
+    if isinstance(experiment_dic, str):
+        experiment_dic = {"single_path": {"sub_path": {1: experiment_dic}}}
+
+    # Traverse the nested dictionary and process each directory
+    for agent, environments in experiment_dic.items():
+        for env_type, games in environments.items():
+            for game_num, directory_path in games.items():
+                print(f"Processing directory: {directory_path}")
+
+                if not os.path.isdir(directory_path):
+                    print(f"Skipping invalid directory: {directory_path}")
+                    continue
+
+                # Locate JSON files in the directory
+                json_files = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.endswith('.json')]
+
+                if not json_files:
+                    print(f"No JSON files found in directory: {directory_path}")
+                    continue
+
+                for json_file in json_files:
+                    try:
+                        # Load the JSON config
+                        with open(json_file, 'r') as file:
+                            config = json.load(file)
+
+                        # Add the new values
+                        config["grid_label"] = grid_label
+                        config["camera_offset"] = camera_offset
+                        config["screenshot_alpha"] = screenshot_alpha
+
+                        # Save the updated JSON back to the file
+                        with open(json_file, 'w') as file:
+                            json.dump(config, file, indent=4)
+
+                        print(f"Updated and saved: {json_file}")
+                    except (json.JSONDecodeError, IOError) as e:
+                        print(f"Error processing file {json_file}: {e}")
+
+    return config
 
 
 
@@ -191,7 +294,7 @@ def create_experiment_directories(num_game_env, agents):
     #os.makedirs(data_dir, exist_ok=True)
 
     # Generate a unique ID based on the current date and time (format: YYYYMMDD_HHMMSS)
-    experiment_id = datetime.now().strftime("experiment_ID_%Y%m%d_%H%M%S")
+    #experiment_id = datetime.now().strftime("experiment_ID_%Y%m%d_%H%M%S")
 
     # Create the path for the main experiment directory
     #experiment_dir = os.path.join(data_dir, experiment_id)
@@ -225,7 +328,7 @@ def create_experiment_directories(num_game_env, agents):
                 experiment_subdirs[agent_type][env_type][game_num] = subdir_path
 
     # Return the dictionary of subdirectory paths
-    return experiment_subdirs
+    return experiment_subdirs, experiment_id
 
 
 def copy_files_to_experiment(json_file_path, image_file_paths, experiment_path):

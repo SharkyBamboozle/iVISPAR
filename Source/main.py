@@ -8,8 +8,8 @@ from Configuration.generate_sut_configs import generate_sut_configs
 from Configuration.visualise_configs_statistics import visualise_config_stats
 from Configuration.retrieve_config_visualisations import retrieve_config_visualisations
 from Experiment import agent_systems
-from Experiment.run_experiment import run_experiment
-from Experiment.visualise_episode import visualise_episode_interaction, visualize_state_combination
+from Experiment.experiment import run_experiment
+from Experiment.episode_visualisation import visualise_episode_interaction, visualize_state_combination
 from Evaluation.evaluate_results_main import evaluate
 
 
@@ -85,4 +85,4 @@ retrieve_config_visualisations(config_id, experiment_id)
 ####################################################
 
 # Evaluate the experiment
-evaluate(experiment_ids)
+evaluate(experiment_id)

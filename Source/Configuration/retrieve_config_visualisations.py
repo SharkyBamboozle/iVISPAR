@@ -73,6 +73,6 @@ def retrieve_config_visualisations(config_id, experiment_id):
 
 if __name__ == "__main__":
     config_id = "SGP_ID_20241130_145237"
-    experiment_id = "experiment_ID_20241130_175532"
+    experiment_id = "experiment_ID_20241130_212501"
 
     retrieve_config_visualisations(config_id, experiment_id)

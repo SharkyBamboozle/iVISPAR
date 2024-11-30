@@ -243,8 +243,8 @@ def visualise_episode_interaction(experiment_id, duration=500):
         # Load the images and actions
         images, actions = load_images_and_actions(obs_dir)
 
-        init_image_path = os.path.join(experiment_path, "obs/obs_1_init.png")
-        output_gif_path = os.path.join(experiment_path, "experiment_results_compare.gif")
+        #init_image_path = os.path.join(experiment_path, "obs/obs_1_init.png")
+        #output_gif_path = os.path.join(experiment_path, "experiment_results_compare.gif")
 
         # Preprocess the images to remove transparency
         background_color = (0,0,0)
@@ -270,7 +270,7 @@ def visualise_episode_interaction(experiment_id, duration=500):
 
         #combine_gif_with_init(gif_path, init_image_path, output_gif_path, duration=duration)
 
-        print(f"GIF saved at {experiment_path}")
+        print(f"GIF saved at {subdir_path}")
 
 
 def visualize_state_combination(experiment_id, white_bar_width=20):
@@ -335,8 +335,7 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
 
 
 if __name__ == "__main__":
-    #experiment_path = r"C:\Users\Sharky\RIPPLE\Data\Experiments\experiment_ID_20241130_174036\experiment_AStarAgent_SlidingGeomPuzzle_1"
-    experiment_path = r"C:\Users\Sharky\RIPPLE\Data\Experiments\experiment_ID_20241130_175532\experiment_AStarAgent_SlidingGeomPuzzle_1"
+    experiment_id = "experiment_ID_20241130_212501"
 
-    visualise_episode_interaction("experiment_ID_20241130_175532")
-    visualize_state_combination("experiment_ID_20241130_175532")
+    visualise_episode_interaction(experiment_id)
+    visualize_state_combination(experiment_id)

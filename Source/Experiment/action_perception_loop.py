@@ -2,161 +2,186 @@ import websockets
 import base64
 from PIL import Image
 import json
-import agent_systems
 import os
-from load_JSON_from_experiment_dir import load_single_json_from_directory
+import experiment_utilities as util
 
-async def client(agent, max_game_length, experiment_path):
 
-    uri = "ws://localhost:1984"  # Replace with your server's URI
+async def initialize_connection(uri):
+    """
+    Initialize the WebSocket connection, perform the handshake, and register the partner ID.
 
-    # Create the 'obs' subdirectory inside the save path
-    obs_dir = os.path.join(experiment_path, 'obs')
-    os.makedirs(obs_dir, exist_ok=True)  # Create 'obs' directory if it doesn't exist
+    Args:
+        uri (str): The WebSocket server URI.
 
-    async with websockets.connect(uri,max_size=10000000,ping_interval=10, ping_timeout=360) as websocket:
-        print(f"Connecting to server. Type 'exit' to close the connection.")
-        try:
-            response = await websocket.recv()
-            message_data = json.loads(response)
-            if message_data.get("command") == "Handshake":
-                network_id = message_data.get("to")
-                print(message_data.get("messages"))
-                isConnected = False
-                while not isConnected:
-                    partner_id = input("Please enter the remote client id :")
-                    message_data = {
-                        "command": "Handshake",
-                        "from": network_id,
-                        "to": partner_id,  # Server ID or specific target ID
-                        "messages": ["Action Perception client attempting to register partner id with the game"],
-                        "payload": base64.b64encode(b"nothing here").decode("utf-8")
-                    }
-                    await websocket.send(json.dumps(message_data))
-                    print(f"sending handshake")
-                    response = await websocket.recv()
-                    message_data = json.loads(response)
-                    command = message_data.get("command")
-                    msg = message_data.get("messages")
-                    print(f"Received {command} : {msg}")
-                    if command == "ACK":
-                        partner_id =  message_data.get("from")
-                        isConnected = True
+    Returns:
+        tuple: A tuple containing the WebSocket connection, network ID, and partner ID.
+    """
+    websocket = await websockets.connect(uri, max_size=10000000, ping_interval=10, ping_timeout=360)
+    try:
+        # Perform the handshake
+        response = await websocket.recv()
+        message_data = json.loads(response)
+        if message_data.get("command") != "Handshake":
+            raise RuntimeError("Handshake failed: Unexpected response from server.")
 
-            setup_config_file = load_single_json_from_directory(experiment_path)
+        network_id = message_data.get("to")
+        print(message_data.get("messages"))
+
+        # Register partner ID
+        isConnected = False
+        partner_id = None
+        while not isConnected:
+            partner_id = input("Please enter the remote client id: ")
             message_data = {
-                "command": "Setup",
+                "command": "Handshake",
                 "from": network_id,
-                "to": partner_id,  # Server ID or specific target ID
-                "messages": [json.dumps(setup_config_file)],
-                "payload": base64.b64encode(b"nothing here").decode("utf-8")
+                "to": partner_id,
+                "messages": ["Action Perception client attempting to register partner id with the game"],
+                "payload": base64.b64encode(b"nothing here").decode("utf-8"),
             }
             await websocket.send(json.dumps(message_data))
-            print(f"sending the setup to the the game...")
-
+            print("Sending handshake...")
             response = await websocket.recv()
             message_data = json.loads(response)
             command = message_data.get("command")
-            msg = message_data.get("messages")
-            print(f"screenshot size is {msg[0]}*{msg[1]}")
-            screenshotWidth = int(msg[0])
-            screenshotHeight = int(msg[1])
-            if command == "Screenshot":
-                print(message_data.get("messages"))
-                encoded_data = message_data.get("payload")
-                observation = base64.b64decode(encoded_data)
-                image = Image.frombytes('RGBA', (screenshotWidth, screenshotHeight), observation, 'raw')
-                image = image.transpose(Image.FLIP_TOP_BOTTOM)
+            print(f"Received {command}: {message_data.get('messages')}")
+            if command == "ACK":
+                isConnected = True
 
-                filename = os.path.join(obs_dir, f"obs_1_init.png")
-                image.save(filename)  # Save the image as a PNG
-                print(f"Saved image to {filename}")
+        return websocket, network_id, partner_id
+    except Exception as e:
+        await websocket.close()
+        raise e
 
 
-            ##TODO add agent here
+async def interact_with_server(websocket, network_id, partner_id, agent, experiment_path, max_game_length=30):
+    """
+    Perform repeated interactions with the server after the connection has been established.
 
+    Args:
+        websocket: The active WebSocket connection.
+        network_id (str): The client network ID.
+        partner_id (str): The registered partner ID.
+        agent: The agent performing the actions.
+        experiment_path (str): The path to save experiment data.
+        max_game_length (int): The maximum number of actions to perform.
+    """
+    # Create the 'obs' subdirectory inside the save path
+    obs_dir = os.path.join(experiment_path, 'obs')
+    os.makedirs(obs_dir, exist_ok=True)
 
-            i = 2
-            user_message = ""
-            while user_message != "exit":
+    msg_dir = os.path.join(experiment_path, 'msg')
+    os.makedirs(msg_dir, exist_ok=True)  # Create 'obs' directory if it doesn't exist
 
-                user_message = agent.act(image)
+    setup_config_file = util.load_single_json_from_directory(experiment_path)
+    message_data = {
+        "command": "Setup",
+        "from": network_id,
+        "to": partner_id,
+        "messages": [json.dumps(setup_config_file)],
+        "payload": base64.b64encode(b"nothing here").decode("utf-8"),
+    }
+    await websocket.send(json.dumps(message_data))
+    print("Sending setup to the game...")
 
-                # Exit the loop if the user wants to close the connection
-                if user_message.lower() == "reset":
-                    message_data = {
-                        "command": "Reset",
-                        "from": network_id,
-                        "to": partner_id,  # Server ID or specific target ID
-                        "messages": ["reset to main menu"],
-                        "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
-                    }
-                    await websocket.send(json.dumps(message_data))
-                    print(f"Sending data")
-                if user_message.lower() == "exit":
-                    print("Closing connection...")
-                    message_data = {
-                        "command": "Reset",
-                        "from": network_id,
-                        "to": partner_id,  # Server ID or specific target ID
-                        "messages": ["reset to main menu"],
-                        "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
-                    }
-                    await websocket.send(json.dumps(message_data))
-                    print(f"Sending data")
-                    await websocket.close()
-                    print("Connection closed")
-                    break
-                else:
-                    message_list = [msg.strip() for msg in user_message.split(",")]
-                    # Create a JSON-formatted message
-                    #print(message_list)
-                    message_data = {
-                        "command": "GameInteraction",
-                        "from": network_id,
-                        "to": partner_id,  # Server ID or specific target ID
-                        "messages": message_list,
-                        "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
-                    }
+    response = await websocket.recv()
+    message_data = json.loads(response)
+    command = message_data.get("command")
+    msg = message_data.get("messages")
+    #print(f"screenshot size is {msg[0]}*{msg[1]}")
+    #screenshotWidth = int(msg[0])
+    #screenshotHeight = int(msg[1])
+    if command == "Screenshot":
+        print(message_data.get("messages"))
+        encoded_data = message_data.get("payload")
+        observation = base64.b64decode(encoded_data)
+        image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
+        image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
-                    # Send the JSON message to the server
-                    await websocket.send(json.dumps(message_data))
-                    print(f"Sending data")
+        filename = os.path.join(obs_dir, f"obs_1_init.png")
+        image.save(filename)  # Save the image as a PNG
+        print(f"Saved image to {filename}")
 
-                # Wait for a response from the server
+    #had to add this from lower part for when setup is done repeatidly
+    if command == "ActionAck":
+        encoded_data = message_data.get("payload")
+        observation = base64.b64decode(encoded_data)
+        image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
+        image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
-                #response = await asyncio.wait_for(websocket.recv(), 10)
-                response = await websocket.recv()
-                message_data = json.loads(response)
-                command = message_data.get("command")
-                msg = message_data.get("messages")
-                #print(f"Received {command} : {msg}")
-                if command == "ActionAck":
+        filename = os.path.join(obs_dir, f"obs_1_init.png")
+        image.save(filename)  # Save the image as a PNG
 
-                    #print(message_data.get("messages"))
-                    msg_dir = os.path.join(experiment_path, 'msg')
-                    os.makedirs(msg_dir, exist_ok=True)  # Create 'obs' directory if it doesn't exist
-                    json_filename = os.path.join(msg_dir, f"msg_{i}.json")
-                    with open(json_filename, 'w') as json_file:
-                        json.dump(message_data, json_file, indent=4)
+    i = 2
+    user_message = ""
+    while user_message != "exit":
 
+        user_message = agent.act(image)
 
-                    encoded_data = message_data.get("payload")
-                    observation = base64.b64decode(encoded_data)
-                    image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
-                    image = image.transpose(Image.FLIP_TOP_BOTTOM)
-                    #image.show()
-
-                    filename = os.path.join(obs_dir, f"obs_{i}_{user_message}.png")
-                    image.save(filename)  # Save the image as a PNG
-                    print(f"Saved image to {filename}")
-                    i  +=1
-
-                ##TODO save response data to experiment_path
-
-        except websockets.ConnectionClosed as e:
-            #print("Connection with server was closed.")
-            print(f"Connection closed with code {e.code}, reason: {e.reason}")
-        except KeyboardInterrupt:
-            print("Interrupted by user. Closing connection.")
+        # Exit the loop if the user wants to close the connection
+        if user_message.lower() == "reset":
+            message_data = {
+                "command": "Reset",
+                "from": network_id,
+                "to": partner_id,  # Server ID or specific target ID
+                "messages": ["reset to main menu"],
+                "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+            }
+            await websocket.send(json.dumps(message_data))
+            print(f"Sending data")
+            break
+        if user_message.lower() == "exit":
+            print("Closing connection...")
+            message_data = {
+                "command": "Reset",
+                "from": network_id,
+                "to": partner_id,  # Server ID or specific target ID
+                "messages": ["reset to main menu"],
+                "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+            }
+            await websocket.send(json.dumps(message_data))
+            print(f"Sending data")
             await websocket.close()
+            print("Connection closed")
+            break
+        else:
+            message_list = [msg.strip() for msg in user_message.split(",")]
+            # Create a JSON-formatted message
+            # print(message_list)
+            message_data = {
+                "command": "GameInteraction",
+                "from": network_id,
+                "to": partner_id,  # Server ID or specific target ID
+                "messages": message_list,
+                "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+            }
+
+            # Send the JSON message to the server
+            await websocket.send(json.dumps(message_data))
+            print(f"Sending data")
+
+        # Wait for a response from the server
+
+        # response = await asyncio.wait_for(websocket.recv(), 10)
+        response = await websocket.recv()
+        message_data = json.loads(response)
+        command = message_data.get("command")
+        msg = message_data.get("messages")
+        # print(f"Received {command} : {msg}")
+        if command == "ActionAck":
+            # print(message_data.get("messages"))
+            json_filename = os.path.join(msg_dir, f"msg_{i}.json")
+            with open(json_filename, 'w') as json_file:
+                json.dump(message_data, json_file, indent=4)
+
+            encoded_data = message_data.get("payload")
+            observation = base64.b64decode(encoded_data)
+            image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
+            image = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+            filename = os.path.join(obs_dir, f"obs_{i}_{user_message}.png")
+            image.save(filename)  # Save the image as a PNG
+            print(f"Saved image to {filename}")
+            i += 1
+
+        ##TODO save response data to experiment_path

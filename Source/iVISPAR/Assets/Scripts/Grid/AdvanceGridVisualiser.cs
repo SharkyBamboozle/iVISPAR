@@ -31,6 +31,8 @@ public class AdvanceGridVisualiser : MonoBehaviour
     public Color labelDarkColor = Color.black;
 
     public LabelType labelType = LabelType.none;
+    public Vector3 threeLetterLableOffset = new Vector3(1.0f,0.1f,-0.25f);
+    public Vector3 twoLetterLableOffset = new Vector3(1.0f,0.1f,-0.25f);
 
     void Start()
     {
@@ -92,9 +94,9 @@ public class AdvanceGridVisualiser : MonoBehaviour
                     textMeshComponent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,labelSize);
                     textMeshComponent.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,labelSize);
                     if(lable.Length == 3)     
-                        textMeshComponent.rectTransform.position = grid.getGridWorldPos(x, z) + new Vector3(1.0f,0.1f,-0.25f);
+                        textMeshComponent.rectTransform.position = grid.getGridWorldPos(x, z) + threeLetterLableOffset;
                     else
-                        textMeshComponent.rectTransform.position = grid.getGridWorldPos(x, z) + new Vector3(1.2f,0.1f,-0.25f);
+                        textMeshComponent.rectTransform.position = grid.getGridWorldPos(x, z) + twoLetterLableOffset;
                     textMeshComponent.rectTransform.SetParent(this.transform);
                     textMeshComponent.text = lable;
                     textMeshComponent.fontSize = cellFontSize;

@@ -31,6 +31,9 @@ public class ExperimentManager : MonoBehaviour
         
     }
     public void Reset() {
+        loadedLandmarkData = new LandmarkData();
+        if(InteractionUI.Instance.IsHumanExperiment())
+            InteractionUI.Instance.isLevelLoaded = false;
          SceneManager.LoadScene("Main", LoadSceneMode.Single);
     }
     void Start()

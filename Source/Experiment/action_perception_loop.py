@@ -1,6 +1,7 @@
 import websockets
 import base64
 from PIL import Image
+import time
 import json
 import os
 import experiment_utilities as util
@@ -98,24 +99,17 @@ async def interact_with_server(websocket, network_id, partner_id, agent, experim
         image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
-        filename = os.path.join(obs_dir, f"obs_1_init.png")
+        filename = os.path.join(obs_dir, f"obs_0_init.png")
         image.save(filename)  # Save the image as a PNG
         print(f"Saved image to {filename}")
 
-    #had to add this from lower part for when setup is done repeatidly
-    if command == "ActionAck":
-        encoded_data = message_data.get("payload")
-        observation = base64.b64decode(encoded_data)
-        image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
-        image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
-        filename = os.path.join(obs_dir, f"obs_1_init.png")
-        image.save(filename)  # Save the image as a PNG
 
-    i = 2
+    time.sleep(0.2)
+    i = 1
     user_message = ""
-    while user_message != "exit":
-
+    while user_message != "done":
+        time.sleep(0.2)
         user_message = agent.act(image)
 
         # Exit the loop if the user wants to close the connection
@@ -170,9 +164,6 @@ async def interact_with_server(websocket, network_id, partner_id, agent, experim
         # print(f"Received {command} : {msg}")
         if command == "ActionAck":
             # print(message_data.get("messages"))
-            json_filename = os.path.join(msg_dir, f"msg_{i}.json")
-            with open(json_filename, 'w') as json_file:
-                json.dump(message_data, json_file, indent=4)
 
             encoded_data = message_data.get("payload")
             observation = base64.b64decode(encoded_data)
@@ -182,6 +173,13 @@ async def interact_with_server(websocket, network_id, partner_id, agent, experim
             filename = os.path.join(obs_dir, f"obs_{i}_{user_message}.png")
             image.save(filename)  # Save the image as a PNG
             print(f"Saved image to {filename}")
+
+            # Remove the 'payload' entry if it exists
+            #message_data.pop('payload', None)
+
+            json_filename = os.path.join(msg_dir, f"msg_{i}.json")
+            with open(json_filename, 'w') as json_file:
+                json.dump(message_data.get("messages")[0], json_file, indent=4)
             i += 1
 
         ##TODO save response data to experiment_path

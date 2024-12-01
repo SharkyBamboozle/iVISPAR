@@ -846,6 +846,8 @@ MonoBehaviour:
     grid_size: 0
     grid_label: 
     camera_offset: []
+    camera_auto_override: []
+    screenshot_alpha: 0
     landmarks: []
   url: localhost
   socketPort: 1984
@@ -860,6 +862,57 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.322185, y: 3.1127758, z: -2.1388805}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &791907618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 791907620}
+  - component: {fileID: 791907619}
+  m_Layer: 0
+  m_Name: InteractionUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &791907619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791907618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cae3a9504af8da468bc237d5e40e5f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textFieldWidthPercentage: 0.85
+  buttonWidthPercentage: 0.15
+  heightPercentage: 0.1
+  messageFontRatio: 0.02
+  ButtonFontSize: 40
+  isHumanExperiment: 0
+  isLevelLoaded: 0
+--- !u!4 &791907620
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791907618}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.8869987, y: 14.6748905, z: 17.52247}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1371,6 +1424,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   logs: []
+  jsonLogs:
+    Actions: []
+    board_state: []
+    game_done: 0
 --- !u!4 &1153303471
 Transform:
   m_ObjectHideFlags: 0
@@ -1937,3 +1994,4 @@ SceneRoots:
   - {fileID: 671376323}
   - {fileID: 1607624419}
   - {fileID: 1315979060}
+  - {fileID: 791907620}

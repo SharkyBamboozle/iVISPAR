@@ -51,7 +51,7 @@ except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
     print(e)
 
 
-def expand_config_file(experiment_dic, grid_label, camera_offset, screenshot_alpha):
+def expand_config_file(experiment_dic, grid_label, camera_offset, camera_auto_override, screenshot_alpha):
     """
     Traverse a dictionary containing nested paths or process a single directory path,
     locate JSON files, update them with additional values, and save the updated JSONs back to the same files.
@@ -97,6 +97,7 @@ def expand_config_file(experiment_dic, grid_label, camera_offset, screenshot_alp
                         # Add the new values
                         config["grid_label"] = grid_label
                         config["camera_offset"] = camera_offset
+                        config['camera_auto_override'] = camera_auto_override
                         config["screenshot_alpha"] = screenshot_alpha
 
                         # Save the updated JSON back to the file

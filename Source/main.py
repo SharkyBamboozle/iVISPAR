@@ -3,13 +3,13 @@ demand of the configurations and experiments it is not recommended to run the en
 to rather run the code in individual sections, first generating a configuration set (or using one of the ready-made ones
 in the Data/Configs dir) then running the experiment and later evaluating it."""
 
-from Configuration.generate_sgp_configs import generate_sgp_configs
+from Configuration.generate_configs import generate_sgp_configs
 from Configuration.generate_sut_configs import generate_sut_configs
 from Configuration.visualise_configs_statistics import visualise_config_stats
 from Configuration.retrieve_config_visualisations import retrieve_config_visualisations
 from Experiment import agent_systems
-from Experiment.experiment import run_experiment
-from Experiment.episode_visualisation import visualise_episode_interaction, visualize_state_combination
+from Experiment.run_experiment import run_experiment
+from Experiment.visualise_episode import visualise_episode_interaction, visualize_state_combination
 from Evaluation.evaluate_results_main import evaluate
 
 

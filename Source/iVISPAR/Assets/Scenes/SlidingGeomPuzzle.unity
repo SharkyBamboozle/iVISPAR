@@ -148,7 +148,7 @@ Transform:
   m_GameObject: {fileID: 101692013}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.9736843, y: 4.212932, z: 6.64478}
+  m_LocalPosition: {x: 6.8, y: -1, z: -3.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -171,6 +171,7 @@ MonoBehaviour:
   mainCamera: {fileID: 963194228}
   verticalOffset: 5
   screenshotCamera: {fileID: 345199729}
+  overrideAutoPosition: {x: 6.8, y: -1, z: 6.7}
 --- !u!1 &339738198
 GameObject:
   m_ObjectHideFlags: 0
@@ -437,8 +438,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98908d08fd7afdc429202796c2b0ad3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 5
-  height: 5
+  width: 11
+  height: 11
   cellSize: 1
   lineColor: {r: 0, g: 0.47009897, b: 1, a: 1}
   lineWidth: 100
@@ -530,6 +531,8 @@ MonoBehaviour:
   labelLightColor: {r: 1, g: 1, b: 1, a: 1}
   labelDarkColor: {r: 0, g: 0, b: 0, a: 1}
   labelType: 3
+  threeLetterLableOffset: {x: 1.1, y: 0.1, z: -0.3}
+  twoLetterLableOffset: {x: 1.25, y: 0.1, z: -0.3}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

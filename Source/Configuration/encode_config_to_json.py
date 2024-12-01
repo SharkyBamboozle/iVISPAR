@@ -43,6 +43,7 @@ def translate_moves_to_commands(shortest_move_sequence, landmarks):
                     commands.append(command)
 
     commands.append("done")
+    #commands.append("hellow clown")
     return commands
 
 
@@ -50,8 +51,8 @@ def encode_config_to_json(board_size, state_combination, geoms_sample,
                           complexity, complexity_bins, shortest_move_sequence,
                           config_id, config_dir):
 
-    config_instance_id = (f"{config_id}_c1_{complexity['c1']}_c2_{complexity['c2']}"
-                          f"_i_{complexity_bins[complexity['c1']][complexity['c2']]}")
+    config_instance_id = (f"{config_id}_b_{board_size}_g_{len(geoms_sample)}_c1_{complexity['c1']}_c2_{complexity['c2']}"
+                          f"_i_{complexity_bins[len(geoms_sample)][complexity['c1']][complexity['c2']]}")
 
 
     landmarks = []

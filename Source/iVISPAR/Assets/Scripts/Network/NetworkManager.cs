@@ -164,6 +164,7 @@ public class NetworkManger : MonoBehaviour
             network_id = data.to;
             Debug.LogFormat("registered network ID = {0}", network_id);
             response.to = server_id;
+            CopyIdToClipboard();
             GameObject obj = GameObject.FindWithTag("inputField");
             if(obj != null)
                 obj.GetComponent<TMP_InputField>().text = network_id;

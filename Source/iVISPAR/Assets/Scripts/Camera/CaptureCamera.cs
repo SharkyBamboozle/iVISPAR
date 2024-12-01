@@ -31,10 +31,6 @@ public class CaptureCamera : MonoBehaviour
         }
     }
     // Update is called once per frame
-    void Update()
-    {
-          
-    }
     public void GenerateScreenshot()
     {
         StartCoroutine("RecordFrameFromTexture");
@@ -61,7 +57,13 @@ public class CaptureCamera : MonoBehaviour
         screenshotInfo.Add(texture.width.ToString());
         screenshotInfo.Add(texture.height.ToString());
         DataPacket data = NetworkManger.Instance.PackData("Screenshot",screenshotInfo, screenshot);
-        NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(data));
+        
+        if(!InteractionUI.Instance.IsHumanExperiment())
+            NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(data));
+        else
+        {
+            InteractionUI.Instance.saveActionAck(JsonUtility.ToJson(data));
+        }
         UnityEngine.Object.Destroy(texture);
         yield return null;
     }

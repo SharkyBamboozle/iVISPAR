@@ -167,6 +167,9 @@ public class LevelManager : MonoBehaviour
 
     public void StartLevel()
     {
+        if(InteractionUI.Instance.IsHumanExperiment())
+            InteractionUI.Instance.isLevelLoaded = true;
+
         EventHandler.Instance.InvokeCommand("capture_send_screenshot");
     }
     private void OnDestroy() {

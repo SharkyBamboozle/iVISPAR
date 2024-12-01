@@ -107,7 +107,7 @@ public class TurnManager : MonoBehaviour
         GameObject[] boardObjects = GameObject.FindGameObjectsWithTag("Commandable");
         foreach (GameObject boardObject in boardObjects)
         {
-            string status = boardObject.GetComponent<TargetBehaviour>().getObjectStatus();
+            string status = boardObject.GetComponent<TargetBehaviour>().getObjectChessStatus();
             //response.messages.Add(status);
             Debugger.Instance.SetBoardStatus(status);
         }
@@ -121,16 +121,27 @@ public class TurnManager : MonoBehaviour
             if(isPuzzleSolved)
             {
                 Debugger.Instance.SetValidity("Puzzle is soveled correctly");
-                NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));
+                if(!InteractionUI.Instance.IsHumanExperiment())
+                    NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));
+                else
+                {
+                    InteractionUI.Instance.saveActionAck(JsonUtility.ToJson(response));
+                }
                 EmptyLog();
                 ExperimentManager.Instance.Reset();
+                return;
             }
             else
             {
                 Debugger.Instance.SetValidity("Puzzle is not solved correctly, try again");
             }
         }
-        NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));
+        if(!InteractionUI.Instance.IsHumanExperiment())
+            NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));
+        else
+        {
+            InteractionUI.Instance.saveActionAck(JsonUtility.ToJson(response));
+        }
         EmptyLog();
             
 

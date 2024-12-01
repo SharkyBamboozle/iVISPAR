@@ -85,7 +85,20 @@ public class GridBoard : MonoBehaviour
     {
         return grid.DumbGridOccupancyStatus();
     }
-    
+    public string GridCoordinatesToChess(int x, int z)
+    {
+        return ConvertNumberToLetter(x+1) + (z+1).ToString();
+    }
+    string ConvertNumberToLetter(int number)
+    {
+        if (number < 1 || number > 26)
+        {
+            return "Invalid"; // Return "Invalid" for out-of-range numbers
+        }
+
+        char letter = (char)('A' + number - 1); // Calculate the corresponding letter
+        return letter.ToString();
+    }
     // Update is called once per frame
     void Update()
     {

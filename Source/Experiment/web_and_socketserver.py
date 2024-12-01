@@ -49,7 +49,8 @@ async def handle_client(websocket, path):
                 to_client_id = message_data.get("to")
                 from_client_id = message_data.get("from")
                 command =  message_data.get("command")
-                print(f"Packet from {from_client_id} to {to_client_id}: command {command}")
+                msg = message_data.get("messages")[0]
+                print(f"Packet from {from_client_id} to {to_client_id}: command {command} with message {msg}")
 
                 if to_client_id in connected_clients:
                     # Route the message to the intended recipient
@@ -112,7 +113,7 @@ def run_WebSocket_server_in_background():
     print("WebSocket server started in the background.")
 
 
-async def start_server():
+async def start_server_fix():
     # Configuration
     PORT = 8000  # Port to serve the WebGL build
     BUILD_DIRECTORY = r"C:\Users\Sharky\RIPPLE\iVISPAR"  # Replace with the path to your WebGL build folder
@@ -137,17 +138,17 @@ async def start_server():
 
 def run_socketserver_in_background():
     # Start the server in a background thread
-    server_thread = threading.Thread(target=lambda: asyncio.run(start_server()), daemon=True)
+    server_thread = threading.Thread(target=lambda: asyncio.run(start_server_fix()), daemon=True)
     server_thread.start()
     print("Server started in the background.")
 
 
 if __name__ == "__main__":
-    run_socketserver_in_background()
-
+    #run_socketserver_in_background()
     # Run the server
-    #asyncio.run(start_server())
-    run_WebSocket_server_in_background()
+    asyncio.run(start_server())
+    #run_WebSocket_server_in_background()
+
 
     # Continue running main script logic
     print("Main script is running while the server is in the background.")

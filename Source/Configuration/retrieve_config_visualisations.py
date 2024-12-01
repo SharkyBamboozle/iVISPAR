@@ -37,10 +37,10 @@ def retrieve_config_visualisations(config_id, experiment_id):
 
         # Locate the PNG and GIF files in the same subdirectory
         png_file = next((f for f in os.listdir(subdir) if f == f"{json_base_name}.png"), None)
-        gif_file = next((f for f in os.listdir(subdir) if f == f"{json_base_name}.gif"), None)
+        mp4_file = next((f for f in os.listdir(subdir) if f == f"{json_base_name}.mp4"), None)
 
         # Ensure at least one of the files exists
-        if not png_file and not gif_file:
+        if not png_file and not mp4_file:
             print(f"No PNG or GIF files found for '{json_base_name}' in {subdir}. Skipping...")
             continue
 
@@ -48,7 +48,7 @@ def retrieve_config_visualisations(config_id, experiment_id):
         if png_file:
             source_path_png = os.path.join(subdir, png_file)
             destination_path_png = os.path.join(config_dir, png_file)
-            shutil.move(source_path_png, destination_path_png)
+            shutil.copy(source_path_png, destination_path_png)
             successful_moves += 1
             print(f"""Moved file {successful_moves} (PNG):
                 - - - from: {source_path_png}
@@ -56,15 +56,15 @@ def retrieve_config_visualisations(config_id, experiment_id):
 
             """)
 
-        # Move the GIF file, if it exists
-        if gif_file:
-            source_path_gif = os.path.join(subdir, gif_file)
-            destination_path_gif = os.path.join(config_dir, gif_file)
-            shutil.move(source_path_gif, destination_path_gif)
+        # Move the MP4 file, if it exists
+        if mp4_file:
+            source_path_mp4 = os.path.join(subdir, mp4_file)
+            destination_path_mp4 = os.path.join(config_dir, mp4_file)
+            shutil.copy(source_path_mp4, destination_path_mp4)
             successful_moves += 1
-            print(f"""Moved file {successful_moves} (GIF):
-                - - - from: {source_path_gif}
-                - - - to: {destination_path_gif}
+            print(f"""Moved file {successful_moves} (MP4):
+                - - - from: {source_path_mp4}
+                - - - to: {destination_path_mp4}
 
             """)
 
@@ -72,7 +72,7 @@ def retrieve_config_visualisations(config_id, experiment_id):
 
 
 if __name__ == "__main__":
-    config_id = "SGP_ID_20241130_145237"
-    experiment_id = "experiment_ID_20241130_212501"
+    config_id = "SGP_ID_20241201_111256"
+    experiment_id = "experiment_ID_20241201_202300"
 
     retrieve_config_visualisations(config_id, experiment_id)

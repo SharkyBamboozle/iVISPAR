@@ -54,6 +54,10 @@ public class TargetBehaviour : MonoBehaviour
     {
         return string.Format("{0} {1} is at ({2},{3})",objectColor,objectType,x,z);
     }
+    public string getObjectChessStatus()
+    {
+        return string.Format("{0} {1} {2}",gridBoard.GridCoordinatesToChess(x,z),objectColor,objectType);
+    }
     public void SetInfo(string type, string color)
     {
         objectType = type;

@@ -19,6 +19,7 @@ public class LandmarkData
 
     public string grid_label;
     public float[] camera_offset;
+    public float[] camera_auto_override;
     public float screenshot_alpha;
     public Landmark[] landmarks;      // Array of landmarks
 }

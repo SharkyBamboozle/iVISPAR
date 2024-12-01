@@ -30,10 +30,10 @@ class AStarAgent(Agent):
         self.shortest_move_sequence = shortest_move_sequence
 
     def act(self, observation):
-        if not self.shortest_move_sequence:
-            return "reset"
-        else:
-            return self.shortest_move_sequence.pop(0)
+        #if not self.shortest_move_sequence:
+        #    return "reset"
+        #else:
+        return self.shortest_move_sequence.pop(0)
 
 
 class UserAgent:

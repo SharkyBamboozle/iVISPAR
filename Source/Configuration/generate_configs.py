@@ -2,6 +2,7 @@
 
 # Import statements
 import os
+import sys
 import math
 import random
 import numpy as np
@@ -163,10 +164,10 @@ def generate_configs(board_size, num_geoms_min_max, complexity_min_max, complexi
 if __name__ == "__main__":
     # Parameters
     board_size = 4
-    num_geoms_min_max = {"min": 7, "max": 9}
-    complexity_min_max = {"c1": {"min": 18, "max": 22},  # smallest and highest c1 complexity to be considered
-                          "c2": {"min": 0, "max": 2}}  # smallest and highest c2 complexity to be considered
-    complexity_bin_size = 1 # amount of puzzle configs per complexity bin
+    num_geoms_min_max = {"min": 4, "max": 6}
+    complexity_min_max = {"c1": {"min": 8, "max": 12},  # smallest and highest c1 complexity to be considered
+                          "c2": {"min": 0, "max": 0}}  # smallest and highest c2 complexity to be considered
+    complexity_bin_size = 1  # amount of puzzle configs per complexity bin
     shapes = ['cube', 'sphere', 'pyramid']#, 'cylinder', 'cone', 'prism']
     colors = ['red', 'green', 'blue']#, 'yellow', 'purple', 'orange']
 

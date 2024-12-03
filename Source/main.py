@@ -4,6 +4,12 @@ to rather run the code in individual sections, first generating a configuration 
 in the Data/Configs dir) then running the experiment and later evaluating it."""
 
 import asyncio
+import os
+import sys
+
+# Dynamically add the parent directories of the source files to the path
+subdirs = ['Configuration', 'Experiment', 'Evaluation']
+sys.path.extend([os.path.abspath(os.path.join(os.path.dirname(__file__), subdir)) for subdir in subdirs])
 
 from Configuration.generate_configs import generate_configs
 from Configuration.visualise_configs_statistics import visualise_config_stats
@@ -11,7 +17,7 @@ from Configuration.retrieve_config_visualisations import retrieve_config_visuali
 from Experiment import agent_systems
 from Experiment import game_systems
 from Experiment.run_experiment import run_experiment
-from Experiment.visualise_episode import visualise_episode_interaction, visualize_state_combination, parse_messages
+from Experiment.visualise_episode import visualise_episode_interaction, visualize_state_combination
 from Evaluation.evaluate_results import evaluate
 from Evaluation.plot_results import plot_results
 
@@ -21,21 +27,16 @@ from Evaluation.plot_results import plot_results
 ####################################################
 
 # Parameters
-experiment_types = {
-    "SGP": "SlidingGeomPuzzle",
-    "SUT": "SceneUnderstandingTask"
-}
-experiment_type = experiment_types['SGP']
-board_size = 5
-num_geoms = 5
-complexity_min_max = {"c1": {"min": 10, "max": 15},  # smallest and highest c1 complexity to be considered
-                      "c2": {"min": 0, "max": 1}}  # smallest and highest c2 complexity to be considered
-complexity_bin_size = 2  # amount of puzzle configs per complexity bin
+board_size = 4
+num_geoms_min_max = {"min": 4, "max": 6}
+complexity_min_max = {"c1": {"min": 6, "max": 12},  # smallest and highest c1 complexity to be considered
+                      "c2": {"min": 0, "max": 0}}  # smallest and highest c2 complexity to be considered
+complexity_bin_size = 1  # amount of puzzle configs per complexity bin
 shapes = ['cube', 'sphere', 'pyramid']  # , 'cylinder', 'cone', 'prism']
 colors = ['red', 'green', 'blue']  # , 'yellow', 'purple', 'orange']
 
 # Generate Sliding Geom Puzzle (SGP) configuration files
-config_id = generate_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors)
+config_id = generate_configs(board_size, num_geoms_min_max, complexity_min_max, complexity_bin_size, shapes, colors)
 print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
 
 # Visualise config stats
@@ -74,7 +75,7 @@ games = {
         'class': game_systems.InteractivePuzzle,
         'parameters': {
             'config_id': "SGP_ID_20241201_220627",
-            'num_game_env': 3,  # This param will now come from config_id
+            'num_game_env': 1000,  # Max amount of games to play (set to high value to play all configs)
             'max_game_length': 100,  # Max amount of action-perception iterations with the environment
             'representation_type': 'vision',
             'planning_steps': 1,
@@ -106,7 +107,6 @@ print(f"Finished running experiments for experiment ID: {experiment_id}")
 # Visualize episode and state combination
 visualise_episode_interaction(experiment_id)
 visualize_state_combination(experiment_id)
-parse_messages(experiment_id)
 
 retrieve_config_visualisations(experiment_id)
 

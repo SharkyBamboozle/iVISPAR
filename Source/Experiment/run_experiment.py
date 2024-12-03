@@ -6,7 +6,7 @@ from datetime import datetime
 import agent_systems
 import game_systems
 import experiment_utilities as util
-from visualise_episode import visualise_episode_interaction, visualize_state_combination, parse_messages
+from visualise_episode import visualise_episode_interaction, visualize_state_combination
 from web_and_socketserver import run_socketserver_in_background, run_WebSocket_server_in_background
 from action_perception_loop import initialize_connection, interact_with_server as action_perception_loop
 
@@ -142,7 +142,7 @@ if __name__ == "__main__":
             'class': game_systems.InteractivePuzzle,
             'params': {
                 'config_id': "SGP_ID_20241202_155231",
-                'num_game_env': 2,  #This param will now come from config_id
+                'num_game_env': 1000,  # Max amount of games to play (set to high value to play all configs)
                 'max_game_length': 30,  # Max amount of action-perception iterations with the environment
                 'representation_type': 'vision', #'text' 'both'
                 'planning_steps': 1,
@@ -172,4 +172,3 @@ if __name__ == "__main__":
     # Visualize episode and state combination
     visualise_episode_interaction(experiment_id)
     visualize_state_combination(experiment_id)
-    parse_messages(experiment_id)

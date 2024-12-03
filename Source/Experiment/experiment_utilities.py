@@ -42,14 +42,6 @@ def load_single_json_from_directory(directory_path):
     except json.JSONDecodeError as e:
         raise json.JSONDecodeError(f"Error decoding JSON file: {file_path}. Details: {str(e)}")
 
-# Example usage:
-directory_path = "/path/to/your/json_directory"
-try:
-    json_data = load_single_json_from_directory(directory_path)
-    print("JSON data loaded successfully:", json_data)
-except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
-    print(e)
-
 
 def expand_config_file(experiment_dic, grid_label, camera_offset, camera_auto_override, screenshot_alpha):
     """
@@ -504,3 +496,11 @@ if __name__ == "__main__":
 
     # Close the Unity executable
     close_Unity_process(process)
+
+    # Example usage:
+    directory_path = "/path/to/your/json_directory"
+    try:
+        json_data = load_single_json_from_directory(directory_path)
+        print("JSON data loaded successfully:", json_data)
+    except (FileNotFoundError, ValueError, json.JSONDecodeError) as e:
+        print(e)

@@ -62,10 +62,20 @@ agents = {
         }
     },
     'ClaudeAgent': {
-        'class': agent_systems.ClaudeAgent
+        'class': agent_systems.ClaudeAgent,
+        'params': {
+            'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+            'single_images': True,
+            'COT': True,
+        }
     },
     'GeminiAgent': {
-        'class': agent_systems.GeminiAgent
+        'class': agent_systems.GeminiAgent,
+        'params': {
+            'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+            'single_images': True,
+            'COT': True,
+        }
     },
 }
 
@@ -83,6 +93,9 @@ games = {
     },
     'SceneUnderstanding': {
         'class': game_systems.SceneUnderstanding,
+        'params': {
+            'config_id': config_id,
+        }
     }
 }
 

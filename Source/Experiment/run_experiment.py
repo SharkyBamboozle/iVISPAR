@@ -21,11 +21,11 @@ async def run_experiment(games, agents, sim_param):
 
     # Run the server
     print("starting WebSocket Server")
-    run_WebSocket_server_in_background()
+    #run_WebSocket_server_in_background()
 
     # run WebGL Server
     print("starting WebGL Server")
-    run_socketserver_in_background()
+    #run_socketserver_in_background()
 
     uri = "ws://localhost:1984"
     websocket, network_id, partner_id = await initialize_connection(uri)
@@ -114,7 +114,7 @@ async def run_experiment(games, agents, sim_param):
 
 if __name__ == "__main__":
 
-    config_id = 'SGP_ID_20241202_155231'
+    config_id = 'SGP_ID_20241203_105154'
 
     # Agent parameter
     agents = {

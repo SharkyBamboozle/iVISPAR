@@ -94,18 +94,6 @@ async def start_WebSocket_server():
     print("WebSocket server started on ws://localhost:1984")
     await asyncio.Future()  # Keep running indefinitely
 
-def run_WebSocket_server_in_background2():
-    # Start the server in a background thread
-    def start_server_in_thread():
-        asyncio.run(start_server())
-
-    server_thread = threading.Thread(target=start_server_in_thread, daemon=True)
-    server_thread.start()
-    print("Server started"
-          ""
-          ""
-          " in the background.")
-
 # Background server runners
 def run_WebSocket_server_in_background():
     thread = threading.Thread(target=lambda: asyncio.run(start_WebSocket_server()), daemon=True)
@@ -144,14 +132,11 @@ def run_socketserver_in_background():
 
 
 if __name__ == "__main__":
-    #run_socketserver_in_background()
+    run_socketserver_in_background()
     # Run the server
-    asyncio.run(start_server())
-    #run_WebSocket_server_in_background()
+    #asyncio.run(start_server())
+    #asyncio.run(start_WebSocket_server())
+    run_WebSocket_server_in_background()
 
-
-    # Continue running main script logic
-    print("Main script is running while the server is in the background.")
-    for i in range(10):
-        print(f"Main script working... {i}")
-        time.sleep(1)
+    while True:
+        pass

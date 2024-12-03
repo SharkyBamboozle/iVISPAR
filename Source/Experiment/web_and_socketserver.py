@@ -101,10 +101,10 @@ def run_WebSocket_server_in_background():
     print("WebSocket server started in the background.")
 
 
-async def start_server_fix():
+async def start_server_fix(BUILD_DIRECTORY):
     # Configuration
     PORT = 8000  # Port to serve the WebGL build
-    BUILD_DIRECTORY = r"C:\Users\Sharky\RIPPLE\iVISPAR"  # Replace with the path to your WebGL build folder
+    #BUILD_DIRECTORY = r"C:\Users\Sharky\RIPPLE\iVISPAR"  # Replace with the path to your WebGL build folder
 
     # Change working directory to the WebGL build folder
     os.chdir(BUILD_DIRECTORY)
@@ -124,18 +124,24 @@ async def start_server_fix():
             print("\nStopping server.")
             httpd.server_close()
 
-def run_socketserver_in_background():
+def run_socketserver_in_background(BUILD_DIRECTORY):
     # Start the server in a background thread
-    server_thread = threading.Thread(target=lambda: asyncio.run(start_server_fix()), daemon=True)
+    server_thread = threading.Thread(target=lambda: asyncio.run(start_server_fix(BUILD_DIRECTORY)), daemon=True)
     server_thread.start()
     print("Server started in the background.")
 
 
 if __name__ == "__main__":
-    run_socketserver_in_background()
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    webApp_dir = os.path.join(base_dir, 'iVISPAR')
+
+
     # Run the server
     #asyncio.run(start_server())
     #asyncio.run(start_WebSocket_server())
+
+    #Run the server in the background
+    run_socketserver_in_background(webApp_dir)
     run_WebSocket_server_in_background()
 
     while True:

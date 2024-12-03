@@ -21,11 +21,13 @@ async def run_experiment(games, agents, sim_param):
 
     # Run the server
     print("starting WebSocket Server")
-    #run_WebSocket_server_in_background()
+    run_WebSocket_server_in_background()
 
     # run WebGL Server
     print("starting WebGL Server")
-    #run_socketserver_in_background()
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    webApp_dir = os.path.join(base_dir, 'iVISPAR')
+    run_socketserver_in_background(webApp_dir)
 
     uri = "ws://localhost:1984"
     websocket, network_id, partner_id = await initialize_connection(uri)
@@ -131,10 +133,20 @@ if __name__ == "__main__":
             }
         },
         'ClaudeAgent': {
-            'class': agent_systems.ClaudeAgent
+            'class': agent_systems.ClaudeAgent,
+            'params': {
+                'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+                'single_images': True,
+                'COT': True,
+            }
         },
         'GeminiAgent': {
-            'class': agent_systems.GeminiAgent
+            'class': agent_systems.GeminiAgent,
+            'params': {
+                'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+                'single_images': True,
+                'COT': True,
+            }
         },
     }
 

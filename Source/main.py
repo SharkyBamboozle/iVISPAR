@@ -55,7 +55,7 @@ agents = {
     },
     'GPT4Agent': {
         'class': agent_systems.GPT4Agent,
-        'parameter': {
+        'params': {
             'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
             'single_images': True,
             'COT': True,
@@ -73,11 +73,11 @@ agents = {
 games = {
     'InteractivePuzzle': {
         'class': game_systems.InteractivePuzzle,
-        'parameters': {
-            'config_id': "SGP_ID_20241201_220627",
-            'num_game_env': 1000,  # Max amount of games to play (set to high value to play all configs)
-            'max_game_length': 100,  # Max amount of action-perception iterations with the environment
-            'representation_type': 'vision',
+        'params': {
+            'config_id': config_id,
+            'num_game_env': 2,  # Max amount of games to play (set to high value to play all configs)
+            'max_game_length': 30,  # Max amount of action-perception iterations with the environment
+            'representation_type': 'vision',  # 'text' 'both'
             'planning_steps': 1,
         }
     },
@@ -87,9 +87,7 @@ games = {
 }
 
 # Simulation parameter
-simulation_parameter = {
-    'screenshotWidth': 0,
-    'screenshotHeight': 0,
+sim_param = {
     'grid_label': 'both',  # choices are between 'edge', 'cell' , 'both' and 'none'
     'camera_offset': [0, 5.57, -3.68],  # need to add to JSON
     'camera_auto_override': [6.8, -1, 6.8],
@@ -100,7 +98,7 @@ simulation_parameter = {
 experiment_id = asyncio.run(run_experiment(
     games={'InteractivePuzzle': games['InteractivePuzzle']},
     agents={'AStarAgent': agents['AStarAgent']},
-    sim_param=simulation_parameter)
+    sim_param=sim_param)
 )
 print(f"Finished running experiments for experiment ID: {experiment_id}")
 
@@ -108,7 +106,7 @@ print(f"Finished running experiments for experiment ID: {experiment_id}")
 visualise_episode_interaction(experiment_id)
 visualize_state_combination(experiment_id)
 
-retrieve_config_visualisations(experiment_id)
+retrieve_config_visualisations(config_id, experiment_id)
 
 ####################################################
 ##########      Evaluate experiment       ##########

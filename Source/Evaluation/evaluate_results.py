@@ -15,11 +15,13 @@ def load_result_files(experiment_id):
     for subdir in os.listdir(experiment_dir):
         subdir_path = os.path.join(experiment_dir, subdir)
 
+        print(subdir_path)
+
         if not os.path.isdir(subdir_path):
             continue  # Skip non-directory files
 
         # Ensure the images exist
-        if not os.path.exists(results):
+        if not os.path.exists(subdir_path):
             print(f"Missing images in {subdir_path}. Skipping...")
             continue
 
@@ -44,7 +46,6 @@ def structure_results(results):
 def evaluate(experiment_id):
 
     # Set up experiment ID and directory
-    experiment_id = datetime.now().strftime("experiment_ID_%Y%m%d_%H%M%S")
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     results_dir = os.path.join(base_dir, 'Data', 'Results', experiment_id)
     os.makedirs(results_dir, exist_ok=True)
@@ -56,7 +57,7 @@ def evaluate(experiment_id):
 
 if __name__ == "__main__":
 
-    experiment_id = "experiment_ID_20241201_202300"
+    experiment_id = "experiment_ID_20241203_104853"
 
     print(f"Evaluate experiment {experiment_id}")
     evaluate(experiment_id)

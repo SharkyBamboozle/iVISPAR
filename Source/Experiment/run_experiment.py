@@ -114,6 +114,8 @@ async def run_experiment(games, agents, sim_param):
 
 if __name__ == "__main__":
 
+    config_id = 'SGP_ID_20241202_155231'
+
     # Agent parameter
     agents = {
         'UserAgent': agent_systems.UserAgent,
@@ -141,8 +143,8 @@ if __name__ == "__main__":
         'InteractivePuzzle': {
             'class': game_systems.InteractivePuzzle,
             'params': {
-                'config_id': "SGP_ID_20241202_155231",
-                'num_game_env': 1000,  # Max amount of games to play (set to high value to play all configs)
+                'config_id': config_id,
+                'num_game_env': 2,  # Max amount of games to play (set to high value to play all configs)
                 'max_game_length': 30,  # Max amount of action-perception iterations with the environment
                 'representation_type': 'vision', #'text' 'both'
                 'planning_steps': 1,

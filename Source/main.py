@@ -3,14 +3,17 @@ demand of the configurations and experiments it is not recommended to run the en
 to rather run the code in individual sections, first generating a configuration set (or using one of the ready-made ones
 in the Data/Configs dir) then running the experiment and later evaluating it."""
 
-from Configuration.generate_configs import generate_sgp_configs
-from Configuration.generate_sut_configs import generate_sut_configs
+import asyncio
+
+from Configuration.generate_configs import generate_configs
 from Configuration.visualise_configs_statistics import visualise_config_stats
 from Configuration.retrieve_config_visualisations import retrieve_config_visualisations
 from Experiment import agent_systems
+from Experiment import game_systems
 from Experiment.run_experiment import run_experiment
-from Experiment.visualise_episode import visualise_episode_interaction, visualize_state_combination
-from Evaluation.evaluate_results_main import evaluate
+from Experiment.visualise_episode import visualise_episode_interaction, visualize_state_combination, parse_messages
+from Evaluation.evaluate_results import evaluate
+from Evaluation.plot_results import plot_results
 
 
 ####################################################
@@ -32,15 +35,8 @@ shapes = ['cube', 'sphere', 'pyramid']  # , 'cylinder', 'cone', 'prism']
 colors = ['red', 'green', 'blue']  # , 'yellow', 'purple', 'orange']
 
 # Generate Sliding Geom Puzzle (SGP) configuration files
-if experiment_type == "SlidingGeomPuzzle":
-    config_id = generate_sgp_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors)
-    print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
-
-# Generate Scene Understanding Task (SUT) configuration files
-elif experiment_type == "SceneUnderstandingTask":
-    num_geoms_min_max = {"min": 1, "max": 9}
-    config_id = generate_sut_configs(board_size, num_geoms_min_max, complexity_bin_size, shapes, colors)
-    print(f"Finished Generate Scene Understanding Task (SUT) configuration files with ID: {config_id}")
+config_id = generate_configs(board_size, num_geoms, complexity_min_max, complexity_bin_size, shapes, colors)
+print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
 
 # Visualise config stats
 visualise_config_stats(config_id)
@@ -50,39 +46,75 @@ visualise_config_stats(config_id)
 ##########         Run experiment         ##########
 ####################################################
 
-# Parameters
-max_game_length = 100  # Max amount of action-perception iterations with the environment
-num_game_env = {'SlidingGeomPuzzle': 1}  # This param will now come from config_id
-grid_label = 'both'  # choices are between 'edge', 'cell' , 'both' and 'none'
-camera_offset = [0, 0, 0]  # need to add to JSON
-screenshot_alpha = 0.0  # need to add to JSON
-instruction_prompt_file_path = r"../../Resources/instruction_prompts/instruction_prompt_1.txt"
-screenshotWidth = 0
-screenshotHeight = 0
-single_images = True
-COT = True
-
-# Load LLMs and game configs for experiment
+# Agent parameter
 agents = {
-    # 'UserAgent': agent_systems.UserInteractiveAgent,
-    'AStarAgent': agent_systems.AStarAgent,
-    # 'GPT4Agent': agent_systems.GPT4Agent,
-    # 'ClaudeAgent': agent_systems.ClaudeAgent,
-    # 'GeminiAgent': agent_systems.GeminiAgent,
+    'UserAgent': agent_systems.UserAgent,
+    'AStarAgent': {
+        'class': agent_systems.AStarAgent
+    },
+    'GPT4Agent': {
+        'class': agent_systems.GPT4Agent,
+        'parameter': {
+            'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+            'single_images': True,
+            'COT': True,
+        }
+    },
+    'ClaudeAgent': {
+        'class': agent_systems.ClaudeAgent
+    },
+    'GeminiAgent': {
+        'class': agent_systems.GeminiAgent
+    },
 }
 
-experiment_id = run_experiment(config_id, agents, grid_label, camera_offset, screenshot_alpha, max_game_length,
-                                num_game_env)
+# Game parameter
+games = {
+    'InteractivePuzzle': {
+        'class': game_systems.InteractivePuzzle,
+        'parameters': {
+            'config_id': "SGP_ID_20241201_220627",
+            'num_game_env': 3,  # This param will now come from config_id
+            'max_game_length': 100,  # Max amount of action-perception iterations with the environment
+            'representation_type': 'vision',
+            'planning_steps': 1,
+        }
+    },
+    'SceneUnderstanding': {
+        'class': game_systems.SceneUnderstanding,
+    }
+}
+
+# Simulation parameter
+simulation_parameter = {
+    'screenshotWidth': 0,
+    'screenshotHeight': 0,
+    'grid_label': 'both',  # choices are between 'edge', 'cell' , 'both' and 'none'
+    'camera_offset': [0, 5.57, -3.68],  # need to add to JSON
+    'camera_auto_override': [6.8, -1, 6.8],
+    'screenshot_alpha': 1.0,  # need to add to JSON
+}
+
+# Run the experiment
+experiment_id = asyncio.run(run_experiment(
+    games={'InteractivePuzzle': games['InteractivePuzzle']},
+    agents={'AStarAgent': agents['AStarAgent']},
+    sim_param=simulation_parameter)
+)
+print(f"Finished running experiments for experiment ID: {experiment_id}")
 
 # Visualize episode and state combination
 visualise_episode_interaction(experiment_id)
 visualize_state_combination(experiment_id)
-retrieve_config_visualisations(config_id, experiment_id)
+parse_messages(experiment_id)
 
+retrieve_config_visualisations(experiment_id)
 
 ####################################################
 ##########      Evaluate experiment       ##########
 ####################################################
 
 # Evaluate the experiment
+print(f"Evaluate experiment {experiment_id}")
 evaluate(experiment_id)
+plot_results(experiment_id)

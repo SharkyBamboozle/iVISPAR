@@ -14,7 +14,8 @@ from encode_config_to_json import encode_config_to_json
 from visualise_configs_statistics import visualise_config_stats
 
 
-def generate_sgp_configs(board_size, num_geoms_min_max, complexity_min_max, complexity_bin_size, shapes, colors):
+def generate_configs(board_size, num_geoms_min_max, complexity_min_max, complexity_bin_size, shapes, colors,
+                         interval = 60):
     """
 
     Args:
@@ -61,7 +62,6 @@ def generate_sgp_configs(board_size, num_geoms_min_max, complexity_min_max, comp
         use_c1_c2[0] = False
         print("Not using c1 or c2")
 
-
     # Initialize nested bins
     complexity_bins = {
         num_geoms: {c1: {
@@ -70,38 +70,36 @@ def generate_sgp_configs(board_size, num_geoms_min_max, complexity_min_max, comp
         for num_geoms in range(num_geoms_min_max["min"], num_geoms_min_max["max"] + 1)
     }
     total_bin_values_checkpoint = 0
-    total_bin_values = 0
-    total_bin_size = complexity_bin_size *  sum(len(c2_bins) for c2_bins in complexity_bins.values())
-    total_config_num = (num_geoms_min_max['max']-num_geoms_min_max['min']+1) * total_bin_size
+    num_configs_current = 0
+    num_configs_per_num_geoms = complexity_bin_size *  sum(len(c2_bins) for c2_bins in complexity_bins.values())
+    num_configs_total = (num_geoms_min_max['max']-num_geoms_min_max['min']+1) * num_configs_per_num_geoms
 
-    print(f"Generating {config_id}: {total_config_num} samples of SlidingGeomPuzzle (SGP) configs for {board_size}x{board_size} with "
-          f"{num_geoms_min_max['min']}-{num_geoms_min_max['max']} geoms")
+    print(f"Generating {config_id}: {num_configs_total} samples of SlidingGeomPuzzle (SGP) configs for "
+          f"{board_size}x{board_size} with {num_geoms_min_max['min']}-{num_geoms_min_max['max']} geoms")
 
     # Track used combinations
     seen_state_combinations = set()
 
     # Sample board states
     sample_board_states = lambda num_geoms: np.stack((
-        (idx := np.random.choice(board_size ** 2, num_geoms, replace=False)) // board_size,
-        idx % board_size), axis=1)
+        (idx := np.random.choice(board_size ** 2, num_geoms, replace=False)) // board_size, idx % board_size), axis=1)
 
     # Timer settings
-    interval = 600
     last_checked_time = time.time()  # Initialize the last checked time
 
     # Sample initial and goal states until complexity bins are filled with bin size amount of samples
-    for num_geoms in range(num_geoms_min_max['min'], num_geoms_min_max['max']+1):
+    for i, num_geoms in enumerate(range(num_geoms_min_max['min'], num_geoms_min_max['max']+1)):
         print(f"Start sampling SlidingGeomPuzzle configs for {num_geoms} geoms.")
         while True:
             # Check progress every 'interval' seconds
             if time.time() - last_checked_time >= interval:
                 # Evaluate condition for breaking the loop
-                if total_bin_values_checkpoint == total_bin_values:
+                if total_bin_values_checkpoint == num_configs_current:
                     warnings.warn(f"Abort generating further SGP configs, no configs found for {interval} seconds")
                     #break
 
-                print(f"Checking at {datetime.now().strftime('%H:%M')}: {total_bin_values}/{total_config_num} new configs")
-                total_bin_values_checkpoint = total_bin_values
+                print(f"Checking at {datetime.now().strftime('%H:%M')}: {num_configs_current}/{num_configs_total} new configs")
+                total_bin_values_checkpoint = num_configs_current
                 last_checked_time = time.time()
 
             # Sample initial and goal states
@@ -132,7 +130,6 @@ def generate_sgp_configs(board_size, num_geoms_min_max, complexity_min_max, comp
                     complexity['c1'] not in complexity_bins[num_geoms] or  # Check if c1 exists in the next level
                     complexity['c2'] not in complexity_bins[num_geoms][complexity['c1']] or  # Check if c2 exists in the inner dictionary
                     complexity_bins[num_geoms][complexity['c1']][complexity['c2']] >= complexity_bin_size):  # Check if the bin size is exceeded
-                if num_geoms == 9: print(f"removed: {complexity}")
                 continue
 
             # Increment the corresponding bin
@@ -152,11 +149,11 @@ def generate_sgp_configs(board_size, num_geoms_min_max, complexity_min_max, comp
                                   config_id, config_dir)
 
             # Check if all bins are full
-            total_bin_values = sum(sum(sum(sub_bin.values())
+            num_configs_current = sum(sum(sum(sub_bin.values())
                 for sub_bin in c1_bins.values())
                 for c1_bins in complexity_bins.values()
             )
-            if total_bin_values == total_bin_size:
+            if num_configs_current == num_configs_per_num_geoms *(i+1):
                 print(f"Successfully finished building all configurations for {num_geoms} geoms")
                 break
 
@@ -174,7 +171,7 @@ if __name__ == "__main__":
     colors = ['red', 'green', 'blue']#, 'yellow', 'purple', 'orange']
 
     # Generate Sliding Geom Puzzle (SGP) configuration files
-    config_id = generate_sgp_configs(board_size, num_geoms_min_max, complexity_min_max, complexity_bin_size, shapes, colors)
+    config_id = generate_configs(board_size, num_geoms_min_max, complexity_min_max, complexity_bin_size, shapes, colors)
     print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
 
     # Visualise config stats

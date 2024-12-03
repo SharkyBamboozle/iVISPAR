@@ -57,7 +57,7 @@ def load_images_and_actions(obs_dir):
 
         # Extract the action from the filename (exclude 'init')
         action = filename.split("_")[-1].replace(".png", "")
-        if action != "init":
+        if action != "goal":
             actions.append(action)
 
     return images, actions
@@ -335,19 +335,17 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
             continue  # Skip non-directory files
 
         # Paths for the images
-        init_state_image_path = os.path.join(subdir_path, "obs/obs_0_init.png")
-        goal_state_image_path = os.path.join(subdir_path, "obs/obs_1_start.png")
+        init_state_image_path = os.path.join(subdir_path, "obs/obs_1_start.png")
+        goal_state_image_path = os.path.join(subdir_path, "obs/obs_0_goal.png")
 
         # Ensure the images exist
         if not os.path.exists(init_state_image_path) or not os.path.exists(goal_state_image_path):
-            print(init_state_image_path)
-            print(goal_state_image_path)
             print(f"Missing images in {subdir_path}. Skipping...")
             continue
 
         # Load the images
         init_image = Image.open(init_state_image_path)
-        init_image = add_action_text(init_image.copy(), "Init", "green")
+        init_image = add_action_text(init_image.copy(), "init", "green")
         goal_image = Image.open(goal_state_image_path)
         goal_image = add_action_text(goal_image.copy(), "goal", "red")
 
@@ -376,51 +374,9 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
         combined_frame.save(img_file_path)
         print(f"Saved combined image to {img_file_path}")
 
-
-def parse_messages(experiment_id):
-    """
-    Visualizes the state combination by combining the initial state image and the goal state image
-    into a single image with a white bar separating them. Adds text annotations to label the states.
-
-    Args:
-        experiment_id (str): The ID of the experiment directory.
-        white_bar_width (int): The width of the white bar separating the images.
-    """
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    experiment_dir = os.path.join(base_dir, 'Data', 'Experiments', experiment_id)
-
-    # Iterate through subdirectories of the experiment directory
-    for subdir in os.listdir(experiment_dir):
-        msg_subdir_path = os.path.join(experiment_dir, subdir, 'msg')
-
-        combined_data = []  # List to hold all JSON data
-
-        # Get all JSON files in the directory
-        json_files = [f for f in os.listdir(msg_subdir_path) if f.endswith('.json')]
-
-        # Iterate through JSON files
-        for idx, json_file in enumerate(sorted(json_files), start=1):
-            file_path = os.path.join(msg_subdir_path, json_file)
-
-            # Load JSON content
-            try:
-                with open(file_path, 'r') as file:
-                    data = json.load(file)
-                    combined_data.append({f"Item {idx}": data})  # Add numbered item to the list
-            except json.JSONDecodeError:
-                print(f"Error decoding {json_file}. Skipping...")
-            except Exception as e:
-                print(f"Error processing {json_file}: {e}")
-
-        # Save the combined JSON to the output file
-        output_file = os.path.join(experiment_dir, subdir, f"message_log.json")
-        with open(output_file, 'w') as outfile:
-            json.dump(combined_data, outfile, indent=4)
-
-
 if __name__ == "__main__":
     experiment_id = "experiment_ID_20241201_202300"
 
+    print(f"Visualise experiment {experiment_id}")
     visualise_episode_interaction(experiment_id)
     visualize_state_combination(experiment_id)
-    parse_messages(experiment_id)

@@ -30,10 +30,10 @@ class AStarAgent(Agent):
         self.shortest_move_sequence = shortest_move_sequence
 
     def act(self, observation):
-        #if not self.shortest_move_sequence:
-        #    return "reset"
-        #else:
-        return self.shortest_move_sequence.pop(0)
+        if not self.shortest_move_sequence:
+            return "AStar path empty"
+        else:
+            return self.shortest_move_sequence.pop(0)
 
 
 class UserAgent:
@@ -79,7 +79,7 @@ Available actions:
 - "done": Write done when you think the current state matches the goal state (if you write done, and the game does not end, this means that you did not succefully solve it, keep trying)
 
 Colors: green, red, blue
-Shapes: cube, ball, pyramid
+Shapes: cube, sphere, pyramid
 Directions: up, down, left, right
 """ + ("Please explain your reasoning, then end with 'action: <your action>',"
        "no matter what always end with action: <your action> (dont add additional character"
@@ -183,7 +183,7 @@ class ClaudeAgent(LLMAgent):
             if self.single_images:
                 goal_base64 = self.encode_image_from_pil(self.goal_state)
                 content = [
-                    {"type": "text", "text": "obs_0_init"},
+                    {"type": "text", "text": "obs_0_goal"},
                     {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": goal_base64}},
                     {"type": "text", "text": "Current state:"},
                     {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": current_base64}},

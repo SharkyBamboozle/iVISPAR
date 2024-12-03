@@ -55,7 +55,7 @@ async def initialize_connection(uri):
         raise e
 
 
-async def interact_with_server(websocket, network_id, partner_id, agent, experiment_path, max_game_length=30):
+async def interact_with_server(websocket, network_id, partner_id, agent, game, experiment_path):
     """
     Perform repeated interactions with the server after the connection has been established.
 
@@ -71,8 +71,8 @@ async def interact_with_server(websocket, network_id, partner_id, agent, experim
     obs_dir = os.path.join(experiment_path, 'obs')
     os.makedirs(obs_dir, exist_ok=True)
 
-    msg_dir = os.path.join(experiment_path, 'msg')
-    os.makedirs(msg_dir, exist_ok=True)  # Create 'obs' directory if it doesn't exist
+    #msg_dir = os.path.join(experiment_path, 'msg')
+    #os.makedirs(msg_dir, exist_ok=True)  # Create 'obs' directory if it doesn't exist
 
     setup_config_file = util.load_single_json_from_directory(experiment_path)
     message_data = {
@@ -99,7 +99,7 @@ async def interact_with_server(websocket, network_id, partner_id, agent, experim
         image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
-        filename = os.path.join(obs_dir, f"obs_0_init.png")
+        filename = os.path.join(obs_dir, f"obs_0_goal.png")
         image.save(filename)  # Save the image as a PNG
         print(f"Saved image to {filename}")
 
@@ -108,9 +108,11 @@ async def interact_with_server(websocket, network_id, partner_id, agent, experim
     time.sleep(0.2)
     i = 1
     user_message = ""
-    while user_message != "done":
+    while not game.check_done():
+    #while user_message != "done":
         time.sleep(0.2)
         user_message = agent.act(image)
+        response = game.feed_agent_response(user_message)
 
         # Exit the loop if the user wants to close the connection
         if user_message.lower() == "reset":
@@ -177,9 +179,13 @@ async def interact_with_server(websocket, network_id, partner_id, agent, experim
             # Remove the 'payload' entry if it exists
             #message_data.pop('payload', None)
 
-            json_filename = os.path.join(msg_dir, f"msg_{i}.json")
-            with open(json_filename, 'w') as json_file:
-                json.dump(message_data.get("messages")[0], json_file, indent=4)
+            #json_filename = os.path.join(msg_dir, f"msg_{i}.json")
+            #with open(json_filename, 'w') as json_file:
+            #    json.dump(message_data.get("messages")[0], json_file, indent=4)
             i += 1
+
+            log = game.feed_sim_response(message_data.get("messages")[0])
+
+    game.end_game()
 
         ##TODO save response data to experiment_path

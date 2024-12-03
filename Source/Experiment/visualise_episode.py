@@ -252,7 +252,7 @@ def combine_gif_with_init(gif_path, init_image_path, output_gif_path, duration=1
     )
 
 
-def visualise_episode_interaction(experiment_id, duration=600, fps=2.0):
+def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, duration=600, fps=2.0):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     experiment_dir = os.path.join(base_dir, 'Data', 'Experiments', experiment_id)
 
@@ -276,6 +276,28 @@ def visualise_episode_interaction(experiment_id, duration=600, fps=2.0):
         images = add_background_to_transparent_images(images, background_color)
 
         frames = generate_gif_from_images_and_actions(images, actions)
+
+        if dual:
+            #add goal image
+            goal_state_image_path = os.path.join(subdir_path, "obs/obs_0_goal.png")
+            goal_image = Image.open(goal_state_image_path)
+            goal_image = add_action_text(goal_image.copy(), "goal", "green")
+
+            dual_frames = []
+            for frame in frames:
+                # Combine the images with a white bar in the middle
+                combined_width = frame.width + goal_image.width + white_bar_width
+                combined_height = max(frame.height, goal_image.height)
+                combined_frame = Image.new("RGBA", (combined_width, combined_height), (255, 255, 255, 255))  # White background
+
+                # Paste the 'init' image on the left
+                combined_frame.paste(frame, (0, 0))
+
+                # Paste the 'goal' image on the right, leaving space for the white bar
+                combined_frame.paste(goal_image, (frame.width + white_bar_width, 0))
+                dual_frames.append(combined_frame)
+            frames = dual_frames
+
 
         # Locate the JSON file in the subdirectory
         json_file = next((f for f in os.listdir(subdir_path) if f.startswith('config') and f.endswith('.json')), None)
@@ -375,7 +397,7 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
         print(f"Saved combined image to {img_file_path}")
 
 if __name__ == "__main__":
-    experiment_id = "experiment_ID_20241201_202300"
+    experiment_id = "experiment_ID_20241203_143619"
 
     print(f"Visualise experiment {experiment_id}")
     visualise_episode_interaction(experiment_id)

@@ -68,11 +68,13 @@ async def run_experiment(games, agents, sim_param):
 
                 # Move the JSON and image files to the experiment path using the new utility function
                 util.copy_json_to_experiment(config_file_path, experiment_path)
-                config = util.expand_config_file(experiment_path,
-                                                 sim_param.get('grid_label', None),
-                                                 sim_param.get('camera_offset', None),
-                                                 sim_param.get('camera_auto_override', None),
-                                                 sim_param.get('screenshot_alpha', None))
+                config = util.expand_config_file(
+                    experiment_path=experiment_path,
+                    grid_label=sim_param.get('grid_label', None),
+                    camera_offset=sim_param.get('camera_offset', None),
+                    camera_auto_override=sim_param.get('camera_auto_override', None),
+                    screenshot_alpha=sim_param.get('screenshot_alpha', None)
+                )
 
                 # Initialise agent
                 agent_class = agent_details.get('class', None)
@@ -84,8 +86,12 @@ async def run_experiment(games, agents, sim_param):
                       agent_type == 'ClaudeAgent' or
                       agent_type == 'GeminiAgent'):
                     agent_parameters = agent_details.get('params', {})
-                    agent = agent_class(single_images=agent_parameters.get('single_images', None),
-                                        COT=agent_parameters.get('COT', None))
+                    agent = agent_class(
+                        api_key_file_path=agent_parameters.get('api_keys_file_path', None),
+                        instruction_prompt_file_path=agent_parameters.get('instruction_prompt_file_path', None),
+                        single_images=agent_parameters.get('single_images', None),
+                        COT=agent_parameters.get('COT', None)
+                    )
                 else:
                     raise ValueError(f"Unsupported agent_type: {agent_type}")
 
@@ -93,10 +99,12 @@ async def run_experiment(games, agents, sim_param):
                 game_class = game_details.get('class', None)
                 if game_type == 'InteractivePuzzle':
                     game = game_class(
-                        experiment_path,
-                        game_params.get("representation_type", None),
-                        game_params.get("planning_steps", None),
-                        game_params.get('max_game_length', None)
+                        experiment_id=experiment_path,
+                        instruction_prompt_file_path=game_params.get("instruction_prompt_file_path", None),
+                        chain_of_thoughts = game_params.get("chain_of_thoughts", None),
+                        representation_type = game_params.get("representation_type", None),
+                        planning_steps=game_params.get("planning_steps", None),
+                        max_game_length=game_params.get('max_game_length', None),
                     )
 
                 try:
@@ -127,7 +135,8 @@ if __name__ == "__main__":
         'GPT4Agent': {
             'class': agent_systems.GPT4Agent,
             'params': {
-                'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_2.txt",
+                'api_keys_file_path': r"Data/API-keys/api-keys.txt",
                 'single_images': True,
                 'COT': True,
             }
@@ -135,7 +144,8 @@ if __name__ == "__main__":
         'ClaudeAgent': {
             'class': agent_systems.ClaudeAgent,
             'params': {
-                'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_2.txt",
+                'api_keys_file_path': r"Data/API-keys/api-keys.txt",
                 'single_images': True,
                 'COT': True,
             }
@@ -143,7 +153,8 @@ if __name__ == "__main__":
         'GeminiAgent': {
             'class': agent_systems.GeminiAgent,
             'params': {
-                'instruction_prompt_file_path': r"../../Resources/instruction_prompts/instruction_prompt_1.txt",
+                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_2.txt",
+                'api_keys_file_path': r"Data/API-keys/api-keys.txt",
                 'single_images': True,
                 'COT': True,
             }
@@ -160,6 +171,8 @@ if __name__ == "__main__":
                 'max_game_length': 30,  # Max amount of action-perception iterations with the environment
                 'representation_type': 'vision', #'text' 'both'
                 'planning_steps': 1,
+                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_2.txt",
+                'chain_of_thoughts': True
             }
         },
         'SceneUnderstanding': {
@@ -178,7 +191,7 @@ if __name__ == "__main__":
     # Run the experiment
     experiment_id = asyncio.run(run_experiment(
         games={'InteractivePuzzle': games['InteractivePuzzle']},
-        agents={'AStarAgent': agents['AStarAgent']},
+        agents={'GPT4Agent': agents['GPT4Agent']},
         sim_param=sim_param)
     )
     print(f"Finished running experiments for experiment ID: {experiment_id}")

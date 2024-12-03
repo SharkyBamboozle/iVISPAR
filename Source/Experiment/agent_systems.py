@@ -1,9 +1,11 @@
 import base64
 import requests
 import io
+import os
 from anthropic import Anthropic
 import google.generativeai as genai
 from abc import ABC, abstractmethod
+import re
 
 
 class Agent(ABC):
@@ -66,13 +68,15 @@ class UserAgent:
 class LLMAgent:
     """Parent class for LLM-based agents"""
 
-    def __init__(self, instruction_prompt_file_path, single_images=True, COT=False):
-        self.instruction_prompt_file_path = instruction_prompt_file_path
+    def __init__(self, api_key_file_path, instruction_prompt_file_path, single_images=True, COT=False):
+        self.api_keys = load_api_keys(api_key_file_path)
         self.goal_state = None
         self.single_images = single_images
         self.COT = COT
 
         # Load system prompt from file
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        self.instruction_prompt_file_path = os.path.join(base_dir, instruction_prompt_file_path)
         with open(self.instruction_prompt_file_path, 'r') as f:
             self.system_prompt = f.read()
 
@@ -103,11 +107,26 @@ class LLMAgent:
             action = action.split("action:")[1].strip()
         return action
 
+    def parse_action_rmv_special_chars(self, action):
+        """
+        Removes special characters (like **, __, etc.) from the input string.
 
-def load_api_keys():
+        Args:
+            action (str): The input string to parse and clean.
+
+        Returns:
+            str: The cleaned string with only alphanumeric characters and spaces.
+        """
+        # Use a regular expression to remove non-alphanumeric characters, except spaces
+        cleaned_action = re.sub(r'[^a-zA-Z0-9\s]', '', action)
+        return cleaned_action
+
+def load_api_keys(api_key_file_path):
     """Load API keys from file"""
     keys = {}
-    with open('./instruction_prompts/api-keys.txt', 'r') as f:
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    api_key_file_path = os.path.join(base_dir, api_key_file_path)
+    with open(api_key_file_path, 'r') as f:
         for line in f:
             if '=' in line:
                 key, value = line.strip().split('=')
@@ -116,10 +135,10 @@ def load_api_keys():
 
 
 class GPT4Agent(LLMAgent):
-    def __init__(self, instruction_prompt_file_path, single_images=True, COT=False):
-        super().__init__(single_images, COT)
-        api_keys = load_api_keys()
-        self.api_key = api_keys['GPT4_API_KEY']
+    def __init__(self, api_key_file_path, instruction_prompt_file_path, single_images=True, COT=False):
+        super().__init__(api_key_file_path, instruction_prompt_file_path, single_images, COT)
+        print(self.api_keys)
+        self.api_key = self.api_keys['GPT4_API_KEY']
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}"
@@ -170,18 +189,18 @@ class GPT4Agent(LLMAgent):
             print(response.json())
             action = self.parse_action(response.json()['choices'][0]['message']['content'])
             print(f"\nGPT-4 Vision suggested action: {action}")
-            return action
+            return self.parse_action_rmv_special_chars(action)
 
         except Exception as e:
             print(f"\nError calling OpenAI API: {e}")
             return "error"
 
 
+
 class ClaudeAgent(LLMAgent):
-    def __init__(self, instruction_prompt_file_path, single_images=True, COT=False):
-        super().__init__(single_images, COT)
-        api_keys = load_api_keys()
-        self.client = Anthropic(api_key=api_keys['CLAUDE_API_KEY'])
+    def __init__(self, api_key_file_path, instruction_prompt_file_path, single_images=True, COT=False):
+        super().__init__(instruction_prompt_file_path, api_key_file_path, single_images, COT)
+        self.client = Anthropic(api_key=self.api_keys['CLAUDE_API_KEY'])
         self.model = "claude-3-5-sonnet-20241022"
 
     def act(self, observation):
@@ -237,10 +256,9 @@ class ClaudeAgent(LLMAgent):
 
 
 class GeminiAgent(LLMAgent):
-    def __init__(self, instruction_prompt_file_path, single_images=True, COT=False):
-        super().__init__(single_images, COT)
-        api_keys = load_api_keys()
-        self.api_key = api_keys['GEMINI_API_KEY']
+    def __init__(self, api_key_file_path, instruction_prompt_file_path, single_images=True, COT=False):
+        super().__init__(api_key_file_path, instruction_prompt_file_path, single_images, COT)
+        self.api_key = self.api_keys['GEMINI_API_KEY']
         genai.configure(api_key=self.api_key)
         self.model = genai.GenerativeModel(model_name="gemini-1.5-flash", system_instruction=self.system_prompt)
 

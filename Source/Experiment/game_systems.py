@@ -3,13 +3,26 @@ import json
 
 class GameSystem:
 
-    def __init__(self, experiment_path):
+    def __init__(self, experiment_path, instruction_prompt_file_path, chain_of_thoughts):
         """
         Initialize the GameSystem.
         Args:
             experiment_path (str): The path where the log files will be saved.
         """
         self.experiment_path = experiment_path
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        instruction_prompt_file_path = os.path.join(base_dir, instruction_prompt_file_path)
+        with open(instruction_prompt_file_path, 'r') as f:
+            self.instruction_prompt = f.read()
+
+        # Add COT instruction if needed
+        if chain_of_thoughts:
+            self.instruction_prompt += ("\nPlease explain your reasoning, then end with 'action: <your action>',"
+                                   "no matter what always end with action: <your action> (dont add additional character"
+                                   "after the word action)")
+        else:
+            self.instruction_prompt += "\nPlease output only the action, no explanations needed."
+
         self.is_done = False
         self.agent_message_log = []
         self.sim_message_log = []
@@ -86,8 +99,8 @@ class GameSystem:
 
 class InteractivePuzzle(GameSystem):
 
-    def __init__(self, experiment_id, representation_type, planning_steps, max_game_length):
-        super().__init__(experiment_id)
+    def __init__(self, experiment_id, instruction_prompt_file_path, chain_of_thoughts, representation_type, planning_steps, max_game_length):
+        super().__init__(experiment_id, instruction_prompt_file_path, chain_of_thoughts)
         self.representation_type = representation_type
         self.planning_steps = planning_steps
         self.max_game_length = max_game_length

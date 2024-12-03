@@ -43,7 +43,7 @@ def load_single_json_from_directory(directory_path):
         raise json.JSONDecodeError(f"Error decoding JSON file: {file_path}. Details: {str(e)}")
 
 
-def expand_config_file(experiment_dic, grid_label, camera_offset, camera_auto_override, screenshot_alpha):
+def expand_config_file(experiment_path, grid_label, camera_offset, camera_auto_override, screenshot_alpha):
     """
     Traverse a dictionary containing nested paths or process a single directory path,
     locate JSON files, update them with additional values, and save the updated JSONs back to the same files.
@@ -60,8 +60,8 @@ def expand_config_file(experiment_dic, grid_label, camera_offset, camera_auto_ov
         raise ValueError(f"Invalid grid_label '{grid_label}'. Must be one of {valid_grid_labels}.")
 
     # If a single path string is passed, wrap it into a dictionary-like structure
-    if isinstance(experiment_dic, str):
-        experiment_dic = {"single_path": {"sub_path": {1: experiment_dic}}}
+    if isinstance(experiment_path, str):
+        experiment_dic = {"single_path": {"sub_path": {1: experiment_path}}}
 
     # Traverse the nested dictionary and process each directory
     for agent, environments in experiment_dic.items():

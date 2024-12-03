@@ -6,5 +6,5 @@ Available actions:
 - "done": Write done when you think the current state matches the goal state (if you write done, and the game does not end, this means that you did not succefully solve it, keep trying)
 
 Colors: green, red, blue
-Shapes: cube, ball, pyramid
+Shapes: cube, sphere, pyramid
 Directions: up, down, left, right

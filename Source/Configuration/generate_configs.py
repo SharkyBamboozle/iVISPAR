@@ -72,7 +72,9 @@ def generate_configs(board_size, num_geoms_min_max, complexity_min_max, complexi
     }
     total_bin_values_checkpoint = 0
     num_configs_current = 0
-    num_configs_per_num_geoms = complexity_bin_size *  sum(len(c2_bins) for c2_bins in complexity_bins.values())
+    num_configs_per_num_geoms = ((complexity_min_max["c1"]["max"]-complexity_min_max["c1"]["min"]+1) *
+                                 (complexity_min_max["c2"]["max"] - complexity_min_max["c2"]["min"] + 1) *
+                                 complexity_bin_size)
     num_configs_total = (num_geoms_min_max['max']-num_geoms_min_max['min']+1) * num_configs_per_num_geoms
 
     print(f"Generating {config_id}: {num_configs_total} samples of SlidingGeomPuzzle (SGP) configs for "
@@ -165,7 +167,7 @@ if __name__ == "__main__":
     # Parameters
     board_size = 4
     num_geoms_min_max = {"min": 4, "max": 6}
-    complexity_min_max = {"c1": {"min": 8, "max": 12},  # smallest and highest c1 complexity to be considered
+    complexity_min_max = {"c1": {"min": 10, "max": 11},  # smallest and highest c1 complexity to be considered
                           "c2": {"min": 0, "max": 0}}  # smallest and highest c2 complexity to be considered
     complexity_bin_size = 1  # amount of puzzle configs per complexity bin
     shapes = ['cube', 'sphere', 'pyramid']#, 'cylinder', 'cone', 'prism']

@@ -29,7 +29,7 @@ from Evaluation.plot_results import plot_results
 # Parameters
 board_size = 4
 num_geoms_min_max = {"min": 4, "max": 6}
-complexity_min_max = {"c1": {"min": 6, "max": 12},  # smallest and highest c1 complexity to be considered
+complexity_min_max = {"c1": {"min": 10, "max": 11},  # smallest and highest c1 complexity to be considered
                       "c2": {"min": 0, "max": 0}}  # smallest and highest c2 complexity to be considered
 complexity_bin_size = 1  # amount of puzzle configs per complexity bin
 shapes = ['cube', 'sphere', 'pyramid']  # , 'cylinder', 'cone', 'prism']

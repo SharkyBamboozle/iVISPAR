@@ -28,7 +28,7 @@ async def handle_client(websocket, path):
         "command" : "Handshake",
         "from" : "0000-0000-0000-0000",
         "to" : client_id,
-        "messages" : ["welcome to Microcomsim action perception server V1.0.","your network id is registered"],
+        "messages" : ["action perception server V1.0.","your network id is registered"],
         "payload" : encoded_byte_array
     }
     #websocket.send(f"Handshake")

@@ -1,3 +1,5 @@
 # Config files and experiment data
 .idea
-data/
+data/*
+!/data/API-keys
+!/data/Instructions

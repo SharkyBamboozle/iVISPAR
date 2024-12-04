@@ -112,7 +112,6 @@ class GameSystem:
         try:
             with open(agent_message_log_path, "w") as log_file:
                 log_file.write("\n".join(self.agent_message_log))
-            print(f"Agent log saved successfully to {agent_message_log_path}")
         except IOError as e:
             print(f"Error saving agent log: {e}")
 
@@ -143,6 +142,9 @@ class InteractivePuzzle(GameSystem):
         self.representation_type = representation_type
         self.planning_steps = planning_steps
         self.max_game_length = max_game_length
+
+    def get_max_game_length(self):
+        return self.max_game_length
 
 
 class SceneUnderstanding(GameSystem):

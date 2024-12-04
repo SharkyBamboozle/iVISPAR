@@ -103,22 +103,34 @@ class LLMAgent:
     def parse_action(self, response):
         """Extract action from model response"""
         action = response.strip().lower()
+        thoughts=""
         if self.COT:
+            thoughts = action.split("action:")[0].strip()
             action = action.split("action:")[1].strip()
-        return action
+        return action, thoughts
 
     def parse_action_rmv_special_chars(self, action):
         """
-        Removes special characters (like **, __, etc.) from the input string.
+        Cleans the input string to ensure it is safe to use as part of a file name.
 
         Args:
             action (str): The input string to parse and clean.
 
         Returns:
-            str: The cleaned string with only alphanumeric characters and spaces.
+            str: The cleaned string, safe for use in file names.
         """
-        # Use a regular expression to remove non-alphanumeric characters, except spaces
-        cleaned_action = re.sub(r'[^a-zA-Z0-9\s]', '', action)
+        # Remove invalid file name characters
+        cleaned_action = re.sub(r'[\\/*?:"<>|]', '', action)
+
+        # Replace newlines and tabs with spaces
+        cleaned_action = re.sub(r'[\r\n\t]', ' ', cleaned_action)
+
+        # Remove other special characters (leaving alphanumeric and spaces)
+        cleaned_action = re.sub(r'[^a-zA-Z0-9\s]', '', cleaned_action)
+
+        # Remove extra spaces and strip leading/trailing spaces
+        cleaned_action = re.sub(r'\s+', ' ', cleaned_action).strip()
+
         return cleaned_action
 
 def load_api_keys(api_key_file_path):
@@ -187,8 +199,10 @@ class GPT4Agent(LLMAgent):
                 json=payload
             )
             print(response.json())
-            action = self.parse_action(response.json()['choices'][0]['message']['content'])
+            action, thoughts = self.parse_action(response.json()['choices'][0]['message']['content'])
+
             print(f"\nGPT-4 Vision suggested action: {action}")
+            print(f"GPT-4 Vision thought: {thoughts}")
             return self.parse_action_rmv_special_chars(action)
 
         except Exception as e:

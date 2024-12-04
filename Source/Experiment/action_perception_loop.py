@@ -67,7 +67,7 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game):
     """
 
     i = 0
-    while not game.check_done():
+    while not game.check_done() and i <= game.get_max_game_length():
         time.sleep(0.2)
 
         response = await websocket.recv()

@@ -50,7 +50,7 @@ async def handle_client(websocket, path):
                 from_client_id = message_data.get("from")
                 command =  message_data.get("command")
                 msg = message_data.get("messages")[0]
-                print(f"Packet from {from_client_id} to {to_client_id}: command {command} with message {msg}")
+                #print(f"Packet from {from_client_id} to {to_client_id}: command {command} with message {msg}")
 
                 if to_client_id in connected_clients:
                     # Route the message to the intended recipient

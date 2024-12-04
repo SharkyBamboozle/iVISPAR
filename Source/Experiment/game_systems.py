@@ -1,5 +1,7 @@
 import os
 import json
+from PIL import Image
+import base64
 
 class GameSystem:
 
@@ -14,6 +16,10 @@ class GameSystem:
         instruction_prompt_file_path = os.path.join(base_dir, instruction_prompt_file_path)
         with open(instruction_prompt_file_path, 'r') as f:
             self.instruction_prompt = f.read()
+
+        # Create the 'obs' subdirectory inside the save path
+        self.obs_dir = os.path.join(experiment_path, 'obs')
+        os.makedirs(self.obs_dir, exist_ok=True)
 
         # Add COT instruction if needed
         if chain_of_thoughts:
@@ -35,12 +41,14 @@ class GameSystem:
         """
         self.agent_message_log.append(agent_message)
 
-    def feed_sim_response(self, sim_message):
+    def feed_sim_response(self, response, i):
         """
         Process a response from the simulation.
         Args:
             sim_message (str or dict): The message from the simulation.
         """
+
+        sim_message = response.get("messages")[0]
         try:
             # Check if sim_message is a string and parse it as JSON
             if isinstance(sim_message, str):
@@ -54,6 +62,26 @@ class GameSystem:
         except json.JSONDecodeError as e:
             print(f"Error decoding simulation message: {e}")
 
+        encoded_data = response.get("payload")
+        observation = base64.b64decode(encoded_data)
+        image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
+        image = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+        if response.get("command") == "Screenshot":
+            color = (100,191,106) #"green"
+        else:
+            color = (82, 138, 174) #"blue"
+        image_colored = self.color_code_observation(image.copy(), color)
+
+        if response.get("command") == "Screenshot":
+            filename = os.path.join(self.obs_dir, f"obs_0_goal.png")
+        else:
+            filename = os.path.join(self.obs_dir, f"obs_{i}_{self.agent_message_log[-1]}.png")
+        image_colored.save(filename)  # Save the image as a PNG
+
+        return image_colored
+
+
     def check_done(self):
         """
         Check if the game system is done.
@@ -64,12 +92,14 @@ class GameSystem:
             self._save_logs()
         return self.is_done
 
+
     def end_game(self):
         """
         End the game, append an ending message, and save logs.
         """
         #self.sim_message_log.append({"message": "Game was ended, possibly due to running out of steps"})
         self._save_logs()
+
 
     def _save_logs(self):
         """
@@ -94,6 +124,15 @@ class GameSystem:
             print(f"Simulation log saved successfully to {sim_message_log_path}")
         except IOError as e:
             print(f"Error saving simulation log: {e}")
+
+
+    def color_code_observation(self, observation, background_color):
+        """
+        Preprocesses an images by removing transparency and setting a solid background.
+        """
+        background = Image.new('RGB', observation.size, background_color)
+        background.paste(observation, mask=observation.getchannel('A') if 'A' in observation.getbands() else None)
+        return background
 
 
 

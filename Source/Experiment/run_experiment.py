@@ -2,6 +2,8 @@ import asyncio
 import os
 from logging import raiseExceptions
 from datetime import datetime
+import json
+import base64
 
 import agent_systems
 import game_systems
@@ -108,9 +110,21 @@ async def run_experiment(games, agents, sim_param):
                     )
 
                 try:
+
+                    # Set up environment
+                    setup_config_file = util.load_single_json_from_directory(experiment_path)
+                    message_data = {
+                        "command": "Setup",
+                        "from": network_id,
+                        "to": partner_id,
+                        "messages": [json.dumps(setup_config_file)],
+                        "payload": base64.b64encode(b"nothing here").decode("utf-8"),
+                    }
+                    await websocket.send(json.dumps(message_data))
+
                     # Run the client
                     print(f"Start Game with Agent: {agent_type}, Game: {game_type}, Config: {config.get('config_instance_id', [])}")
-                    await action_perception_loop(websocket, network_id, partner_id, agent, game, experiment_path)
+                    await action_perception_loop(websocket, network_id, partner_id, agent, game)
 
                 except Exception as e:
                     # Handle any errors that occur within the action-perception loop
@@ -171,7 +185,7 @@ if __name__ == "__main__":
                 'max_game_length': 30,  # Max amount of action-perception iterations with the environment
                 'representation_type': 'vision', #'text' 'both'
                 'planning_steps': 1,
-                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_2.txt",
+                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_3.txt",
                 'chain_of_thoughts': True
             }
         },
@@ -183,9 +197,9 @@ if __name__ == "__main__":
     # Simulation parameter
     sim_param = {
         'grid_label': 'both', #choices are between 'edge', 'cell' , 'both' and 'none'
-        'camera_offset': [0,5.57,-3.68], #need to add to JSON
+        'camera_offset': [0,5.57,-3.68],
         'camera_auto_override': [6.8,-1,6.8],
-        'screenshot_alpha': 1.0, #need to add to JSON
+        'screenshot_alpha': 0.0,
     }
 
     # Run the experiment

@@ -397,7 +397,7 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
         print(f"Saved combined image to {img_file_path}")
 
 if __name__ == "__main__":
-    experiment_id = "experiment_ID_20241203_143619"
+    experiment_id = "experiment_ID_20241204_113501"
 
     print(f"Visualise experiment {experiment_id}")
     visualise_episode_interaction(experiment_id)

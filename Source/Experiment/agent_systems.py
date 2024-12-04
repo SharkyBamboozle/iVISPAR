@@ -39,7 +39,7 @@ class AStarAgent(Agent):
             return self.shortest_move_sequence.pop(0)
 
 
-class UserAgent:
+class UserAgent(Agent):
     """
     A simple interactive agent that simulates the role of an LLM for user interaction.
 

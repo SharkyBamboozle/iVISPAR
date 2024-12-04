@@ -122,13 +122,19 @@ class LLMAgent:
         # Remove invalid file name characters
         cleaned_action = re.sub(r'[\\/*?:"<>|]', '', action)
 
-        # Replace newlines and tabs with spaces
+        # Replace newlines, tabs, and control characters with spaces
         cleaned_action = re.sub(r'[\r\n\t]', ' ', cleaned_action)
 
-        # Remove other special characters (leaving alphanumeric and spaces)
+        # Remove other special characters (excluding alphanumeric and spaces)
         cleaned_action = re.sub(r'[^a-zA-Z0-9\s]', '', cleaned_action)
 
-        # Remove extra spaces and strip leading/trailing spaces
+        # Remove leading backslashes or forward slashes
+        cleaned_action = re.sub(r'^[\\/]+', '', cleaned_action)
+
+        # Remove trailing single quotes or other special characters
+        cleaned_action = cleaned_action.strip("'").strip()
+
+        # Remove extra spaces
         cleaned_action = re.sub(r'\s+', ' ', cleaned_action).strip()
 
         return cleaned_action

@@ -1,51 +1,109 @@
-# RIPPLE
+![Build](https://img.shields.io/github/actions/workflow/status/username/repository/build.yml?branch=main)
 
 <img src="Resources/task.jpeg" alt="Task Configuration Preview" width="500"/>
 
-This codebase consists of the following components:
+# iVISPAR
 
-- Python files
-- Unity assets
-- External files
+The interactive-Visiual-Spatial-Reasoning (iVISPAR) benchmark tests the visiual-spatial-reasoning of humans and artificial agents. It features a fully customizable version of the popular sliding tile puzzle with a 3D simulator and a natural language API that allows large vision language models (LVLMs) to interact with the scene.
 
-<img src="Resources/image.png" alt="Task Configuration Preview" width="500"/>
+<img src="Resources/task.jpeg" alt="Task Configuration Preview" width="500"/>
 
-Your setup may work directly with the provided executable (`.exe` file). If not, you'll need to install Unity and build the project on your machine using the provided assets. The Python scripts can interact with the project in the Unity Editor, but this makes automated testing of LLMs more challenging, as the application needs to start and close for each task. There should be no need to modify the Unity assets or application code. Once the Unity application is built, everything else runs via Python.
 
-The diagram below illustrates the experimental pipeline and the key files involved. Python scripts can be run individually for more control or all at once using the main Python script.
+## Table of Contents
+1. [Features](#joystick-features)
+2. [Overview](#mount_fuji-overview)
+3. [Quick Start](#rocket-quick-start)
+4. [Setup](#package-setup)
+5. [Citation](#bookmark-citation)
+6. [Contact](#mailbox_with_mail-contact)
 
-![Experiment Pipeline](Resources/experiment_results_compare.gif)
 
-## Task Generation
 
-1. Generate a random task using the `TaskGeneration.py` script.
-2. This script will generate a JSON configuration file with a UUID.
-3. The Unity application uses this JSON configuration file.
-4. It also generates a quick visual preview of the task configuration.
+## :joystick: Features
 
-<img src="Resources/ShapePuzzle_config_ID_20241023_153744_1.png" alt="Task Configuration Preview" width="300"/>
+- benchmarking
+    - Multi-modal evaluation of visual-spatial reasoning in LVLMs
+    - use LVLMs as agents in interactive puzzle solving task
+    - highly parameterizable, with automated testing and evaluation
+- puzzle problem datasets
+    - generate your own dataset of interactive Sliding Geom Puzzles
+    - each individual puzzle configuration comes with an animated minimal move sequence computed by A*, to show this puzzle instance’s complexity
+    - additionally, pre-generated test dataset of puzzle configurations are provided
+- simulation
+    - WebApp with GUI for LVLMs and human baseline participants
+    - works out of the box, easy setup, no installation or dependencies necessary
+    - can run locally or online on a server setup,
+    
 
-## LLM Integration
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-- Currently, this script only accepts user input.
-- LLM experts are needed to further develop the integration.
 
-## Unity Startup
+## :mount_fuji: Overview
 
-1. The Unity application needs to be started at this point to set up a TCP server.
-2. Before starting, move the previously generated configuration file to the `resources` folder and rename it to `puzzle.json`.
-3. Start the Unity application either manually or via the provided Python script.
-4. After completing one episode of the Action-Perception Loop, Python will automatically close the application.
+There are four directories:
 
-## Action-Perception Loop
+1. **Data**: contains all data used by the source code, from the configuration datasets in configs, the experiment data, LLM task instructions and API-keys, to the results
+2. **iVISPAR**: contains the compiled WebApp. 
+3. **Resources**: holds some meta files for the repository
+4. **Source**: contains all source code for generating a dataset of puzzle configurations in COnfiguration, running the experiment in /experimetn and evaluating the experiments in Evalaution, as well as the Unity project for the WebApp in iVISPAR.
 
-- This script handles the interaction between Python and Unity.
-- LLM prompts are sent to Unity as actions, and Unity's screen captures are returned, saved, and passed to the LLM for feedback.
-- A TCP connection is used to facilitate communication with Unity.
-- You can limit the number of actions allowed before an episode is considered a failure (recommended).
-- After an interaction, the script returns the episode data (e.g., success status and number of actions taken).
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Episode GIFs
+## :rocket: Quick Start
 
-- After one or more episodes, you can use the screen captures to generate a GIF of the episode. This allows the interactions to be preserved and reviewed later.
+You can find an example of how to run the code in source/main.py. It will open the iVISPAR web app on your browser and copy the client ID into the Python console. We've prepared a comprehensive **Getting Started Guide** with instructions to help you get started with the iVISPAR benchmark.
 
+1. [How to run the experiment](experiment_instructions.md)
+2. [How to generate configurations (optional)](experiment_instructions.md)
+3. [How to evaluate the results](experiment_instructions.md)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## :package: Setup
+
+### Clone
+
+You can clone our repository with 
+
+```
+$ git clone https://github.com/askforalfred/alfred.git alfred
+$ export ALFRED_ROOT=$(pwd)/alfred
+```
+
+### Conda
+
+The experiment uses Python 3. You can find the list of Python dependencies in /Resources/environment.yaml. We recommend to download Anaconda and make a conda environment with
+
+```
+$ conda env create -f resources/environment.yml
+```
+
+### Unity
+
+The WebApp is written in C# with Unity and it’s code source code is available under /source/iVISPAR. The project comes with the compiled WebApp, which should work out of the box on any common OS with a browser installed. It is unnecessary to code C# or compile the Unity project to run experiments with iVISPAR. To extend the iVISPAR simulation, the C# is included as a Unity project in source/iVISPAR.    
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## :bookmark: Citation
+
+We've published our latest paper on iVISPAR, which you can find on [ArXiv](https://arxiv.org/). If you use iVISPAR in your research, please cite our paper:
+
+*Mayer J., Nezami F., Ballout M., Serwan J., Bruni E. (2024). iVISPAR: An Interactive Visual-Spatial Reasoning Benchmark for LVLMs. arXiv preprint arXiv:xxxx.xxxxx.*
+
+```
+@inproceedings{iVisapar24,
+  title ={{iVISPAR: An Interactive Visual-Spatial Reasoning Benchmark for LVLMs}},
+  author={Julius Mayer and Farbod Nezami and Mohamad Ballout and Serwan Jassim and Elia Bruni},
+  booktitle = {ICML 2025 Benchmarking,
+  year = {2024},
+  url  = {https://arxiv.org/abs/xxxx.xxxxx}
+}
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## :mailbox_with_mail: Contact
+
+Julius Mayer - research@jmayer.ai
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>

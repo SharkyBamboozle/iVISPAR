@@ -56,9 +56,9 @@ There are four directories:
 
 You can find an example of how to run the code in source/main.py. It will open the iVISPAR web app on your browser and copy the client ID into the Python console. We've prepared a comprehensive **Getting Started Guide** with instructions to help you get started with the iVISPAR benchmark.
 
-1. [How to run the experiment](experiment_instructions.md)
-2. [How to generate configurations (optional)](experiment_instructions.md)
-3. [How to evaluate the results](experiment_instructions.md)
+1. [How to run experiments](Resources/how_to_run_experiments.md)
+2. [How to generate configurations (optional)](Resources/how_to_generate_configurations.md)
+3. [How to evaluate the results](Resources/how_to_evaluate_results.md)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

@@ -252,7 +252,7 @@ def combine_gif_with_init(gif_path, init_image_path, output_gif_path, duration=1
     )
 
 
-def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, duration=600, fps=2.0):
+def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, duration=600, fps=5.0):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     experiment_dir = os.path.join(base_dir, 'Data', 'Experiments', experiment_id)
 
@@ -397,7 +397,7 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
         print(f"Saved combined image to {img_file_path}")
 
 if __name__ == "__main__":
-    experiment_id = "experiment_ID_20241204_113501"
+    experiment_id = "experiment_ID_20241204_122742"
 
     print(f"Visualise experiment {experiment_id}")
     visualise_episode_interaction(experiment_id)

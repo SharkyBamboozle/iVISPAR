@@ -23,18 +23,18 @@ The interactive-Visiual-Spatial-Reasoning (iVISPAR) benchmark tests the visiual-
 
 ## :joystick: Features
 
-- benchmarking
-    - Multi-modal evaluation of visual-spatial reasoning in LVLMs
-    - use LVLMs as agents in interactive puzzle solving task
-    - highly parameterizable, with automated testing and evaluation
-- puzzle problem datasets
-    - generate your own dataset of interactive Sliding Geom Puzzles
-    - each individual puzzle configuration comes with an animated minimal move sequence computed by A*, to show this puzzle instance’s complexity
-    - additionally, pre-generated test dataset of puzzle configurations are provided
-- simulation
-    - WebApp with GUI for LVLMs and human baseline participants
-    - works out of the box, easy setup, no installation or dependencies necessary
-    - can run locally or online on a server setup,
+### Benchmarking
+- Multi-modal evaluation of visual-spatial reasoning in LVLMs
+- use LVLMs as agents in interactive puzzle solving task
+- highly parameterizable, with automated testing and evaluation
+### Puzzle problem datasets
+- generate your own dataset of interactive Sliding Geom Puzzles
+- each individual puzzle configuration comes with an animated minimal move sequence computed by A*, to show this puzzle instance’s complexity
+- additionally, pre-generated test dataset of puzzle configurations are provided
+### Simulation
+- WebApp with GUI for LVLMs and human baseline participants
+- works out of the box, easy setup, no installation or dependencies necessary
+- can run locally or online on a server setup
     
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

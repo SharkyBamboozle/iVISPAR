@@ -1,6 +1,8 @@
+<div id="readme-top"></div>
+
+
 ![Build](https://img.shields.io/github/actions/workflow/status/username/repository/build.yml?branch=main)
 
-<img src="Resources/task.jpeg" alt="Task Configuration Preview" width="500"/>
 
 # iVISPAR
 

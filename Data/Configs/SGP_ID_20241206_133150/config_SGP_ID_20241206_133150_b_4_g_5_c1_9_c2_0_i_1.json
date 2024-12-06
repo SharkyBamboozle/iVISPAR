@@ -1,0 +1,87 @@
+{
+    "config_instance_id": "SGP_ID_20241206_133150_b_4_g_5_c1_9_c2_0_i_1",
+    "experiment_type": "SlidingGeomPuzzle",
+    "complexity_c1": 9,
+    "complexity_c2": 0,
+    "grid_size": 4,
+    "landmarks": [
+        {
+            "geom_nr": 1,
+            "body": "sphere",
+            "color": "red",
+            "start_coordinate": [
+                1,
+                2
+            ],
+            "goal_coordinate": [
+                1,
+                2
+            ]
+        },
+        {
+            "geom_nr": 2,
+            "body": "cube",
+            "color": "red",
+            "start_coordinate": [
+                2,
+                2
+            ],
+            "goal_coordinate": [
+                1,
+                1
+            ]
+        },
+        {
+            "geom_nr": 3,
+            "body": "cube",
+            "color": "green",
+            "start_coordinate": [
+                2,
+                0
+            ],
+            "goal_coordinate": [
+                0,
+                0
+            ]
+        },
+        {
+            "geom_nr": 4,
+            "body": "pyramid",
+            "color": "blue",
+            "start_coordinate": [
+                2,
+                3
+            ],
+            "goal_coordinate": [
+                1,
+                3
+            ]
+        },
+        {
+            "geom_nr": 5,
+            "body": "pyramid",
+            "color": "red",
+            "start_coordinate": [
+                0,
+                3
+            ],
+            "goal_coordinate": [
+                1,
+                0
+            ]
+        }
+    ],
+    "shortest_move_sequence": [
+        "start",
+        "move red cube down",
+        "move green cube left",
+        "move green cube left",
+        "move blue pyramid left",
+        "move red pyramid down",
+        "move red pyramid down",
+        "move red pyramid right",
+        "move red pyramid down",
+        "move red cube left",
+        "done"
+    ]
+}

@@ -1,0 +1,105 @@
+{
+    "config_instance_id": "SGP_ID_20241206_133150_b_4_g_6_c1_14_c2_2_i_1",
+    "experiment_type": "SlidingGeomPuzzle",
+    "complexity_c1": 14,
+    "complexity_c2": 2,
+    "grid_size": 4,
+    "landmarks": [
+        {
+            "geom_nr": 1,
+            "body": "sphere",
+            "color": "blue",
+            "start_coordinate": [
+                0,
+                2
+            ],
+            "goal_coordinate": [
+                2,
+                2
+            ]
+        },
+        {
+            "geom_nr": 2,
+            "body": "pyramid",
+            "color": "blue",
+            "start_coordinate": [
+                3,
+                1
+            ],
+            "goal_coordinate": [
+                1,
+                0
+            ]
+        },
+        {
+            "geom_nr": 3,
+            "body": "cube",
+            "color": "blue",
+            "start_coordinate": [
+                1,
+                3
+            ],
+            "goal_coordinate": [
+                1,
+                3
+            ]
+        },
+        {
+            "geom_nr": 4,
+            "body": "cube",
+            "color": "green",
+            "start_coordinate": [
+                3,
+                0
+            ],
+            "goal_coordinate": [
+                3,
+                3
+            ]
+        },
+        {
+            "geom_nr": 5,
+            "body": "cube",
+            "color": "red",
+            "start_coordinate": [
+                2,
+                3
+            ],
+            "goal_coordinate": [
+                1,
+                2
+            ]
+        },
+        {
+            "geom_nr": 6,
+            "body": "pyramid",
+            "color": "red",
+            "start_coordinate": [
+                3,
+                2
+            ],
+            "goal_coordinate": [
+                3,
+                2
+            ]
+        }
+    ],
+    "shortest_move_sequence": [
+        "start",
+        "move blue pyramid left",
+        "move blue pyramid left",
+        "move blue pyramid down",
+        "move red cube down",
+        "move red cube left",
+        "move green cube up",
+        "move green cube left",
+        "move green cube up",
+        "move green cube up",
+        "move green cube right",
+        "move blue sphere down",
+        "move blue sphere right",
+        "move blue sphere right",
+        "move blue sphere up",
+        "done"
+    ]
+}

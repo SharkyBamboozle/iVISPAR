@@ -1,0 +1,22 @@
+Task Instructions:
+
+This evaluation tests your understanding of intuitive physical concepts. You will be given a task description and a set of available actions to complete the task. After the task begins, you may only respond using the actions listed, until the task is finished.
+
+You will also receive a visual representation of the environment where your task takes place. Each time you select a valid action, the environment will be updated, and you will see a new image of the task's state. You may only perform one action at a time. If an invalid action is prompted, the game state will remain unchanged, and you will receive an image of the current state again.
+
+Your goal is to complete the task using as few actions as possible. When you believe you have solved the task, you can use the "done" action to check if you’ve reached the goal state.
+
+Available actions:
+
+"start": Begins the game.
+"done": Checks whether the current state matches the goal state.
+"move {object color} {object shape} {direction}": Moves an object of a specific color and shape on the game board in a given direction.
+
+Colors: green, red, blue
+Shapes: cube, ball, pyramid
+Directions: up, down, left, right
+Task description:
+
+With these instructions, you receive an image showing the goal state of the board. You can then type "start" to view the initial board configuration. Your task is to move the objects on the board to match the goal state.
+
+From now on, you can only respond using the available actions, type start, to start the game.

@@ -1,0 +1,43 @@
+{
+    "config_instance_id": "ShapePuzzle_config_ID_20241101_161534_1",
+    "instruction_prompt": "Task Instructions:\n\nThis evaluation tests your understanding of intuitive physical concepts. You will be given a task description and a set of available actions to complete the task. After the task begins, you may only respond using the actions listed, until the task is finished.\n\nYou will also receive a visual representation of the environment where your task takes place. Each time you select a valid action, the environment will be updated, and you will see a new image of the task's state. You may only perform one action at a time. If an invalid action is prompted, the game state will remain unchanged, and you will receive an image of the current state again.\n\nYour goal is to complete the task using as few actions as possible. When you believe you have solved the task, you can use the \"done\" action to check if you\u2019ve reached the goal state.\n\nAvailable actions:\n\n\"start\": Begins the game.\n\"done\": Checks whether the current state matches the goal state.\n\"move {object color} {object shape} {direction}\": Moves an object of a specific color and shape on the game board in a given direction.\n\nColors: green, red, blue\nShapes: cube, ball, pyramid\nDirections: up, down, left, right\nTask description:\n\nWith these instructions, you receive an image showing the goal state of the board. You can then type \"start\" to view the initial board configuration. Your task is to move the objects on the board to match the goal state.\n\nFrom now on, you can only respond using the available actions, type start, to start the game.",
+    "grid_size": 3,
+    "landmarks": [
+        {
+            "body": "cube",
+            "color": "green",
+            "start_coordinate": [
+                1,
+                1
+            ],
+            "goal_coordinate": [
+                2,
+                2
+            ]
+        },
+        {
+            "body": "pyramid",
+            "color": "blue",
+            "start_coordinate": [
+                0,
+                2
+            ],
+            "goal_coordinate": [
+                0,
+                1
+            ]
+        },
+        {
+            "body": "cube",
+            "color": "red",
+            "start_coordinate": [
+                0,
+                1
+            ],
+            "goal_coordinate": [
+                0,
+                2
+            ]
+        }
+    ]
+}

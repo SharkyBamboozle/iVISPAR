@@ -1,0 +1,76 @@
+{
+    "config_instance_id": "SGP_ID_20241206_133150_b_4_g_4_c1_11_c2_0_i_1",
+    "experiment_type": "SlidingGeomPuzzle",
+    "complexity_c1": 11,
+    "complexity_c2": 0,
+    "grid_size": 4,
+    "landmarks": [
+        {
+            "geom_nr": 1,
+            "body": "sphere",
+            "color": "green",
+            "start_coordinate": [
+                2,
+                2
+            ],
+            "goal_coordinate": [
+                1,
+                0
+            ]
+        },
+        {
+            "geom_nr": 2,
+            "body": "sphere",
+            "color": "red",
+            "start_coordinate": [
+                2,
+                1
+            ],
+            "goal_coordinate": [
+                3,
+                3
+            ]
+        },
+        {
+            "geom_nr": 3,
+            "body": "pyramid",
+            "color": "red",
+            "start_coordinate": [
+                3,
+                2
+            ],
+            "goal_coordinate": [
+                1,
+                2
+            ]
+        },
+        {
+            "geom_nr": 4,
+            "body": "cube",
+            "color": "green",
+            "start_coordinate": [
+                0,
+                0
+            ],
+            "goal_coordinate": [
+                3,
+                0
+            ]
+        }
+    ],
+    "shortest_move_sequence": [
+        "start",
+        "move green sphere left",
+        "move green sphere down",
+        "move red pyramid left",
+        "move red pyramid left",
+        "move green cube right",
+        "move green cube right",
+        "move green sphere down",
+        "move green cube right",
+        "move red sphere up",
+        "move red sphere up",
+        "move red sphere right",
+        "done"
+    ]
+}

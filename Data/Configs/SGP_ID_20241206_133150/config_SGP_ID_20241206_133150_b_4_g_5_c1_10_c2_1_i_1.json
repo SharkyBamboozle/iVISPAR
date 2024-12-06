@@ -1,0 +1,88 @@
+{
+    "config_instance_id": "SGP_ID_20241206_133150_b_4_g_5_c1_10_c2_1_i_1",
+    "experiment_type": "SlidingGeomPuzzle",
+    "complexity_c1": 10,
+    "complexity_c2": 1,
+    "grid_size": 4,
+    "landmarks": [
+        {
+            "geom_nr": 1,
+            "body": "pyramid",
+            "color": "green",
+            "start_coordinate": [
+                2,
+                1
+            ],
+            "goal_coordinate": [
+                2,
+                1
+            ]
+        },
+        {
+            "geom_nr": 2,
+            "body": "sphere",
+            "color": "green",
+            "start_coordinate": [
+                1,
+                0
+            ],
+            "goal_coordinate": [
+                1,
+                2
+            ]
+        },
+        {
+            "geom_nr": 3,
+            "body": "cube",
+            "color": "green",
+            "start_coordinate": [
+                1,
+                2
+            ],
+            "goal_coordinate": [
+                2,
+                3
+            ]
+        },
+        {
+            "geom_nr": 4,
+            "body": "pyramid",
+            "color": "red",
+            "start_coordinate": [
+                2,
+                2
+            ],
+            "goal_coordinate": [
+                1,
+                1
+            ]
+        },
+        {
+            "geom_nr": 5,
+            "body": "sphere",
+            "color": "blue",
+            "start_coordinate": [
+                3,
+                0
+            ],
+            "goal_coordinate": [
+                1,
+                0
+            ]
+        }
+    ],
+    "shortest_move_sequence": [
+        "start",
+        "move blue sphere left",
+        "move green sphere up",
+        "move blue sphere left",
+        "move green pyramid down",
+        "move red pyramid down",
+        "move green cube up",
+        "move green sphere up",
+        "move red pyramid left",
+        "move green cube right",
+        "move green pyramid up",
+        "done"
+    ]
+}

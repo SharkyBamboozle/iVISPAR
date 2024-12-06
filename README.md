@@ -77,12 +77,6 @@ You can clone our repository with
 ```
 # Clone the repository
 $ git clone https://github.com/SharkyBamboozle/iVISPAR.git
-
-# Set the environment variable (for Unix/Linux/MacOS)
-$ export iVISPAR_Root=$(pwd)/iVISPAR
-
-# For Windows users (PowerShell equivalent)
-$ $env:iVISPAR_Root = (Get-Location).Path + "\iVISPAR"
 ```
 
 ### Conda

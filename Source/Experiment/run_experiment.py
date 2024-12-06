@@ -138,7 +138,7 @@ async def run_experiment(games, agents, sim_param):
 
 if __name__ == "__main__":
 
-    config_id = 'SGP_ID_20241203_105154'
+    config_id = 'SGP_ID_20241206_133150'
     instruction_prompt_file_path = r"Data/Instructions/instruction_prompt_4.txt"
     api_keys_file_path = r"Data/API-keys/api-keys.txt"
 
@@ -184,7 +184,7 @@ if __name__ == "__main__":
             'params': {
                 'config_id': config_id,
                 'num_game_env': 2,  # Max amount of games to play (set to high value to play all configs)
-                'max_game_length': 50,  # Max amount of action-perception iterations with the environment
+                'max_game_length': 15,  # Max amount of action-perception iterations with the environment
                 'representation_type': 'vision', #'text' 'both'
                 'planning_steps': 1,
                 'instruction_prompt_file_path': instruction_prompt_file_path,

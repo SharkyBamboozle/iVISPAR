@@ -6,6 +6,8 @@ using System.Net;
 using System.Threading;
 using UnityEngine.Events;
 using Unity.VisualScripting;
+using System.Net.Http.Headers;
+using System;
 
 public class TargetBehaviour : MonoBehaviour
 {
@@ -35,6 +37,8 @@ public class TargetBehaviour : MonoBehaviour
     private string objectType;
     private string objectColor;
 
+    private string geomNumber;
+
     void Start()
     {
         
@@ -47,6 +51,13 @@ public class TargetBehaviour : MonoBehaviour
         if(x == -1 && z == -1)
             Debug.LogError("Position of target " + objectID.ToString() + " is not correctly set");
         transform.position = gridBoard.getGridWorldPos(x,z) + (Vector3.one *  0.5f);
+        if(objectType == "tile")
+        {
+             Vector3 offset = new Vector3(0f,0.25f,0f);
+            transform.position -= offset;
+            transform.GetComponent<TileLabel>().CreateLabel();
+        }
+           
         EventHandler.Instance.RegisterEvent("move",MovePlayer);
         EventHandler.Instance.RegisterEvent("init_target",InitTargets);
     }
@@ -58,10 +69,28 @@ public class TargetBehaviour : MonoBehaviour
     {
         return string.Format("{0} {1} {2}",gridBoard.GridCoordinatesToChess(x,z),objectColor,objectType);
     }
-    public void SetInfo(string type, string color)
+    public ObjectData GetObjectData()
+    {
+        ObjectData board_data = new ObjectData();
+        board_data.body = objectType;
+        board_data.color = objectColor;
+        board_data.current_coordinate = new float[2];
+        board_data.current_coordinate[0] = x;
+        board_data.current_coordinate[1] = z;
+        board_data.goal_coordinate = new float[2];
+        board_data.goal_coordinate[0] = goal_x;
+        board_data.goal_coordinate[1] = goal_z;
+        return board_data;
+    }
+    public void SetInfo(string type, string color, string geomNum)
     {
         objectType = type;
         objectColor = color;
+        geomNumber = geomNum;
+    }
+    public string getGeomNumber()
+    {
+        return geomNumber;
     }
     // Update is called once per frame
     void Update()

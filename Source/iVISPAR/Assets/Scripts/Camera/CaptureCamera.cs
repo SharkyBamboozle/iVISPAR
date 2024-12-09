@@ -6,7 +6,10 @@ using UnityEngine;
 public class CaptureCamera : MonoBehaviour
 {
     private Camera screenshotCamera;
-    
+    public RenderTexture userPhoto; // Assign the RenderTexture in the Inspector
+    public bool imageToggle = true;
+    [Range(0f,1f)]
+    public float percentage = 0.3f;
     void OnEnable(){
         screenshotCamera = this.GetComponent<Camera>();
     }
@@ -20,7 +23,20 @@ public class CaptureCamera : MonoBehaviour
             alpha = ExperimentManager.Instance.loadedLandmarkData.screenshot_alpha;
              
         }
-        screenshotCamera.backgroundColor = new Color(screenshotCamera.backgroundColor.r , screenshotCamera.backgroundColor.g, screenshotCamera.backgroundColor.b,alpha);
+        if(ExperimentManager.Instance.humanExperiment)
+            screenshotCamera.backgroundColor = new Color(screenshotCamera.backgroundColor.r , screenshotCamera.backgroundColor.g, screenshotCamera.backgroundColor.b,0f);
+        else
+            screenshotCamera.backgroundColor = new Color(screenshotCamera.backgroundColor.r , screenshotCamera.backgroundColor.g, screenshotCamera.backgroundColor.b,alpha);
+    }
+    void Update()
+    {
+        if(ExperimentManager.Instance.humanExperiment)
+        {
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                imageToggle = !imageToggle;
+            }
+        }
     }
     private void OnDestroy() {
         StopAllCoroutines();
@@ -51,19 +67,19 @@ public class CaptureCamera : MonoBehaviour
         texture.ReadPixels(rect, 0, 0);
         texture.Apply();
         screenshotCamera.Render();
+        if (userPhoto == null)
+        {
+            userPhoto = new RenderTexture(renderTexture.width, renderTexture.height, renderTexture.depth);
+            Graphics.Blit(renderTexture, userPhoto); // Copy the contents of renderTexture to userPhoto
+        }
         byte[] screenshot = texture.GetRawTextureData();
         Debug.LogWarning("Texture size is " + texture.width.ToString() + " * " + texture.height.ToString() + " with total size of " + screenshot.Length + " bytes");
         List<string> screenshotInfo = new List<string>();
         screenshotInfo.Add(texture.width.ToString());
         screenshotInfo.Add(texture.height.ToString());
-        DataPacket data = NetworkManger.Instance.PackData("Screenshot",screenshotInfo, screenshot);
-        
-        if(!InteractionUI.Instance.IsHumanExperiment())
-            NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(data));
-        else
-        {
-            InteractionUI.Instance.saveActionAck(JsonUtility.ToJson(data));
-        }
+        Debug.Log("sending Screenshot command");
+        DataPacket data = NetworkManger.Instance.PackData("ActionAck",new List<string>(), screenshot);
+        EventHandler.Instance.InvokeCommand("ActionAck",data);
         UnityEngine.Object.Destroy(texture);
         yield return null;
     }
@@ -75,16 +91,32 @@ public class CaptureCamera : MonoBehaviour
         Texture2D texture = new Texture2D(screenshotCamera.pixelWidth, screenshotCamera.pixelHeight, TextureFormat.RGBA32, false);   
         screenshotCamera.targetTexture = renderTexture;
         screenshotCamera.Render();
+        
         RenderTexture.active = renderTexture;
         texture.ReadPixels(rect, 0, 0);
         texture.Apply();
         screenshotCamera.Render();
+        
         byte[] screenshot = texture.GetRawTextureData();
-        Debug.LogWarning("Texture size is " + texture.width.ToString() + " * " + texture.height.ToString() + " with total size of " + screenshot.Length + " bytes");
+        
         DataPacket data = NetworkManger.Instance.PackData("ActionAck",new List<string>(), screenshot);
         EventHandler.Instance.InvokeCommand("ActionAck",data);
         UnityEngine.Object.Destroy(texture);
         yield return null;
+    }
+
+    
+
+    void OnGUI()
+    {
+        if (userPhoto != null && ExperimentManager.Instance.humanExperiment)
+        {
+            if(imageToggle)
+            {
+                float DIMENTION = Screen.width * percentage;
+                GUI.DrawTexture(new Rect(20, 20, DIMENTION, DIMENTION), userPhoto, ScaleMode.ScaleToFit, false);
+            }
+        }
     }
     
 }

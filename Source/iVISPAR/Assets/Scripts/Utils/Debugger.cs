@@ -11,7 +11,8 @@ public class Debugger : MonoBehaviour
     public Dictionary<int,string> objectList;
     public List<string> logs;
 
-    public EventLogs jsonLogs; 
+    public EventLogs jsonLogs;
+    public List<EventLogs> humanExperimentLogs;
     void Start()
     {
         
@@ -29,6 +30,7 @@ public class Debugger : MonoBehaviour
             objectList = new Dictionary<int, string>();
             logs = new List<string>();
             jsonLogs = new EventLogs();
+            humanExperimentLogs = new List<EventLogs>();
             DontDestroyOnLoad(gameObject);  // Persist this object across scenes
         }
         
@@ -44,6 +46,7 @@ public class Debugger : MonoBehaviour
     }
     public void ClearLogs()
     {
+        
         logs.Clear();
         jsonLogs = new EventLogs();
     }
@@ -88,6 +91,10 @@ public class Debugger : MonoBehaviour
     {
         jsonLogs.board_state.Add(boardStatus);
     }
+    public void SetObjectData(ObjectData status)
+    {
+        jsonLogs.board_data.Add(status);
+    }
     public void SetGameStatus(bool isGameDone)
     {
         jsonLogs.game_done = isGameDone;
@@ -95,6 +102,10 @@ public class Debugger : MonoBehaviour
     public string GetJSONLog()
     {
         return JsonUtility.ToJson(jsonLogs);
+    }
+    public void RecordHumanLog()
+    {
+        humanExperimentLogs.Add(jsonLogs);
     }
 
 }

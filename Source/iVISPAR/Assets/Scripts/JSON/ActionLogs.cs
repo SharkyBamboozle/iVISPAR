@@ -7,12 +7,15 @@ public class EventLogs
 {
     public List<NetAction> Actions;
     public List<string> board_state;
+
+    public List<ObjectData> board_data;
     public bool game_done;
 
     public EventLogs()
     {
         Actions = new List<NetAction>();
         board_state = new List<string>();
+        board_data = new List<ObjectData>();
         game_done = false;
     }
 }

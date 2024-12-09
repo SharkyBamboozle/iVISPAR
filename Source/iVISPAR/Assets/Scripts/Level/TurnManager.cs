@@ -9,10 +9,10 @@ using UnityEngine;
 public class TurnManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    bool initialized = false;
+    //bool initialized = false;
     //private List<string> log;
     private List<string> turnCommands;
-    int currentCommand = 0;
+    //int currentCommand = 0;
     bool isPuzzleSolved = false;
     bool recievedDoneCommand = false;
     private int command_count = 0;
@@ -91,6 +91,9 @@ public class TurnManager : MonoBehaviour
             }
             else if(command.Contains("reset"))
             {
+                if(ExperimentManager.Instance.humanExperiment)
+                    Debugger.Instance.RecordHumanLog();
+                EmptyLog();
                 ExperimentManager.Instance.Reset();
             }
             else
@@ -108,25 +111,32 @@ public class TurnManager : MonoBehaviour
         foreach (GameObject boardObject in boardObjects)
         {
             string status = boardObject.GetComponent<TargetBehaviour>().getObjectChessStatus();
-            //response.messages.Add(status);
+            ObjectData object_data =  boardObject.GetComponent<TargetBehaviour>().GetObjectData();
             Debugger.Instance.SetBoardStatus(status);
+            Debugger.Instance.SetObjectData(object_data);
         }
-        Debugger.Instance.SetGameStatus(isPuzzleSolved);
-        //response.messages.AddRange(Debugger.Instance.getLogs());
+        Debugger.Instance.SetGameStatus(isPuzzleSolved); 
         response.messages.Add(Debugger.Instance.GetJSONLog());
         Debug.Log(Debugger.Instance.GetJSONLog());
+        if(ExperimentManager.Instance.humanExperiment)
+        {
+            response.data = Convert.FromBase64String("null");
+            response.PrepareForSerialization();
+        }
         if(recievedDoneCommand)
         {
             recievedDoneCommand = false;
             if(isPuzzleSolved)
             {
                 Debugger.Instance.SetValidity("Puzzle is soveled correctly");
-                if(!InteractionUI.Instance.IsHumanExperiment())
+                if(!ExperimentManager.Instance.humanExperiment)
                     NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));
                 else
                 {
                     InteractionUI.Instance.saveActionAck(JsonUtility.ToJson(response));
+                    Debugger.Instance.RecordHumanLog();
                 }
+                    
                 EmptyLog();
                 ExperimentManager.Instance.Reset();
                 return;

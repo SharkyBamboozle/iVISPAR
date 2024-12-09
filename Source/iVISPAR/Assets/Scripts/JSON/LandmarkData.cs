@@ -3,6 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class Landmark
 {
+    public string geom_nr;
     public string body;               // The body of the landmark (e.g., cube, ball, pyramid)
     public string color;              // The color of the landmark (e.g., red, green, blue)
     public float[] start_coordinate;  // Start coordinate of the landmark

@@ -4,9 +4,9 @@ using Unity.Collections;
 using UnityEngine;
 using System.Runtime.InteropServices;
 using NativeWebSocket;
-using System;
-using System.Data.SqlTypes;
+
 using TMPro;
+using System.Data.Common;
 public class NetworkManger : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -16,7 +16,8 @@ public class NetworkManger : MonoBehaviour
     string network_id;
     private string partner_id;
     private WebSocket websocket;
-        
+
+       
     [DllImport("__Internal")]
     private static extern void CopyToClipboard(string text);
     void Awake()
@@ -75,6 +76,8 @@ public class NetworkManger : MonoBehaviour
         var JsonString = System.Text.Encoding.UTF8.GetString(data);
         DataPacket decodedData = JsonUtility.FromJson<DataPacket>(JsonString);
         decodedData.LoadFromSerialized();
+        Debug.Log(decodedData.command);
+        Debug.Log(decodedData);
         EventHandler.Instance.InvokeCommand(decodedData.command, decodedData);       
         
         // var message = System.Text.Encoding.UTF8.GetString(bytes);
@@ -112,7 +115,8 @@ public class NetworkManger : MonoBehaviour
     void Update()
     {
         #if !UNITY_WEBGL || UNITY_EDITOR
-        websocket.DispatchMessageQueue();
+        if(!ExperimentManager.Instance.humanExperiment)
+            websocket.DispatchMessageQueue();
         #endif
     }
     public async void SendWebSocketMessage(string data)
@@ -124,6 +128,8 @@ public class NetworkManger : MonoBehaviour
         //await websocket.Send(new byte[] { 10, 20, 30 });
 
         // Sending plain text
+            Debug.Log("sending back the data");
+            Debug.Log(data);
             await websocket.SendText(data);
         }
     }
@@ -142,8 +148,12 @@ public class NetworkManger : MonoBehaviour
 
     private async void OnApplicationQuit()
     {
-        CloseConnectionGracfully();
+        if(!ExperimentManager.Instance.humanExperiment)
+        {
+            CloseConnectionGracfully();
         await websocket.Close();
+        }
+        
     }
     
     public void HandShake(DataPacket data)

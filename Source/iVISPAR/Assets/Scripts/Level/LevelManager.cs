@@ -7,7 +7,7 @@ public class LevelManager : MonoBehaviour
 {
     public List<Material> objectMaterials;  // List of possible materials for objects
     
-    private (int, int) gridSize;
+    //private (int, int) gridSize;
     private List<GameObject> landmarks = new List<GameObject>();
     public GameObject Cube;
     public GameObject Sphere;
@@ -15,6 +15,7 @@ public class LevelManager : MonoBehaviour
     public GameObject Cylinder;
     public GameObject Cone;
     public GameObject Prism;
+    public GameObject Tile;
     public float hedronOffset = -0.2f;
     [Range(0f,1f)]
     public float metallic = 0.7f;
@@ -38,7 +39,7 @@ public class LevelManager : MonoBehaviour
             if (landmarkData != null)
             {
                 // Retrieve the config data
-                gridSize = (landmarkData.grid_size, landmarkData.grid_size);
+                //gridSize = (landmarkData.grid_size, landmarkData.grid_size);
                 
                 // Set grid size (if you have a grid-based system)
                 // Create landmarks based on the config data
@@ -54,6 +55,7 @@ public class LevelManager : MonoBehaviour
 
     void CreateLandmarks(Landmark[] landmarksData)
     {
+        Debug.Log("setting up the Scene");
         // Get the reference to the GridBoard (assuming there's only one GridBoard object in the scene)
         GridBoard gridBoard = GameObject.FindGameObjectsWithTag("Grids")[0].GetComponent<GridBoard>();
 
@@ -102,18 +104,23 @@ public class LevelManager : MonoBehaviour
                     else
                         obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;
+                case "tile":
+                    if(Prism != null)
+                        obj = GameObject.Instantiate(Tile);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
                 default:
                     Debug.LogError($"Unknown object type: {landmark.body}");
                     continue;
             }
 
             // Use the 'coordinate' array to set the object's position
-            
-            obj.transform.position = new Vector3(gridX, 0, gridZ);
+            obj.transform.position = new Vector3(gridX, 0, gridZ);   
             obj.transform.rotation = Quaternion.identity;
             obj.tag = "Commandable";  // Example tag for interactable objects
             obj.AddComponent<TargetBehaviour>();  // Assuming you have this script
-            obj.GetComponent<TargetBehaviour>().SetInfo(landmark.body.ToLower(),landmark.color);
+            obj.GetComponent<TargetBehaviour>().SetInfo(landmark.body.ToLower(),landmark.color, landmark.geom_nr);
             // Set object color based on the 'color' property in the landmark data
             Material mat = new Material(Shader.Find("Standard"));
             Color objectColor;
@@ -147,9 +154,19 @@ public class LevelManager : MonoBehaviour
             targetBehaviour.setPositionOnGrid((int)landmark.goal_coordinate[0], (int)landmark.goal_coordinate[1]);
             targetBehaviour.setGoalPos((int)landmark.goal_coordinate[0], (int)landmark.goal_coordinate[1]);
             targetBehaviour.setStartPos((int)landmark.start_coordinate[0], (int)landmark.start_coordinate[1]);
-            int objectID = Animator.StringToHash(landmark.color.ToLower() + " " + landmark.body.ToLower());
-            Debugger.Instance.objectList.Add(objectID, landmark.color.ToLower() + " " + landmark.body.ToLower());
-            targetBehaviour.SetID(objectID);
+            if(landmark.body.ToLower() == "tile")
+            {
+                int objectID = Animator.StringToHash(landmark.body.ToLower() + " " + landmark.geom_nr.ToLower());
+                Debugger.Instance.objectList.Add(objectID, landmark.body.ToLower() + " " + landmark.geom_nr.ToLower());
+                targetBehaviour.SetID(objectID);
+            }
+            else
+            {
+                int objectID = Animator.StringToHash(landmark.color.ToLower() + " " + landmark.body.ToLower());
+                Debugger.Instance.objectList.Add(objectID, landmark.color.ToLower() + " " + landmark.body.ToLower());
+                targetBehaviour.SetID(objectID);
+            }
+                
 
             // Set grid occupancy for this object using the GridBoard
             if (gridBoard != null)
@@ -167,6 +184,7 @@ public class LevelManager : MonoBehaviour
 
     public void StartLevel()
     {
+        
         if(InteractionUI.Instance.IsHumanExperiment())
             InteractionUI.Instance.isLevelLoaded = true;
 

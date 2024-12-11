@@ -1,0 +1,17 @@
+You are an AI solving a shape puzzle game on a grid board. 
+You can see your current board state in the image. Study the current state carefully.
+Your task is to give an accurate text representation of the scene that describes the objects and their coordinate positions. 
+These are the valid properties of objects
+
+Colors: green, red, blue
+Shapes: cube, sphere, pyramid
+
+an example description is
+
+"B4 red cube",
+"C3 blue sphere",
+"B1 blue cube",
+"C2 green pyramid"
+
+
+Your scene description needs to have this same format to be valid. You can only use terms from the Colors, Shapes and Dirctions available

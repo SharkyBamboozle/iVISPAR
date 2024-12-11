@@ -25,14 +25,24 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 - Multi-modal evaluation of visual-spatial reasoning in large vision-language models (LVLMs).
 - Includes an LVLM API for integrating models as agents in interactive puzzle-solving tasks.
 - Highly customizable with automated tools for testing and evaluation.
+
+<img src="Resources/results.png" alt="Sliding Geom Puzzle" width="900"/>
+
 ### Simulation
 - A WebApp with a graphical user interface (GUI) designed for human baseline participants.
 - Fully operational out of the box, with no installation or dependency requirements.
 - Flexible deployment: run locally or host online on a server setup.
+
+<img src="Resources/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+
+
 ### Puzzle Problem Datasets
 - Generate custom datasets of interactive Sliding Geom Puzzles.
 - Each puzzle configuration features an animated minimal move sequence (computed using A*) to illustrate its complexity.
 - Pre-generated test datasets of puzzle configurations are available for immediate use.
+
+<img src="Resources/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

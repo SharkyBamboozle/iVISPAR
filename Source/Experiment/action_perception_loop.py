@@ -65,17 +65,16 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game):
         experiment_path (str): The path to save experiment data.
         max_game_length (int): The maximum number of actions to perform.
     """
+    response = await websocket.recv()
+    message_data = json.loads(response)
 
     i = 0
-    while not game.check_done() and i <= game.get_max_game_length():
+    while not game.check_done(message_data):
         time.sleep(0.2)
-
-        response = await websocket.recv()
-        message_data = json.loads(response)
         if message_data.get("command") == "Screenshot" or message_data.get("command") == "ActionAck":
-            image = game.feed_sim_response(message_data, i)
-            user_message = agent.act(image)
-            response = game.feed_agent_response(user_message)
+            observation = game.feed_sim_response(message_data, i)
+            user_message = agent.act(observation)
+            game.feed_agent_response(user_message)
 
         # Exit the loop if the user wants to close the connection
         if user_message.lower() == "reset":
@@ -112,11 +111,23 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game):
                 "messages": message_list,
                 "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
             }
+            await websocket.send(json.dumps(message_data))
+            response = await websocket.recv()
+            message_data = json.loads(response)
 
         i += 1
-        game.end_game()
+        game._save_logs()
         # Send the JSON message to the server
-        await websocket.send(json.dumps(message_data))
+    #response = await websocket.recv()
+    message_data = {
+        "command": "Reset",
+        "from": network_id,
+        "to": partner_id,  # Server ID or specific target ID
+        "messages": ["reset to main menu"],
+        "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+    }
+    await websocket.send(json.dumps(message_data))
+    #image = game.feed_sim_response(message_data, 100)
+    #game._save_logs()
 
-
-        ##TODO save response data to experiment_path
+    ##TODO save response data to experiment_path

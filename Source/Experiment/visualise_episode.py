@@ -27,7 +27,7 @@ def add_background_to_transparent_images(images, background_color=(0, 0, 0)):
             processed_images.append(image)
     return processed_images
 
-def load_images_and_actions(obs_dir):
+def load_images_and_actions(subdir_path):
     """
     Loads images and extracts the actions from their filenames, excluding 'init'.
     Sorts the filenames based on the numerical order of the frame numbers.
@@ -43,6 +43,8 @@ def load_images_and_actions(obs_dir):
     images = []
     actions = []
 
+    obs_dir = os.path.join(subdir_path, "obs")
+
     # Get all image files from the 'obs' directory, excluding files that end with "_compare.png"
     files = [f for f in os.listdir(obs_dir) if f.endswith(".png") and not f.endswith("_compare.png")]
 
@@ -55,10 +57,13 @@ def load_images_and_actions(obs_dir):
         image = Image.open(image_path)
         images.append(image)
 
-        # Extract the action from the filename (exclude 'init')
-        action = filename.split("_")[-1].replace(".png", "")
-        if action != "goal":
-            actions.append(action)
+    # Define the file path
+    action_text_file_path = os.path.join(subdir_path, 'agent_message_log.txt')
+
+    # Load the actions from the file as a list of strings
+    with open(action_text_file_path, 'r') as file:
+        actions = [line.strip() for line in file if line.strip()]  # Remove whitespace and skip empty lines
+    #actions.pop() #TODO remove when Astar agent bug is fixed
 
     return images, actions
 
@@ -252,7 +257,7 @@ def combine_gif_with_init(gif_path, init_image_path, output_gif_path, duration=1
     )
 
 
-def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, duration=200, fps=5.0):
+def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, duration=600, fps=2.0):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     experiment_dir = os.path.join(base_dir, 'Data', 'Experiments', experiment_id)
 
@@ -263,10 +268,8 @@ def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, 
         if not os.path.isdir(subdir_path):
             continue  # Skip non-directory files
 
-        obs_dir = os.path.join(subdir_path, "obs")
-
         # Load the images and actions
-        images, actions = load_images_and_actions(obs_dir)
+        images, actions = load_images_and_actions(subdir_path)
 
         #init_image_path = os.path.join(experiment_path, "obs/obs_1_init.png")
         #output_gif_path = os.path.join(experiment_path, "experiment_results_compare.gif")
@@ -279,7 +282,7 @@ def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, 
 
         if dual:
             #add goal image
-            goal_state_image_path = os.path.join(subdir_path, "obs/obs_0_goal.png")
+            goal_state_image_path = os.path.join(subdir_path, "obs/obs_0.png")
             goal_image = Image.open(goal_state_image_path)
             goal_image = add_action_text(goal_image.copy(), "goal", "green")
 
@@ -320,15 +323,15 @@ def visualise_episode_interaction(experiment_id, dual=True, white_bar_width=20, 
             #frames[0].save(gif_path, save_all=True, append_images=frames[1:], duration=duration, loop=0)
             clip.write_videofile(mp4_path, codec="libx264")
 
-            #Save the GIF with optimization
-            frames[0].save(
-                 gif_path,
-                 save_all=True,
-                 append_images=frames[1:],
-                 duration=duration,
-                 loop=0,
-                 optimize=False,
-             )
+            # #Save the GIF with optimization
+            # frames[0].save(
+            #      gif_path,
+            #      save_all=True,
+            #      append_images=frames[1:],
+            #      duration=duration,
+            #      loop=0,
+            #      optimize=False,
+            #  )
         except Exception as e:
             print(f"Error saving GIF: {e}")
 
@@ -357,8 +360,8 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
             continue  # Skip non-directory files
 
         # Paths for the images
-        init_state_image_path = os.path.join(subdir_path, "obs/obs_1_start.png")
-        goal_state_image_path = os.path.join(subdir_path, "obs/obs_0_goal.png")
+        init_state_image_path = os.path.join(subdir_path, "obs/obs_1.png")
+        goal_state_image_path = os.path.join(subdir_path, "obs/obs_0.png")
 
         # Ensure the images exist
         if not os.path.exists(init_state_image_path) or not os.path.exists(goal_state_image_path):
@@ -394,12 +397,90 @@ def visualize_state_combination(experiment_id, white_bar_width=20):
         # Save the combined image
         img_file_path = os.path.join(subdir_path, f"{json_base_name}.png")
         combined_frame.save(img_file_path)
+
+
+def visualize_state_result(experiment_id, white_bar_width=20):
+    """
+    Visualizes the state combination by combining the initial state image and the goal state image
+    into a single image with a white bar separating them. Adds text annotations to label the states.
+
+    Args:
+        experiment_id (str): The ID of the experiment directory.
+        white_bar_width (int): The width of the white bar separating the images.
+    """
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    experiment_dir = os.path.join(base_dir, 'Data', 'Experiments', experiment_id)
+
+    # Iterate through subdirectories of the experiment directory
+    for subdir in os.listdir(experiment_dir):
+        subdir_path = os.path.join(experiment_dir, subdir)
+
+        if not os.path.isdir(subdir_path):
+            continue  # Skip non-directory files
+
+        # **Updated**: Get all obs files from the "obs" directory and find the one with the largest number
+        obs_dir = os.path.join(subdir_path, "obs")
+
+        if not os.path.exists(obs_dir):
+            print(f"No 'obs' directory found in {subdir_path}. Skipping...")
+            continue
+
+        obs_files = [f for f in os.listdir(obs_dir) if f.startswith('obs_') and f.endswith('.png')]
+
+        if not obs_files:
+            print(f"No 'obs_*.png' files found in {obs_dir}. Skipping...")
+            continue
+
+        # Extract numbers from filenames and find the highest
+        obs_numbers = [int(f.split('_')[1].split('.')[0]) for f in obs_files if f.split('_')[1].split('.')[0].isdigit()]
+        max_obs_number = max(obs_numbers)
+        result_state_image_path = os.path.join(obs_dir, f"obs_{max_obs_number}.png")
+
+        # **Goal image stays the same** (use obs_0.png as the goal state)
+        goal_state_image_path = os.path.join(obs_dir, "obs_0.png")
+
+        # Ensure the images exist
+        if not os.path.exists(result_state_image_path) or not os.path.exists(goal_state_image_path):
+            print(f"Missing images in {subdir_path}. Skipping...")
+            continue
+
+        # Load the images
+        result_image = Image.open(result_state_image_path)
+        result_image = add_action_text(result_image.copy(), "init", "green")
+        goal_image = Image.open(goal_state_image_path)
+        goal_image = add_action_text(goal_image.copy(), "goal", "red")
+
+        # Locate the JSON file in the subdirectory
+        json_file = next((f for f in os.listdir(subdir_path) if f.startswith('config') and f.endswith('.json')), None)
+        if not json_file:
+            print(f"No config JSON file found in {subdir_path}. Skipping...")
+            continue
+
+        # Extract the base name of the JSON file (without extension)
+        json_base_name = os.path.splitext(json_file)[0]
+
+        # Combine the images with a white bar in the middle
+        combined_width = result_image.width + goal_image.width + white_bar_width
+        combined_height = max(result_image.height, goal_image.height)
+        combined_frame = Image.new("RGBA", (combined_width, combined_height), (255, 255, 255, 255))  # White background
+
+        # Paste the 'init' image on the left
+        combined_frame.paste(result_image, (0, 0))
+
+        # Paste the 'goal' image on the right, leaving space for the white bar
+        combined_frame.paste(goal_image, (result_image.width + white_bar_width, 0))
+
+        # Save the combined image
+        img_file_path = os.path.join(subdir_path, f"final_state_compare.png")
+        combined_frame.save(img_file_path)
         print(f"Saved combined image to {img_file_path}")
+
 
 if __name__ == "__main__":
     #experiment_GPT4Agent_InteractivePuzzle_config_SGP_ID_20241203_105154_b_4_g_4_c1_10_c2_0_i_1
-    experiment_id = "experiment_ID_20241204_113501"
+    experiment_id = "experiment_ID_20241207_180306"
 
     print(f"Visualise experiment {experiment_id}")
     visualise_episode_interaction(experiment_id)
     visualize_state_combination(experiment_id)
+    visualize_state_result(experiment_id)

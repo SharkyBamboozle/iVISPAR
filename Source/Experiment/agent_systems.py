@@ -6,6 +6,7 @@ from anthropic import Anthropic
 import google.generativeai as genai
 from abc import ABC, abstractmethod
 import re
+from PIL import Image
 
 
 class Agent(ABC):
@@ -28,15 +29,16 @@ class Agent(ABC):
         pass
 
 
-class AStarAgent(Agent):
-    def __init__(self, shortest_move_sequence):
-        self.shortest_move_sequence = shortest_move_sequence
+class AIAgent(Agent):
+    def __init__(self, move_sequence):
+        self.move_sequence = move_sequence
+        print("!")
 
     def act(self, observation):
-        if not self.shortest_move_sequence:
-            return "AStar path empty"
+        if not self.move_sequence:
+            return "path empty"
         else:
-            return self.shortest_move_sequence.pop(0)
+            return self.move_sequence.pop(0)
 
 
 class UserAgent(Agent):
@@ -46,6 +48,9 @@ class UserAgent(Agent):
     Instead of generating responses automatically, it prompts the user for manual input
     and returns that input as the action.
     """
+
+    def __init__(self):
+        pass
 
     def act(self, observation):
         """
@@ -79,6 +84,16 @@ class LLMAgent:
         self.instruction_prompt_file_path = os.path.join(base_dir, instruction_prompt_file_path)
         with open(self.instruction_prompt_file_path, 'r') as f:
             self.system_prompt = f.read()
+            self.system_prompt2 = f.read()
+
+        # Add COT instruction if needed
+        if COT:
+            self.system_prompt2 += ("\nPlease explain your reasoning, then end with 'description: <your object coordinate list>',"
+                                   "no matter what always end with description:<your object coordinate list> (dont add additional character"
+                                   "after the word description)")
+        else:
+            self.system_prompt2 += "\nPlease output only the description, no explanations needed."
+
 
         # Add COT instruction if needed
         if COT:
@@ -100,13 +115,13 @@ class LLMAgent:
         self.goal_state = observation
         return "start"
 
-    def parse_action(self, response):
+    def parse_action(self, response, split_at="action:"):
         """Extract action from model response"""
         action = response.strip().lower()
         thoughts=""
         if self.COT:
-            thoughts = action.split("action:")[0].strip()
-            action = action.split("action:")[1].strip()
+            thoughts = action.split(split_at)[0].strip()
+            action = action.split(split_at)[1].strip()
         return action, thoughts
 
     def parse_action_rmv_special_chars(self, action):
@@ -163,59 +178,146 @@ class GPT4Agent(LLMAgent):
         }
         self.model = "gpt-4o"
 
+
     def act(self, observation):
-        try:
-            if self.goal_state is None:
-                return self.process_goal_state(observation)
+        sceneUnderstanding = False #TODO dirty quick code to manually change agent for scene understanding
+        if sceneUnderstanding:
+            try:
+                print("\n=== Processing Current State ===")
+                current_base64 = self.encode_image_from_pil(observation)
 
-            print("\n=== Processing Current State ===")
-            current_base64 = self.encode_image_from_pil(observation)
-
-            if self.single_images:
-                goal_base64 = self.encode_image_from_pil(self.goal_state)
                 content = [
-                    {"type": "text", "text": """The first image shows the goal state, and the second image shows
+                    {"type": "text", "text": """In this image you will see the board, describe the board state. Only describe the objects with theird coordinates, don't describe empty fields."""},
+                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
+                ]
+
+                payload = {
+                    "model": self.model,
+                    "messages": [
+                        {"role": "system", "content": self.system_prompt2},
+                        {"role": "user", "content": content}
+                    ],
+                    "max_tokens": 150
+                }
+
+                response = requests.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers=self.headers,
+                    json=payload
+                )
+                print(response.json())
+                action, thoughts = self.parse_action(response.json()['choices'][0]['message']['content'], split_at='description:')
+
+                print(f"\nGPT-4 Vision suggested action: {action}")
+                print(f"GPT-4 Vision thought: {thoughts}")
+                return self.parse_action_rmv_special_chars(action)
+
+            except Exception as e:
+                print(f"\nError calling OpenAI API: {e}")
+                return "error"
+
+
+        elif isinstance(observation, Image.Image):
+            try:
+                if self.goal_state is None:
+                    return self.process_goal_state(observation)
+
+                print("\n=== Processing Current State ===")
+                current_base64 = self.encode_image_from_pil(observation)
+
+                if self.single_images:
+                    goal_base64 = self.encode_image_from_pil(self.goal_state)
+                    content = [
+                        {"type": "text", "text": """The first image shows the goal state, and the second image shows
+                          the current state. What action should be taken (so if you try to ask for an action and 
+                         nothing moves, that means the action is not allowed; either blocked by another object or
+                          our of the board move)? no matter what always end with action: <your action> (dont add additional character
+                        after the word action)"""},
+                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{goal_base64}"}},
+                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
+                    ]
+                else:
+                    content = [
+                        {"type": "text", "text": """In this image you will see two boards, the one on the left is 
+                         your current state (written in the bottom of the board) and the one on the right is your
+                          goal state(written in the bottom of the board), what action you should take to match the
+                          current state to the goal state?"""},
+                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
+                    ]
+
+                payload = {
+                    "model": self.model,
+                    "messages": [
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": content}
+                    ],
+                    "max_tokens": 150
+                }
+
+
+                response = requests.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers=self.headers,
+                    json=payload
+                )
+                print(response.json())
+                action, thoughts = self.parse_action(response.json()['choices'][0]['message']['content'])
+
+                print(f"\nGPT-4 Vision suggested action: {action}")
+                print(f"GPT-4 Vision thought: {thoughts}")
+                return self.parse_action_rmv_special_chars(action)
+
+            except Exception as e:
+                print(f"\nError calling OpenAI API: {e}")
+                return "error"
+
+        elif isinstance(observation, list) and all(isinstance(item, str) for item in observation):
+            observation = '\n'.join(observation)
+
+            try:
+                if self.goal_state is None:
+                    return self.process_goal_state(observation)
+
+                print("\n=== Processing Current State ===")
+
+
+                content = [
+                    {"type": "text", "text": f"""The first coordinates show the goal state, and the second coordinates show
                       the current state. What action should be taken (so if you try to ask for an action and 
                      nothing moves, that means the action is not allowed; either blocked by another object or
-                      our of the board move)?"""},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{goal_base64}"}},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
-                ]
-            else:
-                content = [
-                    {"type": "text", "text": """In this image you will see two boards, the one on the left is 
-                     your current state (written in the bottom of the board) and the one on the right is your
-                      goal state(written in the bottom of the board), what action you should take to match the
-                      current state to the goal state?"""},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
+                      our of the board move)? The board is 4 by 4, coordinates go from a to d and 1 to 4 but not beyond that.
+                      goal state: {self.goal_state} 
+                      current state: {observation}
+                       no matter what always end with action: <your action> (dont add additional character
+                        after the word action) """},
                 ]
 
-            payload = {
-                "model": self.model,
-                "messages": [
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": content}
-                ],
-                "max_tokens": 150
-            }
 
-            response = requests.post(
-                "https://api.openai.com/v1/chat/completions",
-                headers=self.headers,
-                json=payload
-            )
-            print(response.json())
-            action, thoughts = self.parse_action(response.json()['choices'][0]['message']['content'])
+                payload = {
+                    "model": self.model,
+                    "messages": [
+                        {"role": "system", "content": self.system_prompt},
+                        {"role": "user", "content": content}
+                    ],
+                    "max_tokens": 150
+                }
+                print(payload)
 
-            print(f"\nGPT-4 Vision suggested action: {action}")
-            print(f"GPT-4 Vision thought: {thoughts}")
-            return self.parse_action_rmv_special_chars(action)
+                response = requests.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers=self.headers,
+                    json=payload
+                )
+                print(response.json())
+                action, thoughts = self.parse_action(response.json()['choices'][0]['message']['content'])
 
-        except Exception as e:
-            print(f"\nError calling OpenAI API: {e}")
-            return "error"
+                print(f"\nGPT-4 Vision suggested action: {action}")
+                print(f"GPT-4 Vision thought: {thoughts}")
+                return self.parse_action_rmv_special_chars(action)
 
-
+            except Exception as e:
+                print(f"\nError calling OpenAI API: {e}")
+                return "error"
 
 class ClaudeAgent(LLMAgent):
     def __init__(self, api_key_file_path, instruction_prompt_file_path, single_images=True, COT=False):

@@ -8,8 +8,9 @@ import base64
 import agent_systems
 import game_systems
 import experiment_utilities as util
-from visualise_episode import visualise_episode_interaction, visualize_state_combination
-from web_and_socketserver import run_socketserver_in_background, run_WebSocket_server_in_background
+from visualise_episode import visualise_episode_interaction, visualize_state_combination, visualize_state_result
+from webgl_socket_server import run_socketserver_in_background
+from web_server import run_WebSocket_server_in_background
 from action_perception_loop import initialize_connection, interact_with_server as action_perception_loop
 
 
@@ -58,20 +59,20 @@ async def run_experiment(games, agents, sim_param):
             if num_game_env > len(json_file_paths):
                 print(f"Number of game environments exceeds the number of config files in the dataset, setting num_game_env to {len(json_file_paths)}.")
                 num_game_env = len(json_file_paths)
-            config_file_paths = json_file_paths[:num_game_env]
+            config_file_paths = json_file_paths[:num_game_env] #TODO reverse
 
-            for config_file_path in config_file_paths:
+            for config_file_path in config_file_paths: #TODO reverse
 
                 # Construct the subdirectory name
                 json_base_name = os.path.splitext(os.path.basename(config_file_path))[0]
-                experiment_path = f"experiment_{agent_type}_{game_type}_{json_base_name}"
-                experiment_path = os.path.join(experiment_dir, experiment_path)
-                os.makedirs(experiment_path, exist_ok=True)
+                episode_name = f"episode_{agent_type}_{game_type}_{json_base_name}"
+                episode_path = os.path.join(experiment_dir, episode_name)
+                os.makedirs(episode_path, exist_ok=True)
 
                 # Move the JSON and image files to the experiment path using the new utility function
-                util.copy_json_to_experiment(config_file_path, experiment_path)
+                util.copy_json_to_experiment(config_file_path, episode_path)
                 config = util.expand_config_file(
-                    experiment_path=experiment_path,
+                    experiment_path=episode_path,
                     grid_label=sim_param.get('grid_label', None),
                     camera_offset=sim_param.get('camera_offset', None),
                     camera_auto_override=sim_param.get('camera_auto_override', None),
@@ -80,8 +81,10 @@ async def run_experiment(games, agents, sim_param):
 
                 # Initialise agent
                 agent_class = agent_details.get('class', None)
-                if agent_type == 'AStarAgent':
-                    agent = agent_class(config.get("shortest_move_sequence", []))
+                if agent_type == 'AIAgent':
+                    agent_parameters = agent_details.get('params', {})
+                    move_set = agent_parameters.get('move_set', None)
+                    agent = agent_class(config.get(move_set, []))
                 elif agent_type == 'UserAgent':
                     agent = agent_class()
                 elif (agent_type == 'GPT4Agent' or
@@ -91,8 +94,8 @@ async def run_experiment(games, agents, sim_param):
                     agent = agent_class(
                         api_key_file_path=agent_parameters.get('api_keys_file_path', None),
                         instruction_prompt_file_path=agent_parameters.get('instruction_prompt_file_path', None),
-                        single_images=agent_parameters.get('single_images', None),
-                        COT=agent_parameters.get('COT', None)
+                        single_images=agent_parameters.get('single_images', True),
+                        COT=agent_parameters.get('COT', False),
                     )
                 else:
                     raise ValueError(f"Unsupported agent_type: {agent_type}")
@@ -101,18 +104,25 @@ async def run_experiment(games, agents, sim_param):
                 game_class = game_details.get('class', None)
                 if game_type == 'InteractivePuzzle':
                     game = game_class(
-                        experiment_id=experiment_path,
+                        experiment_id=episode_path,
                         instruction_prompt_file_path=game_params.get("instruction_prompt_file_path", None),
                         chain_of_thoughts = game_params.get("chain_of_thoughts", None),
                         representation_type = game_params.get("representation_type", None),
                         planning_steps=game_params.get("planning_steps", None),
                         max_game_length=game_params.get('max_game_length', None),
+                        predict_board_state=game_params.get('predict_board_state', False),
+                    )
+                if game_type == 'SceneUnderstanding':
+                    game = game_class(
+                        experiment_id=episode_path,
+                        instruction_prompt_file_path=game_params.get("instruction_prompt_file_path", None),
+                        chain_of_thoughts=game_params.get("chain_of_thoughts", None),
                     )
 
                 try:
 
                     # Set up environment
-                    setup_config_file = util.load_single_json_from_directory(experiment_path)
+                    setup_config_file = util.load_single_json_from_directory(episode_path)
                     message_data = {
                         "command": "Setup",
                         "from": network_id,
@@ -121,6 +131,8 @@ async def run_experiment(games, agents, sim_param):
                         "payload": base64.b64encode(b"nothing here").decode("utf-8"),
                     }
                     await websocket.send(json.dumps(message_data))
+
+
 
                     # Run the client
                     print(f"Start Game with Agent: {agent_type}, Game: {game_type}, Config: {config.get('config_instance_id', [])}")
@@ -138,15 +150,32 @@ async def run_experiment(games, agents, sim_param):
 
 if __name__ == "__main__":
 
+    #OG ds
+    #config_id = 'SGP_ID_20241210_091800' #6 opt moves
+    #config_id = 'SGP_ID_20241210_132513'
+    #config_id = 'SGP_ID_20241210_184822'
+
+    #Rand ds
+    #config_id = 'SGP_ID_20241210_223410'
+
+    #STP ds
     config_id = 'SGP_ID_20241206_133150'
-    instruction_prompt_file_path = r"Data/Instructions/instruction_prompt_4.txt"
+
+    #instruction_prompt_file_path = r"Data/Instructions/instruction_prompt_4.txt"
+    instruction_prompt_file_path = r'Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt'
+    #instruction_prompt_file_path = r"Data/Instructions/instruction_prompt_SGP_SceneUnderstanding.txt"
     api_keys_file_path = r"Data/API-keys/api-keys.txt"
 
     # Agent parameter
     agents = {
-        'UserAgent': agent_systems.UserAgent,
-        'AStarAgent': {
-            'class': agent_systems.AStarAgent
+        'UserAgent': {
+            'class': agent_systems.UserAgent
+        },
+        'AIAgent': {
+            'class': agent_systems.AIAgent,
+            'params': {
+                'move_set': 'shortest_move_sequence' #"shortest_move_sequence", #random_valid_move_sequence, random_invalid_move_sequence,
+            }
         },
         'GPT4Agent': {
             'class': agent_systems.GPT4Agent,
@@ -154,7 +183,7 @@ if __name__ == "__main__":
                 'instruction_prompt_file_path': instruction_prompt_file_path,
                 'api_keys_file_path': api_keys_file_path,
                 'single_images': True,
-                'COT': True,
+                'COT': False,
             }
         },
         'ClaudeAgent': {
@@ -183,16 +212,27 @@ if __name__ == "__main__":
             'class': game_systems.InteractivePuzzle,
             'params': {
                 'config_id': config_id,
-                'num_game_env': 2,  # Max amount of games to play (set to high value to play all configs)
-                'max_game_length': 15,  # Max amount of action-perception iterations with the environment
-                'representation_type': 'vision', #'text' 'both'
+                'num_game_env': 100,  # Max amount of games to play (set to high value to play all configs)
+                'max_game_length': 100,  # Max amount of action-perception iterations with the environment
+                'representation_type': 'vision', #'vision', 'text' 'both'
                 'planning_steps': 1,
-                'instruction_prompt_file_path': instruction_prompt_file_path,
-                'chain_of_thoughts': True
+                'instruction_prompt_file_path': r'Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt', #r"Data/Instructions/instruction_prompt_4.txt",
+                'chain_of_thoughts': True,
+                'predict_board_state': False,
             }
         },
+    }
+
+    # Game parameter
+    games_2 = {
         'SceneUnderstanding': {
             'class': game_systems.SceneUnderstanding,
+            'params': {
+                'config_id': config_id,
+                'num_game_env': 10,  # Max amount of games to play (set to high value to play all configs)
+                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_SGP_SceneUnderstanding.txt",
+                'chain_of_thoughts': True,
+            }
         }
     }
 
@@ -207,7 +247,7 @@ if __name__ == "__main__":
     # Run the experiment
     experiment_id = asyncio.run(run_experiment(
         games={'InteractivePuzzle': games['InteractivePuzzle']},
-        agents={'GPT4Agent': agents['GPT4Agent']},
+        agents={'AIAgent': agents['AIAgent']},
         sim_param=sim_param)
     )
     print(f"Finished running experiments for experiment ID: {experiment_id}")
@@ -215,3 +255,5 @@ if __name__ == "__main__":
     # Visualize episode and state combination
     visualise_episode_interaction(experiment_id)
     visualize_state_combination(experiment_id)
+    visualize_state_result(experiment_id)
+    print(f"Finished visualizing experiments for experiment ID: {experiment_id}")

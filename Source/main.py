@@ -51,7 +51,7 @@ visualise_config_stats(config_id)
 agents = {
     'UserAgent': agent_systems.UserAgent,
     'AStarAgent': {
-        'class': agent_systems.AStarAgent
+        'class': agent_systems.AIAgent
     },
     'GPT4Agent': {
         'class': agent_systems.GPT4Agent,

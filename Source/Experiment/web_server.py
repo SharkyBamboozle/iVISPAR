@@ -50,7 +50,7 @@ async def handle_client(websocket, path):
                 from_client_id = message_data.get("from")
                 command =  message_data.get("command")
                 msg = message_data.get("messages")[0]
-                #print(f"Packet from {from_client_id} to {to_client_id}: command {command} with message {msg}")
+                print(f"Packet from {from_client_id} to {to_client_id}: command {command} with message {msg}")
 
                 if to_client_id in connected_clients:
                     # Route the message to the intended recipient
@@ -101,48 +101,12 @@ def run_WebSocket_server_in_background():
     print("WebSocket server started in the background.")
 
 
-async def start_server_fix(BUILD_DIRECTORY):
-    # Configuration
-    PORT = 8000  # Port to serve the WebGL build
-    #BUILD_DIRECTORY = r"C:\Users\Sharky\RIPPLE\iVISPAR"  # Replace with the path to your WebGL build folder
-
-    # Change working directory to the WebGL build folder
-    os.chdir(BUILD_DIRECTORY)
-
-    # Create the handler
-    Handler = http.server.SimpleHTTPRequestHandler
-
-    # Start the server
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print(f"Serving Unity WebGL on http://localhost:{PORT}")
-        print("Opening the web app in your default browser...")
-        webbrowser.open(f"http://localhost:{PORT}")  # Automatically open in the browser
-        print("Press Ctrl+C to stop the server.")
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\nStopping server.")
-            httpd.server_close()
-
-def run_socketserver_in_background(BUILD_DIRECTORY):
-    # Start the server in a background thread
-    server_thread = threading.Thread(target=lambda: asyncio.run(start_server_fix(BUILD_DIRECTORY)), daemon=True)
-    server_thread.start()
-    print("Server started in the background.")
-
-
 if __name__ == "__main__":
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
     webApp_dir = os.path.join(base_dir, 'iVISPAR')
 
 
-    # Run the server
-    #asyncio.run(start_server())
-    #asyncio.run(start_WebSocket_server())
-
     #Run the server in the background
-    run_socketserver_in_background(webApp_dir)
-    run_WebSocket_server_in_background()
-
+    asyncio.run(start_server())
     while True:
         pass

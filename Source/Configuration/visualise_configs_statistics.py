@@ -108,4 +108,4 @@ def visualise_config_stats(config_id):
 
 
 if __name__ == "__main__":
-    visualise_config_stats(config_id="SGP_ID_20241202_155231")
+    visualise_config_stats(config_id="SGP_ID_20241206_225133")

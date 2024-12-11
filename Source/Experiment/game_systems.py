@@ -5,7 +5,7 @@ import base64
 
 class GameSystem:
 
-    def __init__(self, experiment_path, instruction_prompt_file_path, chain_of_thoughts):
+    def __init__(self, experiment_path, instruction_prompt_file_path, chain_of_thoughts, representation_type, predict_board_state):
         """
         Initialize the GameSystem.
         Args:
@@ -29,9 +29,11 @@ class GameSystem:
         else:
             self.instruction_prompt += "\nPlease output only the action, no explanations needed."
 
+        self.representation_type = representation_type
+        self.predict_board_state = predict_board_state
         self.is_done = False
         self.agent_message_log = []
-        self.sim_message_log = []
+        self.sim_message_log = {}  # Changed to a dictionary
 
     def feed_agent_response(self, agent_message):
         """
@@ -39,9 +41,10 @@ class GameSystem:
         Args:
             agent_message (str): The message from the agent.
         """
+
         self.agent_message_log.append(agent_message)
 
-    def feed_sim_response(self, response, i):
+    def feed_sim_response(self, response, i): #TODO make this i step number internal param of game
         """
         Process a response from the simulation.
         Args:
@@ -55,8 +58,9 @@ class GameSystem:
                 sim_message = json.loads(sim_message)
 
             if isinstance(sim_message, dict):
-                self.sim_message_log.append(sim_message)
                 self.is_done = sim_message.get("game_done", False)
+                step_key = f"step {i}"  # Create the step key as "step 1", "step 2", etc.
+                self.sim_message_log[step_key] = sim_message  # Add the message to the log
             else:
                 print("Invalid simulation message format. Must be a dictionary after parsing.")
         except json.JSONDecodeError as e:
@@ -67,29 +71,50 @@ class GameSystem:
         image = Image.frombytes('RGBA', (1200, 900), observation, 'raw')
         image = image.transpose(Image.FLIP_TOP_BOTTOM)
 
-        if response.get("command") == "Screenshot":
+        if i==0:
             color = (100,191,106) #"green"
         else:
             color = (82, 138, 174) #"blue"
         image_colored = self.color_code_observation(image.copy(), color)
 
-        if response.get("command") == "Screenshot":
-            filename = os.path.join(self.obs_dir, f"obs_0_goal.png")
-        else:
-            filename = os.path.join(self.obs_dir, f"obs_{i}_{self.agent_message_log[-1]}.png")
-        image_colored.save(filename)  # Save the image as a PNG
+        filename = os.path.join(self.obs_dir, f"obs_{i}")
 
-        return image_colored
+        # Save the image as a PNG file
+        try:
+            image_path = f"{filename}.png"
+            image_colored.save(image_path)  # Save the image as a PNG
+        except Exception as e:
+            print(f"Error saving image to {filename}.png: {e}")
+
+        current_board_state = ""
+        if isinstance(sim_message, dict):
+            # Extract the board state
+            current_board_state = sim_message.get("board_state", [])
+
+            # Save the board state as a JSON file
+            try:
+                json_path = f"{filename}.json"
+                with open(json_path, 'w') as f:
+                    json.dump(current_board_state, f, indent=4)
+            except Exception as e:
+                print(f"Error saving board state to {filename}.json: {e}")
+
+        return current_board_state if self.representation_type=='text' else image_colored
 
 
-    def check_done(self):
+    def check_done(self, response):
         """
         Check if the game system is done.
         Returns:
             bool: True if the game is done, False otherwise.
         """
+        sim_message = response.get("messages")[0]
+        print(sim_message)
+        sim_message_dict = json.loads(sim_message)  # Convert JSON string to dict
+        self.is_done = sim_message_dict.get("game_done", False)
+
         if self.is_done:
-            self._save_logs()
+            self._save_logs() #TODO rather make this explicit
         return self.is_done
 
 
@@ -120,7 +145,6 @@ class GameSystem:
         try:
             with open(sim_message_log_path, "w") as log_file:
                 json.dump(self.sim_message_log, log_file, indent=4)
-            print(f"Simulation log saved successfully to {sim_message_log_path}")
         except IOError as e:
             print(f"Error saving simulation log: {e}")
 
@@ -134,20 +158,40 @@ class GameSystem:
         return background
 
 
-
 class InteractivePuzzle(GameSystem):
 
-    def __init__(self, experiment_id, instruction_prompt_file_path, chain_of_thoughts, representation_type, planning_steps, max_game_length):
-        super().__init__(experiment_id, instruction_prompt_file_path, chain_of_thoughts)
-        self.representation_type = representation_type
+    def __init__(self, experiment_id, instruction_prompt_file_path, chain_of_thoughts, representation_type, planning_steps, max_game_length,predict_board_state):
+        super().__init__(experiment_id, instruction_prompt_file_path, chain_of_thoughts, representation_type, predict_board_state)
         self.planning_steps = planning_steps
         self.max_game_length = max_game_length
+        self.iteration = 0
 
-    def get_max_game_length(self):
-        return self.max_game_length
+    def check_done(self, response):
+        is_done = super().check_done(response)
+        reached_max_steps =  self.iteration >= self.max_game_length
 
+        return is_done or reached_max_steps
+
+
+    def feed_sim_response(self, response, i):
+        # Call the parent method to do all the processing
+        result = super().feed_sim_response(response, i)
+
+        # Add additional logic
+        self.iteration = i
+
+        return result
 
 class SceneUnderstanding(GameSystem):
 
-    def __init__(self, experiment_id):
-        super().__init__(experiment_id)
+    def __init__(self, experiment_id, instruction_prompt_file_path, chain_of_thoughts):
+        super().__init__(experiment_id, instruction_prompt_file_path, chain_of_thoughts, representation_type='vision', predict_board_state=True)
+
+    def feed_sim_response(self, response, i):
+        # Call the parent method to do all the processing
+        result = super().feed_sim_response(response, i)
+
+        # Add additional logic
+        self.is_done = True
+
+        return result

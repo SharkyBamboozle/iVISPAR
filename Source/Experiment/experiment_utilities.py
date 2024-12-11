@@ -67,7 +67,6 @@ def expand_config_file(experiment_path, grid_label, camera_offset, camera_auto_o
     for agent, environments in experiment_dic.items():
         for env_type, games in environments.items():
             for game_num, directory_path in games.items():
-                print(f"Processing directory: {directory_path}")
 
                 if not os.path.isdir(directory_path):
                     print(f"Skipping invalid directory: {directory_path}")
@@ -96,7 +95,6 @@ def expand_config_file(experiment_path, grid_label, camera_offset, camera_auto_o
                         with open(json_file, 'w') as file:
                             json.dump(config, file, indent=4)
 
-                        print(f"Updated and saved: {json_file}")
                     except (json.JSONDecodeError, IOError) as e:
                         print(f"Error processing file {json_file}: {e}")
 
@@ -353,13 +351,13 @@ def copy_files_to_experiment(json_file_path, image_file_paths, experiment_path):
         print(f"Error copying files: {e}")
 
 
+
 def copy_json_to_experiment(json_file_path, experiment_path):
     """
-    Copies the JSON and image files (start and goal) to the specified experiment path.
+    Copies the JSON and PNG files (with the same base name) to the specified experiment path.
 
     Args:
         json_file_path (str): The full path of the JSON file to be copied.
-        image_file_paths (dict): A dictionary containing the full paths of the start and goal image files to be copied.
         experiment_path (str): The path to the experiment directory where the files should be copied.
     """
     try:
@@ -370,11 +368,15 @@ def copy_json_to_experiment(json_file_path, experiment_path):
         # Copy the JSON file to the experiment directory
         json_file_dest = os.path.join(experiment_path, os.path.basename(json_file_path))
         shutil.copy(json_file_path, json_file_dest)
-        print(f"JSON file copied to {json_file_dest}")
+
+        # Copy the PNG file with the same name as the JSON file
+        png_file_path = os.path.splitext(json_file_path)[0] + '.png'  # Replace .json with .png
+        if os.path.exists(png_file_path):
+            png_file_dest = os.path.join(experiment_path, os.path.basename(png_file_path))
+            shutil.copy(png_file_path, png_file_dest)
 
     except Exception as e:
         print(f"Error copying files: {e}")
-
 
 
 def save_results_to_csv(experiment_path, i, win):

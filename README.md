@@ -49,17 +49,17 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 ### Sliding Geom Puzzle (SGP)
 This is a 3D implementation of the generalized sliding tile puzzle (GSLP), where agents have to move geoms from an initial to a goal configuration. It allows agents to move geoms in the cardinal directions (von Neumann neighborhood) by text prompts, referencing their color and shape.
 
-<img src="Resources/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+<img src="Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
 
 ### Sliding Tile Puzzle (STP)
 This is a 3D implementation of the classic sliding tile puzzle (STP) commonly known as 14-15-Puzzle or n-Puzzle. Agents have to move tiles from an initial to a goal configuration. It allows agents to move tiles in the cardinal directions (von Neumann neighborhood) by text prompts, referencing their tile number.
 
-<img src="Resources/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+<img src="Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
 
 ## :test_tube: Results
 These are preliminary results of the most recent evaluation (Dez. '24) on the SGP problem. For more details, look at our publication [Link here].
 
-<img src="Resources/results.png" alt="Sliding Geom Puzzle" width="900"/>
+<img src="Resources/README/results.png" alt="Sliding Geom Puzzle" width="900"/>
 
 ## :mount_fuji: Overview
 

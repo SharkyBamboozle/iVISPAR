@@ -1,5 +1,7 @@
 import os
+import json
 import numpy as np
+import pandas as pd
 
 def make_results_dir(experiment_id):
     # Set up paths for experiment directory and results directory
@@ -101,3 +103,55 @@ def extract_all_states_from_config(json_config):
         all_states.append(state_array)
 
     return all_states
+
+
+def compile_episode_data_to_data_frame(experiment_id, experiment_signature, episode_data_file):
+    """
+    Compiles episode data from multiple subdirectories into a single DataFrame.
+
+    Args:
+        experiment_id (str): The ID of the experiment.
+        experiment_signature (str): Signature to filter relevant subdirectories.
+
+    Returns:
+        pd.DataFrame: The DataFrame containing the compiled data.
+    """
+    # Directories
+    experiment_dir, results_dir = make_results_dir(experiment_id)
+    sub_dirs = filter_experiment_sub_dirs(experiment_dir, experiment_signature)
+
+    # Container for all move heuristic values
+    all_episode_data = []
+
+    max_length = 0  # To track the maximum step count for padding
+
+    # Loop over directories
+    for sub_dir in sub_dirs:
+        try:
+            file_path = os.path.join(sub_dir, episode_data_file)
+            with open(file_path, 'r') as file:
+                move_heuristics = json.load(file)
+        except Exception as e:
+            print(f"Error loading file {file_path}: {e}")
+            continue  # Skip this subdirectory if there is an error
+
+        # Check if move_heuristics is valid
+        if not isinstance(move_heuristics, list):
+            print(f"Invalid data in {file_path}: not a list")
+            continue
+
+        # Update the max length to ensure all episodes have the same length
+        max_length = max(max_length, len(move_heuristics))
+
+        # Add the current episode's move heuristics to the container
+        all_episode_data.append(move_heuristics)
+
+    # Pad all rows with 0s to match the maximum length
+    padded_data = [row + [0] * (max_length - len(row)) for row in all_episode_data]
+
+    # Create a DataFrame where each row corresponds to an episode
+    df = pd.DataFrame(padded_data)
+
+
+
+    return df

@@ -8,7 +8,7 @@
 The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual-spatial reasoning abilities of humans and artificial agents. It features a fully customizable sliding tile puzzle simulator using 3D geoms and a natural language API, allowing large vision-language models (LVLMs) to interact with the scene. The benchmark supports evaluation through both vision modality and text-based representations of geoms and their coordinates. The sliding geom puzzle challenges agents to demonstrate visual-spatial scene understanding and effective spatial planning capabilities.
 
 
-<img src="Resources/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
+<img src="Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
 
 
 ## Table of Contents

@@ -21,7 +21,6 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 7. [Citation](#bookmark-citation)
 8. [Contact](#mailbox_with_mail-contact)
 
-
 ## :joystick: Features
 ### Benchmarking
 - Multi-modal evaluation of visual-spatial reasoning in large vision-language models (LVLMs).
@@ -33,14 +32,10 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 - Fully operational out of the box, with no installation or dependency requirements.
 - Flexible deployment: run locally or host online on a server setup.
 
-
 ### Puzzle Problem Datasets
 - Generate custom datasets of interactive Sliding Geom Puzzles.
 - Each puzzle configuration features an animated minimal move sequence (computed using A*) to illustrate its complexity.
 - Pre-generated test datasets of puzzle configurations are available for immediate use.
-
-
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -56,10 +51,14 @@ This is a 3D implementation of the classic sliding tile puzzle (STP) commonly kn
 
 <img src="Resources/README/STP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ## :test_tube: Results
 These are preliminary results of the most recent evaluation (Dez. '24) on the SGP problem. For more details, look at our publication [Link here].
 
 <img src="Resources/README/results.png" alt="Sliding Geom Puzzle" width="900"/>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :mount_fuji: Overview
 
@@ -80,7 +79,6 @@ The repository is organized into four main directories:
      6. [Experiment results](/Data/Resulsts/).
 3. **iVISPAR**: Holds the compiled WebApp.
 4. **Resources**: Contains metadata files for the repository.
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

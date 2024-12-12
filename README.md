@@ -90,7 +90,7 @@ You can clone our repository with
 
 ```
 # Clone the repository
-$ git clone https://github.com/SharkyBamboozle/iVISPAR.git
+git clone https://github.com/SharkyBamboozle/iVISPAR.git
 ```
 
 ### Conda
@@ -98,7 +98,7 @@ $ git clone https://github.com/SharkyBamboozle/iVISPAR.git
 The experiment uses Python 3. You can find the list of Python dependencies in [Resources/environment.yml](Resources/environment.yml). We recommend downloading Anaconda and making a conda environment with
 
 ```
-$ conda env create -f Resources/environment.yml
+conda env create -f Resources/environment.yml
 ```
 
 ### Unity

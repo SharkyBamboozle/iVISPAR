@@ -159,7 +159,7 @@ if __name__ == "__main__":
     #config_id = 'SGP_ID_20241210_223410'
 
     #STP ds
-    config_id = 'SGP_ID_20241206_133150'
+    config_id = 'SGP_ID_20241212_024852'
 
     #instruction_prompt_file_path = r"Data/Instructions/instruction_prompt_4.txt"
     instruction_prompt_file_path = r'Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt'

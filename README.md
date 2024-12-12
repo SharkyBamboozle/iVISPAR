@@ -13,11 +13,13 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 
 ## Table of Contents
 1. [Features](#joystick-features)
-2. [Overview](#mount_fuji-overview)
-3. [Quick Start](#rocket-quick-start)
-4. [Setup](#package-setup)
-5. [Citation](#bookmark-citation)
-6. [Contact](#mailbox_with_mail-contact)
+2. [Environments](#video_game-environments)
+3. [Results](#test_tube-results)
+4. [Overview](#mount_fuji-overview)
+5. [Quick Start](#rocket-quick-start)
+6. [Setup](#package-setup)
+7. [Citation](#bookmark-citation)
+8. [Contact](#mailbox_with_mail-contact)
 
 
 ## :joystick: Features
@@ -42,17 +44,19 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Environments
+## :video_game: Environments
 
 ### Sliding Geom Puzzle (SGP)
 This is a 3D implementation of the generalized sliding tile puzzle (GSLP), where agents have to move geoms from an initial to a goal configuration. It allows agents to move geoms in the cardinal directions (von Neumann neighborhood) by text prompts, referencing their color and shape.
+
 <img src="Resources/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
 
 ### Sliding Tile Puzzle (STP)
 This is a 3D implementation of the classic sliding tile puzzle (STP) commonly known as 14-15-Puzzle or n-Puzzle. Agents have to move tiles from an initial to a goal configuration. It allows agents to move tiles in the cardinal directions (von Neumann neighborhood) by text prompts, referencing their tile number.
+
 <img src="Resources/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
 
-## Results
+## :test_tube: Results
 These are preliminary results of the most recent evaluation (Dez. '24) on the SGP problem. For more details, look at our publication [Link here].
 
 <img src="Resources/results.png" alt="Sliding Geom Puzzle" width="900"/>

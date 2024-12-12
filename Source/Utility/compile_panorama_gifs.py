@@ -134,9 +134,9 @@ if __name__ == "__main__":
     }
 
     img_sub_dirs2 = {
-        'left': {'dir': 'obs_1', 'caption': '3x3 board 8-Puzzle \n shortest moves sequence  8'},
-        'middle': {'dir': 'obs_2', 'caption': '4x4 board 15-Puzzle \n shortest moves sequence 12'},
-        'right': {'dir': 'obs_3', 'caption': '5x5 board 24-Puzzle \n shortest moves sequence 16'}
+        'left': {'dir': 'obs_4', 'caption': '3x3 board 8-Puzzle \n shortest moves sequence 8'},
+        'middle': {'dir': 'obs_5', 'caption': '4x4 board 15-Puzzle \n shortest moves sequence 12'},
+        'right': {'dir': 'obs_6', 'caption': '5x5 board 24-Puzzle \n shortest moves sequence 16'}
     }
 
-    compile_panorama_gifs(img_sub_dirs)
+    compile_panorama_gifs(img_sub_dirs2)

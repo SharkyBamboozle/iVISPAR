@@ -16,8 +16,8 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 2. [Environments](#video_game-environments)
 3. [Results](#test_tube-results)
 4. [Overview](#mount_fuji-overview)
-5. [Quick Start](#rocket-quick-start)
-6. [Setup](#package-setup)
+5. [Setup](#package-setup)
+6. [Quick Start](#rocket-quick-start)
 7. [Citation](#bookmark-citation)
 8. [Contact](#mailbox_with_mail-contact)
 
@@ -82,16 +82,6 @@ The repository is organized into four main directories:
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## :rocket: Quick Start
-
-You can find an example of how to run the code in [Source/main.py](Source/main.py). It will open the iVISPAR WebApp on your browser and copy the client ID into the Python console. We've prepared a comprehensive **Getting Started Guide** with instructions to help you get started with the iVISPAR benchmark.
-
-1. [How to run experiments](Resources/HowTo/how_to_run_experiments.md)
-2. [How to generate configurations (optional)](Resources/HowTo/how_to_generate_configurations.md)
-3. [How to evaluate the results](Resources/HowTo/how_to_evaluate_results.md)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ## :package: Setup
 
 ### Clone
@@ -114,6 +104,16 @@ $ conda env create -f Resources/environment.yml
 ### Unity
 
 The project comes with the compiled [iVISPAR](iVISPAR) WebApp, which should work out of the box on any common OS with a browser installed. The WebApp is written in C# with Unity and its code source code is available under [Source/iVISPAR](Source/iVISPAR). It is unnecessary to code C# or compile the Unity project to run experiments with iVISPAR.    
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## :rocket: Quick Start
+
+You can find an example of how to run the code in [Source/main.py](Source/main.py). It will open the iVISPAR WebApp on your browser and copy the client ID into the Python console. We've prepared a comprehensive **Getting Started Guide** with instructions to help you get started with the iVISPAR benchmark.
+
+1. [How to run experiments](Resources/HowTo/how_to_run_experiments.md)
+2. [How to generate configurations (optional)](Resources/HowTo/how_to_generate_configurations.md)
+3. [How to evaluate the results](Resources/HowTo/how_to_evaluate_results.md)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

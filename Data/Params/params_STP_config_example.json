@@ -1,0 +1,10 @@
+{
+  "board_size": 3,
+  "complexity_min_max": {
+      "c1": {
+          "min": 3,
+          "max": 5
+      }
+  },
+  "complexity_bin_size": 1
+}

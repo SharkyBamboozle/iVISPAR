@@ -3,3 +3,4 @@
 .idea
 data/*
 !/data/Instructions
+!/data/Params

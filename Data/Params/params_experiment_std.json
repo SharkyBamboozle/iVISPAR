@@ -1,0 +1,75 @@
+{
+  "agents": {
+    "UserAgent": {
+      "class": "agent_systems.UserAgent"
+    },
+    "AIAgent": {
+      "class": "agent_systems.AIAgent",
+      "params": {
+        "move_set": "shortest_move_sequence"
+      }
+    },
+    "GPT4Agent": {
+      "class": "agent_systems.GPT4Agent",
+      "params": {
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": false
+      }
+    },
+    "ClaudeAgent": {
+      "class": "agent_systems.ClaudeAgent",
+      "params": {
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": true
+      }
+    },
+    "GeminiAgent": {
+      "class": "agent_systems.GeminiAgent",
+      "params": {
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": true
+      }
+    }
+  },
+
+  "games": {
+    "InteractivePuzzle": {
+      "class": "game_systems.InteractivePuzzle",
+      "params": {
+        "config_id": "SGP_ID_20241212_144703",
+        "num_game_env": 100,
+        "max_game_length": 100,
+        "representation_type": "vision",
+        "planning_steps": 1,
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt",
+        "chain_of_thoughts": true,
+        "predict_board_state": false
+      }
+    }
+  },
+
+  "games_2": {
+    "SceneUnderstanding": {
+      "class": "game_systems.SceneUnderstanding",
+      "params": {
+        "config_id": "SGP_ID_20241212_144703",
+        "num_game_env": 10,
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_SceneUnderstanding.txt",
+        "chain_of_thoughts": true
+      }
+    }
+  },
+
+  "sim_param": {
+    "grid_label": "both",
+    "camera_offset": [0, 5.57, -3.68],
+    "camera_auto_override": [6.8, -1, 6.8],
+    "screenshot_alpha": 0.0
+  }
+}

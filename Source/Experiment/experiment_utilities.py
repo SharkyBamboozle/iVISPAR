@@ -7,6 +7,29 @@ import json
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
+
+def load_params_from_json(file_name):
+    """
+    Loads parameters from a JSON file and returns them as a dictionary.
+
+    Args:
+        file_path (str): Path to the JSON file containing the parameters.
+
+    Returns:
+        dict: A dictionary containing all the parameters from the JSON file.
+    """
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    file_path = os.path.join(base_dir, 'Data', 'Params', file_name)
+    try:
+        with open(file_path, 'r') as file:
+            params = json.load(file)
+        print(f"Loaded parameters from {file_path} successfully.")
+        return params
+    except Exception as e:
+        print(f"Error loading parameters from {file_path}: {e}")
+        return {}
+
+
 def load_single_json_from_directory(directory_path):
     """
     Finds and loads a single JSON file from the specified directory.

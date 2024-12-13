@@ -2,9 +2,7 @@
 
 # Import statements
 import os
-import math
 import random
-import numpy as np
 import pandas as pd
 import time
 import warnings
@@ -14,37 +12,7 @@ from find_shortest_move_sequence import a_star, calculate_manhattan_heuristic
 from encode_config_to_json import encode_SGP_config_to_json
 from visualise_configs_statistics import visualise_config_stats
 from find_random_move_sequence import generate_random_valid_path, generate_random_invalid_path
-
-
-def validate_parameters(complexity_min_max, num_geoms_min_max, board_size, num_geoms, complexity_bin_size):
-    # Validate complexity ranges
-    for key, value in complexity_min_max.items():
-        if value["min"] > value["max"]:
-            raise ValueError(f"Invalid {key} range: {value}")
-
-    # Validate the number of geoms
-    if num_geoms_min_max['max'] > board_size ** 2:
-        raise ValueError("Number of geoms exceeds the total cells on the board.")
-
-    if num_geoms_min_max['max'] > num_geoms:
-        raise ValueError("Number of geoms exceeds the total number of geoms available.")
-
-    # Validate complexity bin size
-    total_combinations = math.comb(num_geoms_min_max['min'] + board_size ** 2 - 1, num_geoms_min_max['min'])
-    if total_combinations < complexity_bin_size:
-        raise ValueError(f"Bin size ({complexity_bin_size}) exceeds the total number of board state combinations "
-            f"({total_combinations}) available.")
-
-
-def sample_board_states(num_geoms, board_size):
-    idx = np.random.choice(board_size ** 2, num_geoms, replace=False)
-    return np.stack(((idx // board_size), (idx % board_size)), axis=1)
-
-
-def has_unfilled_c1_bins_np(complexity_bins, found_complexity, complexity_bin_size, c1_range):
-    c1_indices = [i for i, c1 in enumerate(c1_range) if c1 <= found_complexity]
-    c1_sums = complexity_bins[:, c1_indices, :].sum(axis=2)  # Sum over c2 bins
-    return np.any(c1_sums < complexity_bin_size)
+import configuration_utilities as util
 
 
 def generate_SGP_configs(board_size, num_geoms_min_max, complexity_min_max, complexity_bin_size, shapes, colors,
@@ -64,7 +32,7 @@ def generate_SGP_configs(board_size, num_geoms_min_max, complexity_min_max, comp
     """
 
     geoms = [(shape, color) for shape in shapes for color in colors]
-    validate_parameters(complexity_min_max, num_geoms_min_max, board_size, len(geoms), complexity_bin_size)
+    util.validate_parameters(complexity_min_max, num_geoms_min_max, board_size, len(geoms), complexity_bin_size)
 
     # Set up directories
     config_id = f"SGP_ID_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -118,40 +86,42 @@ def generate_SGP_configs(board_size, num_geoms_min_max, complexity_min_max, comp
                     warnings.warn(f"Abort generating further SGP configs, no configs found for {interval} seconds")
                     #break # Break in case you want simulation to stop after a time interval
 
-                print(f"Checking at {datetime.now().strftime('%H:%M')}: {num_configs_current*(i+1)}/{num_configs_total} "
-                      f"new configs, checked {len(seen_state_combinations)} total configs")
+                print(f"Checking at {datetime.now().strftime('%H:%M')}: {num_configs_current * (i + 1)}/{num_configs_total} "
+                      f"new configs, checked {len(seen_state_combinations):,} total configs")
+
                 total_bin_values_checkpoint = num_configs_current
                 last_checked_time = time.time()
 
             # Sample initial and goal states
-            init_state = sample_board_states(num_geoms, board_size)
-            goal_state = sample_board_states(num_geoms, board_size)
+            init_state = util.sample_board_states(num_geoms, board_size)
+            goal_state = util.sample_board_states(num_geoms, board_size)
 
             # Create a hashable unique combination of init and goal state
             state_combination = (tuple(map(tuple, init_state)), tuple(map(tuple, goal_state)))
 
-            # Calculate cumulative Manhattan distance
-            manhattan_heuristic = calculate_manhattan_heuristic(init_state, goal_state)
+            # Compress the state combination using zlib
+            compressed_state_combination = util.compress_with_zlib(state_combination)
 
             # Check if the combination is already seen
-            if state_combination in seen_state_combinations:
+            if compressed_state_combination  in seen_state_combinations:
                 continue  # Skip this iteration if already sampled
             else: # Add the combination to the seen set
                 seen_state_combinations.add(state_combination)
+
+            # Calculate cumulative Manhattan distance
+            manhattan_heuristic = calculate_manhattan_heuristic(init_state, goal_state)
             if manhattan_heuristic < complexity_min_max["c1"]["min"]-complexity_min_max["c2"]["max"]*2:
                 continue
             if manhattan_heuristic > complexity_min_max["c1"]["max"]:
                 continue
 
-            print(manhattan_heuristic)
             # Sample geoms without replacement
             geoms_sample = random.sample(geoms, num_geoms)
 
             # Measure complexity in form of shortest sequence length and cumulative Manhattan distance
-            shortest_move_sequence = a_star(board_size, init_state, goal_state)
-            random_valid_move_sequence = generate_random_valid_path(board_size, init_state)
-            random_invalid_move_sequence = generate_random_invalid_path(board_size, init_state)
-
+            shortest_move_sequence = a_star(board_size, init_state, goal_state, max_depth=complexity_min_max["c1"]["max"])
+            if shortest_move_sequence == None:
+                continue
 
             complexity =  {
                 "c1": len(shortest_move_sequence)-1,
@@ -174,6 +144,9 @@ def generate_SGP_configs(board_size, num_geoms_min_max, complexity_min_max, comp
 
             bin_fill = complexity_bins.loc[complexity["c1"], complexity["c2"]]
 
+            random_valid_move_sequence = generate_random_valid_path(board_size, init_state)
+            random_invalid_move_sequence = generate_random_invalid_path(board_size, init_state)
+
             # Serialize SGP configuration to JSON file
             encode_SGP_config_to_json(board_size, state_combination, geoms_sample,
                                   complexity, bin_fill, shortest_move_sequence,
@@ -189,22 +162,17 @@ def generate_SGP_configs(board_size, num_geoms_min_max, complexity_min_max, comp
 
 
 if __name__ == "__main__":
-    # Parameters
-    board_size = 5
-    num_geoms_min_max = {"min": 12, "max": 12}
-    complexity_min_max = {"c1": {"min": 12, "max": 12},  # smallest and highest c1 complexity to be considered
-                          "c2": {"min": 0, "max": 0}}  # smallest and highest c2 complexity to be considered
-    complexity_bin_size = 1  # amount of puzzle configs per complexity bin
-    shapes = ['cube', 'sphere', 'pyramid', 'cylinder', 'cone', 'prism']#, 'cylinder', 'cone', 'prism']
-    colors = ['red', 'green', 'blue','yellow', 'purple', 'orange']#, 'yellow', 'purple', 'orange']
+    # Load parameters from the JSON file
+    params = util.load_params_from_json('params_SGP_config_example.json')
 
     # Generate Sliding Geom Puzzle (SGP) configuration files
-    config_id = generate_SGP_configs(board_size=board_size,
-                                     num_geoms_min_max=num_geoms_min_max,
-                                     complexity_min_max=complexity_min_max,
-                                     complexity_bin_size=complexity_bin_size,
-                                     shapes=shapes,
-                                     colors=colors)
+    config_id = generate_SGP_configs(board_size=params.get('board_size', 5),
+                                     num_geoms_min_max=params.get('num_geoms_min_max', {"min": 8, "max": 8}),
+                                     complexity_min_max=params.get('complexity_min_max', {"c1": {"min": 16, "max": 16},
+                                                                                          "c2": {"min": 0, "max": 0}}),
+                                     complexity_bin_size= params.get('complexity_bin_size', 1),
+                                     shapes=params.get('shapes', ['sphere', 'cylinder', 'cone']),
+                                     colors=params.get('colors', ['red', 'green', 'blue']))
     print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
 
     # Visualise config stats

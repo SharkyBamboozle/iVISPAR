@@ -7,7 +7,12 @@ import pandas as pd
 import time
 import warnings
 from datetime import datetime
+import hashlib
+import zlib
+import pickle
+from tqdm import tqdm
 
+import configuration_utilities as util
 from find_shortest_move_sequence import a_star
 from check_is_STP_solvable import is_solvable
 from encode_config_to_json import encode_STP_config_to_json
@@ -55,8 +60,23 @@ def generate_goal_state(num_elements, board_size):
 
     return goal_state_array
 
+# Compress the state with zlib
+def compress_state(init_state, goal_state):
+    state_data = pickle.dumps((init_state, goal_state))
+    compressed_state = zlib.compress(state_data)
+    return compressed_state
 
-def generate_STP_configs(board_size, complexity_min_max, complexity_bin_size, interval = 60):
+def get_md5_hash(state_str):
+    """Convert the state string to an MD5 hash."""
+    return hashlib.md5(state_str.encode()).hexdigest()
+
+def compress_with_zlib(state_combination):
+    """Compress the state combination using zlib."""
+    state_str = str(state_combination)  # Convert the state tuple to a string
+    return zlib.compress(state_str.encode())  # Compress the encoded string and return bytes
+
+
+def generate_STP_configs(board_size, complexity_min_max, complexity_bin_size, interval = 20):
     """
 
     Args:
@@ -107,6 +127,7 @@ def generate_STP_configs(board_size, complexity_min_max, complexity_bin_size, in
     last_checked_time = time.time()  # Initialize the last checked time
     num_geoms = board_size**2-1
     goal_state = generate_goal_state(num_geoms, board_size)
+    #pbar = tqdm(total=100, desc="Manual Progress")
 
     while True:
         # Check progress every 'interval' seconds
@@ -118,7 +139,9 @@ def generate_STP_configs(board_size, complexity_min_max, complexity_bin_size, in
                 #break # Break in case you want simulation to stop after a time interval
 
             print(f"Checking at {datetime.now().strftime('%H:%M')}: {num_configs_current}/{num_configs_total} "
-                  f"new configs, checked {len(seen_state_combinations)} total configs")
+                  f"new configs, checked {len(seen_state_combinations):,} total configs")
+            #how_many_solutions = len(seen_state_combinations)/1000000
+            #pbar.update(how_many_solutions)  # Manually update the progress by 10 units
             total_bin_values_checkpoint = num_configs_current
             last_checked_time = time.time()
 
@@ -128,20 +151,22 @@ def generate_STP_configs(board_size, complexity_min_max, complexity_bin_size, in
         # Create a hashable unique combination of init and goal state
         state_combination = (tuple(map(tuple, init_state)), tuple(map(tuple, goal_state)))
 
-
-        # Check if the combination is already seen
-        if state_combination in seen_state_combinations:
+        # Compress and check if the state exists
+        compressed_state = compress_state(init_state, goal_state)
+        if compressed_state in seen_state_combinations:
             continue  # Skip this iteration if already sampled
-        else: # Add the combination to the seen set
-            seen_state_combinations.add(state_combination)
+            print("seen")
+        else:
+            seen_state_combinations.add(compressed_state)
+
         if not is_solvable(init_state):
             print("Unsolvable")
             continue
 
         # Measure complexity in form of shortest sequence length and cumulative Manhattan distance
-        shortest_move_sequence = a_star(board_size, init_state, goal_state)
+        shortest_move_sequence = a_star(board_size, init_state, goal_state, max_depth=complexity_min_max["c1"]["max"])
         if shortest_move_sequence==None:
-            print("A* None")
+            #print("A* None")
             continue
         random_valid_move_sequence = generate_random_valid_path(board_size, init_state)
         random_invalid_move_sequence = generate_random_invalid_path(board_size, init_state)
@@ -173,19 +198,18 @@ def generate_STP_configs(board_size, complexity_min_max, complexity_bin_size, in
             print(f"Successfully finished building all configurations for {num_geoms} geoms")
             break
 
+    pbar.close()  # Close the progress bar
     return config_id
 
 
 if __name__ == "__main__":
-    # Parameters
-    board_size = 4
-    complexity_min_max = {"c1": {"min": 1, "max": 60}}  # smallest and highest c1 complexity to be considered
-    complexity_bin_size = 1  # amount of puzzle configs per complexity bin
+    # Load parameters from the JSON file
+    params = util.load_params_from_json('params_STP_config_example.json')
 
-    # Generate Sliding Geom Puzzle (SGP) configuration files
-    config_id = generate_STP_configs(board_size=board_size,
-                                     complexity_min_max=complexity_min_max,
-                                     complexity_bin_size=complexity_bin_size)
+    # Generate Sliding Tile Puzzle (STP) configuration files
+    config_id = generate_STP_configs(board_size=params.get('board_size', 5),
+                                     complexity_min_max=params.get('complexity_min_max', {"c1": {"min": 1, "max": 70}}),
+                                     complexity_bin_size=params.get('complexity_bin_size', 1))
     print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
 
     # Visualise config stats

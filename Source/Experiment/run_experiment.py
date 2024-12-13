@@ -84,9 +84,9 @@ async def run_experiment(games, agents, sim_param):
                 if agent_type == 'AIAgent':
                     agent_parameters = agent_details.get('params', {})
                     move_set = agent_parameters.get('move_set', None)
-                    agent = agent_class(config.get(move_set, []))
+                    agent = agent_systems.AIAgent(config.get(move_set, []))
                 elif agent_type == 'UserAgent':
-                    agent = agent_class()
+                    agent = agent_systems.UserAgent()
                 elif (agent_type == 'GPT4Agent' or
                       agent_type == 'ClaudeAgent' or
                       agent_type == 'GeminiAgent'):
@@ -103,7 +103,7 @@ async def run_experiment(games, agents, sim_param):
                 # Initialise game
                 game_class = game_details.get('class', None)
                 if game_type == 'InteractivePuzzle':
-                    game = game_class(
+                    game = game_systems.InteractivePuzzle(
                         experiment_id=episode_path,
                         instruction_prompt_file_path=game_params.get("instruction_prompt_file_path", None),
                         chain_of_thoughts = game_params.get("chain_of_thoughts", None),
@@ -149,106 +149,14 @@ async def run_experiment(games, agents, sim_param):
 
 
 if __name__ == "__main__":
-
-    #OG ds
-    #config_id = 'SGP_ID_20241210_091800' #6 opt moves
-    #config_id = 'SGP_ID_20241210_132513'
-    #config_id = 'SGP_ID_20241210_184822'
-
-    #Rand ds
-    #config_id = 'SGP_ID_20241210_223410'
-
-    #STP ds
-    config_id = 'SGP_ID_20241212_024852'
-
-    #instruction_prompt_file_path = r"Data/Instructions/instruction_prompt_4.txt"
-    instruction_prompt_file_path = r'Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt'
-    #instruction_prompt_file_path = r"Data/Instructions/instruction_prompt_SGP_SceneUnderstanding.txt"
-    api_keys_file_path = r"Data/API-keys/api-keys.txt"
-
-    # Agent parameter
-    agents = {
-        'UserAgent': {
-            'class': agent_systems.UserAgent
-        },
-        'AIAgent': {
-            'class': agent_systems.AIAgent,
-            'params': {
-                'move_set': 'shortest_move_sequence' #"shortest_move_sequence", #random_valid_move_sequence, random_invalid_move_sequence,
-            }
-        },
-        'GPT4Agent': {
-            'class': agent_systems.GPT4Agent,
-            'params': {
-                'instruction_prompt_file_path': instruction_prompt_file_path,
-                'api_keys_file_path': api_keys_file_path,
-                'single_images': True,
-                'COT': False,
-            }
-        },
-        'ClaudeAgent': {
-            'class': agent_systems.ClaudeAgent,
-            'params': {
-                'instruction_prompt_file_path': instruction_prompt_file_path,
-                'api_keys_file_path': api_keys_file_path,
-                'single_images': True,
-                'COT': True,
-            }
-        },
-        'GeminiAgent': {
-            'class': agent_systems.GeminiAgent,
-            'params': {
-                'instruction_prompt_file_path': instruction_prompt_file_path,
-                'api_keys_file_path': api_keys_file_path,
-                'single_images': True,
-                'COT': True,
-            }
-        },
-    }
-
-    # Game parameter
-    games = {
-        'InteractivePuzzle': {
-            'class': game_systems.InteractivePuzzle,
-            'params': {
-                'config_id': config_id,
-                'num_game_env': 100,  # Max amount of games to play (set to high value to play all configs)
-                'max_game_length': 100,  # Max amount of action-perception iterations with the environment
-                'representation_type': 'vision', #'vision', 'text' 'both'
-                'planning_steps': 1,
-                'instruction_prompt_file_path': r'Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt', #r"Data/Instructions/instruction_prompt_4.txt",
-                'chain_of_thoughts': True,
-                'predict_board_state': False,
-            }
-        },
-    }
-
-    # Game parameter
-    games_2 = {
-        'SceneUnderstanding': {
-            'class': game_systems.SceneUnderstanding,
-            'params': {
-                'config_id': config_id,
-                'num_game_env': 10,  # Max amount of games to play (set to high value to play all configs)
-                'instruction_prompt_file_path': r"Data/Instructions/instruction_prompt_SGP_SceneUnderstanding.txt",
-                'chain_of_thoughts': True,
-            }
-        }
-    }
-
-    # Simulation parameter
-    sim_param = {
-        'grid_label': 'both', #choices are between 'edge', 'cell' , 'both' and 'none'
-        'camera_offset': [0,5.57,-3.68],
-        'camera_auto_override': [6.8,-1,6.8],
-        'screenshot_alpha': 0.0,
-    }
+    # Load parameters from the JSON file
+    params = util.load_params_from_json('params_experiment_example.json')
 
     # Run the experiment
     experiment_id = asyncio.run(run_experiment(
-        games={'InteractivePuzzle': games['InteractivePuzzle']},
-        agents={'AIAgent': agents['AIAgent']},
-        sim_param=sim_param)
+        games=params.get('games', {}),
+        agents=params.get('agents', {}),
+        sim_param=params.get('sim_param', {}))
     )
     print(f"Finished running experiments for experiment ID: {experiment_id}")
 

@@ -42,12 +42,17 @@ public class GridBoard : MonoBehaviour
             {
                 Debug.LogError("Failed to load config data from ExperimentManager.");
             }
+            if(!ExperimentManager.Instance.loadedLandmarkData.use_rendering)
+            {
+                GetComponent<MeshRenderer>().enabled = false;
+            }    
         }
         grid = new Grid(width,height,cellSize,transform.position,lineColor,lineWidth);
 
         Vector3 centerPos = grid.GetWorldPosition((int)(width/2) ,  (int)(height/2));
         Vector3 gridHeight =  grid.GetWorldPosition(0 ,  height/2);
         cameraController.SetPosition(centerPos.x + cameraAnchorOffset,centerPos.z + cameraAnchorOffset, gridHeight.z);
+        
         
     }
   

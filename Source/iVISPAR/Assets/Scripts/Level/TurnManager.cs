@@ -1,22 +1,27 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
+using System.Data.Common;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class TurnManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    //bool initialized = false;
-    //private List<string> log;
     private List<string> turnCommands;
-    //int currentCommand = 0;
     bool isPuzzleSolved = false;
     bool recievedDoneCommand = false;
     private int command_count = 0;
     private int action_count = 0;
+    private Dictionary<string, int> wordToNumber = new Dictionary<string, int>
+    {
+        {"one", 1}, {"two", 2}, {"three", 3}, {"four", 4}, {"five", 5},
+        {"six", 6}, {"seven", 7}, {"eight", 8}, {"nine", 9}, {"ten", 10}
+    };
+    string[] knownDirections = { "left", "right", "up", "down" };
+    string[] knownObjects = { "cube", "tile", "sphere", "cylinder", "pyramid", "cone", "prism" };
+    string[] knownCommands = { "move", "start", "reset","done" };
     void Start()
     {
         turnCommands = new List<string>();
@@ -26,7 +31,83 @@ public class TurnManager : MonoBehaviour
             EventHandler.Instance.RegisterEvent("ActionAck",ResponseAck);
         }
     }
-    
+    public Tuple<string,string,string,string,int> decodeCommand(string command)
+    {
+        command = command.ToLower();
+        string cmd = "";
+        string foundObject = "";
+        string foundObjectAttribute = "";
+        string foundDirection = "";
+        int repetition = 1; 
+        // extacting command
+        foreach (var obj in knownCommands)
+        {
+            if (command.Contains(obj))
+            {
+                cmd = obj;
+                break;
+            }
+        }
+        // extracting object name
+        foreach (var obj in knownObjects)
+        {
+            if (command.Contains(obj))
+            {
+                foundObject = obj;
+                break;
+            }
+        }
+        // extracting object attribute
+        if(foundObject != "")
+        {
+            string[] substrings = command.Split(" ");
+            for(int index = 0; index < substrings.Length ; index++)
+            {
+                if(substrings[index] == foundObject)
+                {
+                    if(foundObject == "tile")
+                    {
+                        foundObjectAttribute = substrings[index+1];
+                    }
+                    else
+                        foundObjectAttribute = substrings[index-1];
+                }
+            }
+        }
+        // extracting direction
+        foreach (var obj in knownDirections)
+        {
+            if (command.Contains(obj))
+            {
+                foundDirection = obj;
+                break;
+            }
+        }
+        // extracting repetition
+        if(foundObject != "tile")
+        {
+            Match match = Regex.Match(command, @"(\d+)");
+            if (match.Success)
+            {
+                repetition = int.Parse(match.Value);
+            }
+            else
+            {
+                // If no digits found, try mapping words like "one", "two", "three" to numbers:
+                
+                foreach (var kvp in wordToNumber)
+                {
+                    if (command.Contains(kvp.Key))
+                    {
+                        repetition = kvp.Value;
+                        break;
+                    }
+                }
+            }
+        }
+        Tuple<string,string,string,string,int> decodedText = new Tuple<string,string,string,string,int>(cmd,foundObject,foundObjectAttribute,foundDirection,repetition);
+        return decodedText;
+    }
     // Update is called once per frame
     public void ActionDecoder(DataPacket data)
     {    
@@ -41,43 +122,41 @@ public class TurnManager : MonoBehaviour
             Debugger.Instance.SetPrompt(command);
             action_count++;
             Debugger.Instance.SetActionCount(action_count);
-            if(command.Contains("move"))
+            Tuple<string,string,string,string,int> decodedText = decodeCommand(command);
+            Debug.LogWarning(decodedText);
+            if(decodedText.Item1.Contains("move"))
             {
                 
                 Debug.Log("processing command Queue: " +command.ToString());
+                
                 string[] Tokens = command.Split(" ");
-                int id = Animator.StringToHash(Tokens[1] + " " + Tokens[2]);
+                //int id = Animator.StringToHash(Tokens[1] + " " + Tokens[2]);
+                int id = 0;
+                if(decodedText.Item2 == "tile")
+                    id = Animator.StringToHash(decodedText.Item2 + " " + decodedText.Item3);
+                else
+                    id = Animator.StringToHash(decodedText.Item3 + " " + decodedText.Item2);
                 if(!Debugger.Instance.isValidObject(id))
                 {
-                    Debugger.Instance.SetValidity("Tokens[1]" + " " + Tokens[2] + " is not a valid object");
+                    if(decodedText.Item2 == "tile")
+                        Debugger.Instance.SetValidity(decodedText.Item2 + " " + decodedText.Item3 + " is not a valid object");
+                    else
+                        Debugger.Instance.SetValidity(decodedText.Item3 + " " + decodedText.Item2 + " is not a valid object");
                 }
-                int repetition = 1;
-                if(Tokens.Length > 4)
-                {
-                    try
-                    {
-                        repetition = int.Parse(Tokens[4]);
-                    }
-                    catch(Exception ex)
-                    {
-                        Debug.LogError("tocken not an intiger. Error " + ex.Message);
-
-                    }
-                }
-                for(int i = 0 ; i < repetition; i++)
+                for(int i = 0 ; i < decodedText.Item5; i++)
                 {
                     
-                    EventHandler.Instance.InvokeCommand("move",id,Tokens[3]);
+                    EventHandler.Instance.InvokeCommand("move",id,decodedText.Item4);
 
                 }               
             }
-            else if(command.Contains("start"))
+            else if(decodedText.Item1.Contains("start"))
             {
         
                 EventHandler.Instance.InvokeCommand("init_target");
                 Debugger.Instance.SetValidity("valid command. start of experiment");
             }
-            else if(command.Contains("done"))
+            else if(decodedText.Item1.Contains("done"))
             {
                 recievedDoneCommand = true;
                 isPuzzleSolved = true;
@@ -89,7 +168,7 @@ public class TurnManager : MonoBehaviour
                 }
                 
             }
-            else if(command.Contains("reset"))
+            else if(decodedText.Item1.Contains("reset"))
             {
                 if(ExperimentManager.Instance.humanExperiment)
                     Debugger.Instance.RecordHumanLog();

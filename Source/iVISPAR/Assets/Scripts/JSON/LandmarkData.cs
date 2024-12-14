@@ -17,6 +17,7 @@ public class LandmarkData
     public string experiment_type;
     
     public int grid_size;             // Size of the grid (grid_size x grid_size)
+    public bool use_rendering;
 
     public string grid_label;
     public float[] camera_offset;

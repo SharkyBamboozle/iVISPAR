@@ -859,6 +859,7 @@ MonoBehaviour:
     experiment_id: 
     experiment_type: 
     grid_size: 0
+    use_rendering: 0
     grid_label: 
     camera_offset: []
     camera_auto_override: []
@@ -867,7 +868,7 @@ MonoBehaviour:
   url: localhost
   socketPort: 1984
   isConnected: 0
-  humanExperiment: 1
+  humanExperiment: 0
 --- !u!4 &772065197
 Transform:
   m_ObjectHideFlags: 0

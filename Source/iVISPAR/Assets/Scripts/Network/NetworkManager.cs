@@ -203,7 +203,7 @@ public class NetworkManger : MonoBehaviour
     public void CopyIdToClipboard()
     {
         #if UNITY_WEBGL && !UNITY_EDITOR
-        CopyToClipboard(network_id); // Call the JS function when running in WebGL
+            CopyToClipboard(network_id); // Call the JS function when running in WebGL
         #else
         GUIUtility.systemCopyBuffer = network_id;
         #endif

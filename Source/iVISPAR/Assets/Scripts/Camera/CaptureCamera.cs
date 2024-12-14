@@ -10,6 +10,11 @@ public class CaptureCamera : MonoBehaviour
     public bool imageToggle = true;
     [Range(0f,1f)]
     public float percentage = 0.3f;
+    private string boardSatus = "";
+    public int fontSize = 20;
+    public Vector2 lableSize = new Vector2(300,200);
+    public Vector2 lablePosition = new Vector2(10,10);
+
     void OnEnable(){
         screenshotCamera = this.GetComponent<Camera>();
     }
@@ -72,6 +77,14 @@ public class CaptureCamera : MonoBehaviour
             userPhoto = new RenderTexture(renderTexture.width, renderTexture.height, renderTexture.depth);
             Graphics.Blit(renderTexture, userPhoto); // Copy the contents of renderTexture to userPhoto
         }
+        if(!ExperimentManager.Instance.loadedLandmarkData.use_rendering && boardSatus == "")
+        {
+            GameObject[] boardObjects = GameObject.FindGameObjectsWithTag("Commandable");
+            foreach (GameObject boardObject in boardObjects)
+            {
+                boardSatus += (boardObject.GetComponent<TargetBehaviour>().getObjectChessStatus() + "\n");
+            }
+        }
         byte[] screenshot = texture.GetRawTextureData();
         Debug.LogWarning("Texture size is " + texture.width.ToString() + " * " + texture.height.ToString() + " with total size of " + screenshot.Length + " bytes");
         List<string> screenshotInfo = new List<string>();
@@ -109,12 +122,35 @@ public class CaptureCamera : MonoBehaviour
 
     void OnGUI()
     {
-        if (userPhoto != null && ExperimentManager.Instance.humanExperiment)
+        if(ExperimentManager.Instance.loadedLandmarkData.use_rendering && ExperimentManager.Instance.humanExperiment)
         {
-            if(imageToggle)
+            if (userPhoto != null)
             {
-                float DIMENTION = Screen.width * percentage;
-                GUI.DrawTexture(new Rect(20, 20, DIMENTION, DIMENTION), userPhoto, ScaleMode.ScaleToFit, false);
+                if(imageToggle)
+                {
+                    float DIMENTION = Screen.width * percentage;
+                    GUI.DrawTexture(new Rect(20, 20, DIMENTION, DIMENTION), userPhoto, ScaleMode.ScaleToFit, false);
+                }
+            }
+        }
+        else if (!ExperimentManager.Instance.loadedLandmarkData.use_rendering && ExperimentManager.Instance.humanExperiment)
+        {
+            if (boardSatus != "")
+            {
+                if(imageToggle)
+                {
+                    GUIStyle style = new GUIStyle(GUI.skin.label);
+                    style.alignment = TextAnchor.MiddleCenter;
+                    style.fontSize = fontSize;
+                    style.clipping = TextClipping.Overflow;
+                    // Calculate a rect that is centered on the screen
+                    Rect rect = new Rect(
+                        lablePosition.x,lablePosition.y, 
+                        lableSize.x,lableSize.y
+                    );
+                    
+                    GUI.Label(rect, boardSatus, style);
+                }      
             }
         }
     }

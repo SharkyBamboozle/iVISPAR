@@ -149,6 +149,10 @@ public class LevelManager : MonoBehaviour
             }
 
             // Assuming TargetBehaviour is a script that manages positioning on a grid
+            if(!ExperimentManager.Instance.loadedLandmarkData.use_rendering)
+            {
+                obj.GetComponent<MeshRenderer>().enabled = false;
+            }
             TargetBehaviour targetBehaviour = obj.GetComponent<TargetBehaviour>();
             // Assign the same GridBoard reference that LevelManager uses
             targetBehaviour.setPositionOnGrid((int)landmark.goal_coordinate[0], (int)landmark.goal_coordinate[1]);

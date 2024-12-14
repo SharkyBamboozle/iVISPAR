@@ -20,8 +20,10 @@ public class ExperimentManager : MonoBehaviour
     public string socketPort = "1984";
     public bool isConnected = false;
     public bool humanExperiment = false;
-    private const string conigURL = "http://localhost:400/";
+    private string configPort = "400";
+    private string configURL = "localhost:400";
     private Queue<string> configFiles; 
+
     void Awake()
     {
         // Singleton pattern
@@ -61,10 +63,21 @@ public class ExperimentManager : MonoBehaviour
         {
             if(parameters["human"] == "true")
                 humanExperiment = true;
+            if(url != "localhost")
+                configURL = string.Format("https://{0}:{1}/",url,configPort);
+
         }
     #endif
         EventHandler.Instance.RegisterEvent("Setup",SetupExperiment);
-        string serverAddress = string.Format("ws://{0}:{1}",url,socketPort);
+        string serverAddress = "";
+        if(url == "localhost")
+        {
+            serverAddress = string.Format("ws://{0}:{1}",url,socketPort);
+        }
+        else
+        {
+            serverAddress = string.Format("wss://{0}:{1}",url,socketPort);
+        }
         if(!humanExperiment)
             NetworkManger.Instance.ConnectToServer(serverAddress);
         else
@@ -88,8 +101,7 @@ public class ExperimentManager : MonoBehaviour
         try
         {
             loadedLandmarkData = JsonUtility.FromJson<LandmarkData>(config);
-            // uncommnet this later after the refavtor
-            //Screen.SetResolution(loadedLandmarkData.width, loadedLandmarkData.height,false);
+            loadedLandmarkData.use_rendering = true;
         }
         catch
         {
@@ -107,7 +119,7 @@ public class ExperimentManager : MonoBehaviour
     }
     public IEnumerator DownloadAvailbleList()
     {
-        string url = conigURL + "Available.txt";
+        string url = configURL + "Available.txt";
         Debug.Log($"Downloading JSON file from: {url}");
 
         UnityWebRequest request = UnityWebRequest.Get(url);
@@ -187,7 +199,7 @@ public class ExperimentManager : MonoBehaviour
     }
     public IEnumerator DownloadConfig(string config)
     {
-        string url = conigURL + config;
+        string url = configURL + config;
         Debug.Log($"Downloading JSON file from: {url}");
 
         UnityWebRequest request = UnityWebRequest.Get(url);

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -8,7 +10,9 @@ public class CameraController : MonoBehaviour
     public Transform mainCamera;
     public float verticalOffset = 5f;
     public Transform screenshotCamera;
-
+    public int fontSize = 30;
+    public Vector2 lableSize = new Vector2(800,600);
+    public Vector2 lableOffset = new Vector2(0,150);
     void Start()
     {
         
@@ -50,5 +54,28 @@ public class CameraController : MonoBehaviour
     {
         mainCamera.localPosition = position;
         mainCamera.LookAt(transform.position);
+    }
+    void OnGUI() {
+        if(ExperimentManager.Instance.humanExperiment && !ExperimentManager.Instance.loadedLandmarkData.use_rendering)
+        {
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.alignment = TextAnchor.MiddleCenter;
+            style.fontSize = fontSize;
+            style.clipping = TextClipping.Overflow;
+
+            // Calculate a rect that is centered on the screen
+            Rect rect = new Rect(
+                ((Screen.width - lableSize.x) / 2) - lableOffset.x, 
+                ((Screen.height - lableSize.y) / 2) - lableOffset.y, 
+                lableSize.x,lableSize.y
+            );
+            string boardSatus = "";
+            GameObject[] boardObjects = GameObject.FindGameObjectsWithTag("Commandable");
+            foreach (GameObject boardObject in boardObjects)
+            {
+                boardSatus += (boardObject.GetComponent<TargetBehaviour>().getObjectChessStatus() + "\n");
+            }
+            GUI.Label(rect, boardSatus, style);
+        }   
     }
 }

@@ -34,8 +34,18 @@ public class AdvanceGridVisualiser : MonoBehaviour
     public Vector3 threeLetterLableOffset = new Vector3(1.0f,0.1f,-0.25f);
     public Vector3 twoLetterLableOffset = new Vector3(1.0f,0.1f,-0.25f);
 
+    void Awake()
+    {
+        if(!ExperimentManager.Instance.loadedLandmarkData.use_rendering)
+        {
+            this.enabled = false;
+        }    
+    }
+
+
     void Start()
     {
+        
         grid = GetComponent<GridBoard>();
         meshFilter = GetComponent<MeshFilter>();
         mesh = new Mesh();

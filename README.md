@@ -150,7 +150,7 @@ The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of
 
 
 <div align="center">
-  <img src="Resources/README/webapp.png" alt="webapp image" width="900"/>
+  <img src="Resources/README/webapp.png" alt="webapp image" width="500"/>
   <p><em>Figure 5: Web app with UI for human experiments.</em></p>
 </div>
 

@@ -5,10 +5,16 @@
 
 
 # :jigsaw: iVISPAR
-The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual-spatial reasoning abilities of humans and artificial agents. It features a fully customizable sliding tile puzzle simulator using 3D geoms and a natural language API, allowing large vision-language models (LVLMs) to interact with the scene. The benchmark supports evaluation through both vision modality and text-based representations of geoms and their coordinates. The sliding geom puzzle challenges agents to demonstrate visual-spatial scene understanding and effective spatial planning capabilities.
+Large Vision-Language Models (LVLMs) are known to face challenges with spatial reasoning and visual alignment. The interactive VIsual-SPAtial Reasoning benchmark, iVISPAR, addresses these limitations by providing an interactive environment designed to evaluate the capabilities of LVLMs as agents in this context.
 
+The benchmark centers on a selected scenario, a variation of the generalized Sliding Tile Puzzle, a classic problem that requires logical planning, spatial awareness, and multi-step problem-solving. iVISPAR features a fully customizable Sliding Tile Puzzle simulator that uses 3D geometric shapes (geoms) and a natural language API, enabling LVLMs to interact directly with the scene by prompting actions.
 
-<img src="Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
+The benchmark supports evaluation through both visual modality and text-based representations of geoms and their coordinates. This dual approach allows for a comprehensive assessment of visual-spatial scene understanding and spatial planning capabilities. To gauge model performance, agents are compared against a human baseline, random agents, and the A* algorithm, providing insight into the problem's complexity ceiling and the alignment of the model's spatial reasoning with human logic.
+
+<div align="center">
+  <img src="Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
+  <p><em>Figure 1: Visualization of GPT-4's interaction with the Sliding Geom Puzzle (SGP).</em></p>
+</div>
 
 
 ## Table of Contents
@@ -42,21 +48,31 @@ The Interactive Visual-Spatial Reasoning (iVISPAR) benchmark assesses the visual
 ## :video_game: Environments
 
 ### Sliding Geom Puzzle (SGP)
-This is a 3D implementation of the generalized sliding tile puzzle (GSLP), where agents have to move geoms from an initial to a goal configuration. It allows agents to move geoms in the cardinal directions (von Neumann neighborhood) by text prompts, referencing their color and shape.
+This is a 3D implementation of the generalized sliding tile puzzle (GSLP), where agents are tasked with moving geoms from a randomly sampled initial to a randomly sampled goal state. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference their color and shape.
 
-<img src="Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+<div align="center">
+  <img src="Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+  <p><em>Figure 2: Visualization of Sliding Geom Puzzle (SGP) configuration examples of varying sizes solved by A*.</em></p>
+</div>
+
 
 ### Sliding Tile Puzzle (STP)
-This is a 3D implementation of the classic sliding tile puzzle (STP) commonly known as 14-15-Puzzle or n-Puzzle. Agents have to move tiles from an initial to a goal configuration. It allows agents to move tiles in the cardinal directions (von Neumann neighborhood) by text prompts, referencing their tile number.
+This is a 3D implementation of the classic Sliding Tile Puzzle (STP), commonly known as the 15-Puzzle or n-Puzzle. Agents are tasked with moving tiles from a randomly sampled initial configuration to a goal state where the numbered tiles are arranged in order. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference the tile number. STP is a well-known NP-hard problem.
 
-<img src="Resources/README/STP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+<div align="center">
+  <img src="Resources/README/STP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+  <p><em>Figure 3: Visualization of Sliding Tile Puzzle (STP) configuration examples of varying sizes solved by A*.</em></p>
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :test_tube: Results
-These are preliminary results of the most recent evaluation (Dez. '24) on the SGP problem. For more details, look at our publication [Link here].
+These are preliminary results from the most recent evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon. For more details, see [Citation](#bookmark-citation).
 
-<img src="Resources/README/results.png" alt="Sliding Geom Puzzle" width="900"/>
+<div align="center">
+  <img src="Resources/README/results.png" alt="Sliding Geom Puzzle" width="900"/>
+  <p><em>Figure 4: Preliminary results from the most recent evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon.</em></p>
+</div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -64,62 +80,70 @@ These are preliminary results of the most recent evaluation (Dez. '24) on the SG
 
 The repository is organized into four main directories:
 
-1. **Source**: Includes all source code for:
-    1. [Configuration](/Source/Configuration): Generating puzzle configuration datasets.
-    2. [Experiment](/Source/Experiment): Running experiments.
-    3. [Evaluation](/Source/Evaluation): Evaluating experiments.
-    4. [Utility](/Source/Utility): Indepdent utility scripts for the repository.
-    5. [iVISPAR](/Source/iVISPAR): The Unity project for the web app in iVISPAR.
-2. **Data**: Contains all data used or generated by the source code, including
-     1. [Configuration datasets](/Data/Configs/),
-     2. [Experiment data](/Data/Experiments/),
-     3. [Task instructions](Data/Instructions/),
-     4. [API keys](/Data/API-keys/),
-     5. [Params](/Data/Params/),
-     6. [Experiment results](/Data/Resulsts/).
-3. **iVISPAR**: Holds the compiled web app.
-4. **Resources**: Contains metadata files for the repository.
+### **(1) Source**: 
+Contains all the source code required to generate datasets, run experiments, and evaluate results.
+    
+1. [Configuration](/Source/Configuration): Scripts for generating puzzle configuration datasets.
+2. [Experiment](/Source/Experiment): Code for running experiments based on the generated configurations.
+3. [Evaluation](/Source/Evaluation): Tools for analyzing and evaluating experimental results.
+4. [Utility](/Source/Utility): Independent utility scripts that add functions for the project.
+5. [iVISPAR](/Source/iVISPAR): The Unity project files for the iVISPAR web application.
+    
+### **(2) Data**:
+Contains all data used or generated by the source code, including
+ 1. [Configuration datasets](/Data/Configs/): Contains puzzle configuration files used as input for experiments.
+ 2. [Experiment data](/Data/Experiments/): Raw data generated while running experiments, such as logs and execution traces.
+ 3. [Task instructions](Data/Instructions/): Instructions or prompts used to guide AI agents or human participants.
+ 4. [API keys](/Data/API-keys/): Contains the file to set your API keys (note: ensure this directory is properly secured and excluded from any public commits).
+ 5. [Params](/Data/Params/): Parameter files used to configure and customize experiments and agent behavior.
+ 6. [Experiment results](/Data/Resulsts/): Final output of the experiments, including performance metrics, logs, and summaries.
+
+### **(3) iVISPAR**: 
+This directory contains the compiled version of the iVISPAR web app, ready to be launched in your browser. It requires no additional compilation or modification. However, it must connect to the experiment via Python to receive configuration files.
+
+### **(4) Resources**: 
+Contains metadata files and supporting resources for the project. This may include environment files, dependency lists, and documentation files.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :package: Setup
 
-iVISPAR has minimal dependencies and can be set up and run in just a few simple steps.
+iVISPAR has minimal dependencies and can be easily set up and run in just a few simple steps.
 
 ### Clone
 
-Clone the repository 
+Clone the repository.
 
-```
-# Clone the repository
+```bash
 git clone https://github.com/SharkyBamboozle/iVISPAR.git
 cd iVISPAR
 ```
 
 ### Conda
 
-iVISPAR uses Python 3. You can find the list of Python dependencies in [Resources/environment.yml](Resources/environment.yml). We recommend downloading Anaconda and making a conda environment with
+iVISPAR runs on Python 3. You can find the list of required Python dependencies in [Resources/environment.yml](Resources/environment.yml). We recommend using [Anaconda](https://www.anaconda.com/) to create a new conda environment.
 
-iVISPAR runs on Python 3. You can find the list of required Python dependencies in  [Resources/environment.yml](Resources/environment.yml). We recommend using Anaconda to create a conda environment
-
-```
-# Create new conda env
+```bash
 conda env create -f Resources/environment.yml
 conda activate conda_env_iVISPAR
 ```
 
 ### Python
-You can find an example of how to run the code in [Source/main.py](Source/main.py). It will open the iVISPAR web app on your browser and copy the client ID into the Python console.
 
-```
-# Run main script
+You can find an example of how to run the code in [Source/main.py](Source/main.py). First, the script generates a minimal dataset of configuration files. Next, iVISPAR is launched in your web browser and prompts you to copy the client ID from the web app into the Python console. Once connected, an AI agent, acting as a stand-in for your LVLMs API connection, executes the optimal path. Finally, the results are evaluated and plotted automatically. For more details, see [Quick Start](#rocket-quick-start).
+
+```bash
 cd Source
 python main.py
 ```
 
 ### Unity
 
-The project comes with the compiled [iVISPAR](iVISPAR) web app, which should work out of the box on any common OS with a browser installed. The web app is written in C# with Unity and its code source code is available under [Source/iVISPAR](Source/iVISPAR). It is unnecessary to code C# or compile the Unity project to run experiments with iVISPAR.    
+The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of the box on any common operating system with a web browser installed. The web app is built with C# using Unity, and its source code is available in [Source/iVISPAR](Source/iVISPAR). No knowledge of C# or compilation of the Unity project is required to run experiments with iVISPAR. We also provide a fully online working version for human experiments.
+
+
+http://ivispar.microcosm.ai/
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -135,7 +159,7 @@ The project comes with the compiled [iVISPAR](iVISPAR) web app, which should wor
 
 ## :bookmark: Citation
 
-You can find our publication on iVISPAR on [arXiv](https://arxiv.org/abs/xxxx.xxxxx). If you use iVISPAR in your work, we kindly ask you to cite our paper:
+Please find our publication on iVISPAR on [arXiv](https://arxiv.org/abs/xxxx.xxxxx). If you use iVISPAR in your work, we kindly ask you to cite our paper:
 
 *Mayer J., Nezami F., Ballout M., Serwan J., Bruni E. (2024). iVISPAR: An Interactive Visual-Spatial Reasoning Benchmark for LVLMs. arXiv preprint arXiv:xxxx.xxxxx.*
 

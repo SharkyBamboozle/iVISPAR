@@ -84,9 +84,11 @@ The repository is organized into four main directories:
 
 ## :package: Setup
 
+iVISPAR has minimal dependencies and can be set up and run in just a few simple steps.
+
 ### Clone
 
-You can clone our repository with 
+Clone the repository 
 
 ```
 # Clone the repository
@@ -96,7 +98,9 @@ cd iVISPAR
 
 ### Conda
 
-The experiment uses Python 3. You can find the list of Python dependencies in [Resources/environment.yml](Resources/environment.yml). We recommend downloading Anaconda and making a conda environment with
+iVISPAR uses Python 3. You can find the list of Python dependencies in [Resources/environment.yml](Resources/environment.yml). We recommend downloading Anaconda and making a conda environment with
+
+iVISPAR runs on Python 3. You can find the list of required Python dependencies in  [Resources/environment.yml](Resources/environment.yml). We recommend using Anaconda to create a conda environment
 
 ```
 # Create new conda env
@@ -121,25 +125,27 @@ The project comes with the compiled [iVISPAR](iVISPAR) web app, which should wor
 
 ## :rocket: Quick Start
 
- We've prepared a comprehensive **Getting Started Guide** with instructions to help you get started with the iVISPAR benchmark.
+ We have prepared comprehensive **Getting Started Guides**  with step-by-step instructions to help you get started quickly.
 
 1. [How to run experiments](Resources/HowTo/how_to_run_experiments.md)
-2. [How to generate configurations (optional)](Resources/HowTo/how_to_generate_configurations.md)
-3. [How to evaluate the results](Resources/HowTo/how_to_evaluate_results.md)
+2. [How to generate configurations](Resources/HowTo/how_to_generate_configurations.md)
+3. [How to evaluate results](Resources/HowTo/how_to_evaluate_results.md)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :bookmark: Citation
 
-We've published our latest paper on iVISPAR, which you can find on [arXiv](https://arxiv.org/). If you use iVISPAR in your research, please cite our paper:
+You can find our publication on iVISPAR on [arXiv](https://arxiv.org/abs/xxxx.xxxxx). If you use iVISPAR in your work, we kindly ask you to cite our paper:
 
 *Mayer J., Nezami F., Ballout M., Serwan J., Bruni E. (2024). iVISPAR: An Interactive Visual-Spatial Reasoning Benchmark for LVLMs. arXiv preprint arXiv:xxxx.xxxxx.*
 
-```
-@inproceedings{iVisapar24,
+
+### BibTeX
+```bibtex
+@inproceedings{ivispar24,
   title ={{iVISPAR: An Interactive Visual-Spatial Reasoning Benchmark for LVLMs}},
   author={Julius Mayer and Farbod Nezami and Mohamad Ballout and Serwan Jassim and Elia Bruni},
-  booktitle = {ICML 2025 Benchmarking,
+  journal={arXiv preprint arXiv:xxxx.xxxxx},
   year = {2024},
   url  = {https://arxiv.org/abs/xxxx.xxxxx}
 }

@@ -29,26 +29,29 @@ The benchmark supports evaluation through both visual modality and text-based re
 
 ## :joystick: Features
 ### Benchmarking
-- Multi-modal evaluation of visual-spatial reasoning in large vision-language models (LVLMs).
-- Includes an LVLM API for integrating models as agents in interactive puzzle-solving tasks.
-- Highly customizable with automated tools for testing and evaluation.
+- **Multi-modal evaluation:** Assess visual-spatial reasoning in LVLMs using both visual and text-based representations.
+- **LVLM agent integration:** Includes an LVLM API to seamlessly integrate models as agents for interactive puzzle-solving tasks.
+- **AI agent integration:** Provides benchmark comparisons with solutions from A* agents and random agents to establish performance baselines.
+- **Customizable and automated:** Offers high customizability with automated tools for testing, evaluation, and comparative analysis.
 
 ### Simulation
-- A web app with a graphical user interface (GUI) designed for human baseline participants.
-- Fully operational out of the box, with no installation or dependency requirements.
-- Flexible deployment: run locally or host online on a server setup.
-
-### Puzzle Problem Datasets
-- Generate custom datasets of interactive Sliding Geom Puzzles.
-- Each puzzle configuration features an animated minimal move sequence (computed using A*) to illustrate its complexity.
-- Pre-generated test datasets of puzzle configurations are available for immediate use.
+- **Ready-to-use:** Featuring two Puzzle Scenarios, fully operational right out of the box — no additional installation or dependency requirements.
+- **Interactive web app:** A browser-based graphical user interface (GUI) for human participants to interact with the puzzles, enabling human baseline comparisons.
+- **Flexible deployment:** Run the simulation locally or host it on a server for online access and remote experimentation.
+- **Future addition:** Incorporation of additional spatial reasoning puzzles to enable more comprehensive evaluation of visual-spatial reasoning capabilities.
+   
+### Datasets
+- **Custom puzzle generation:** Generate interactive Sliding Tile Puzzle or Sliding Geom Puzzle datasets tailored to specific experimental needs.
+- **Move sequence visualization:** Each puzzle configuration includes an animated minimal move sequence (computed using A*) to illustrate puzzle complexity.
+- **Pre-generated datasets:** Access a library of pre-generated test datasets for quick experimentation and evaluation.
+- **Future addition:** Incorporation of human performance data to define the problem's complexity ceiling and analyze the alignment of model-based spatial reasoning with human logic.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :video_game: Environments
 
 ### Sliding Geom Puzzle (SGP)
-This is a 3D implementation of the generalized sliding tile puzzle (GSLP), where agents are tasked with moving geoms from a randomly sampled initial to a randomly sampled goal state. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference their color and shape.
+This is a 3D implementation of the generalized sliding tile puzzle (GSTP), where agents are tasked with moving geoms from a randomly sampled initial to a randomly sampled goal state. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference their color and shape. Configuration options include board size, number of geoms, shapes and colors of geoms, camera angles, visibility of board labels, representation types (vision or text), complexity (minimal move sequence length), and more.
 
 <div align="center">
   <img src="Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
@@ -57,7 +60,7 @@ This is a 3D implementation of the generalized sliding tile puzzle (GSLP), where
 
 
 ### Sliding Tile Puzzle (STP)
-This is a 3D implementation of the classic Sliding Tile Puzzle (STP), commonly known as the 15-Puzzle or n-Puzzle. Agents are tasked with moving tiles from a randomly sampled initial configuration to a goal state where the numbered tiles are arranged in order. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference the tile number. STP is a well-known NP-hard problem.
+This is a 3D implementation of the classic Sliding Tile Puzzle (STP), commonly known as the 15-Puzzle or n-Puzzle. Agents are tasked with moving tiles from a randomly sampled initial configuration to a goal state where the numbered tiles are arranged in order. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference the tile number. STP is a well-known NP-hard problem. Configuration options include board size, number of tiles, camera angles, visibility of board labels, representation types (vision or text), complexity (minimal move sequence length), and more.
 
 <div align="center">
   <img src="Resources/README/STP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
@@ -91,12 +94,12 @@ Contains all the source code required to generate datasets, run experiments, and
     
 ### **(2) Data**:
 Contains all data used or generated by the source code, including
- 1. [Configuration datasets](/Data/Configs/): Contains puzzle configuration files used as input for experiments.
- 2. [Experiment data](/Data/Experiments/): Raw data generated while running experiments, such as logs and execution traces.
- 3. [Task instructions](Data/Instructions/): Instructions or prompts used to guide AI agents or human participants.
+ 1. [Configs](/Data/Configs/): Contains puzzle configuration files used as input for experiments.
+ 2. [Experiments](/Data/Experiments/): Raw data generated while running experiments, such as logs and execution traces.
+ 3. [Instructions](Data/Instructions/): Instructions or prompts used to guide AI agents or human participants.
  4. [API keys](/Data/API-keys/): Contains the file to set your API keys (note: ensure this directory is properly secured and excluded from any public commits).
  5. [Params](/Data/Params/): Parameter files used to configure and customize experiments and agent behavior.
- 6. [Experiment results](/Data/Resulsts/): Final output of the experiments, including performance metrics, logs, and summaries.
+ 6. [Results](/Data/Results/): Final output of the experiments, including performance metrics, logs, and summaries.
 
 ### **(3) iVISPAR**: 
 This directory contains the compiled version of the iVISPAR web app, ready to be launched in your browser. It requires no additional compilation or modification. However, it must connect to the experiment via Python to receive configuration files.

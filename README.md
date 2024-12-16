@@ -1,7 +1,18 @@
 <div id="readme-top"></div>
 
 
-![Build](https://img.shields.io/github/actions/workflow/status/username/repository/build.yml?branch=main)
+
+![Task_multimodal](https://img.shields.io/badge/Task-multimodal-gray?style=flat&labelColor=red)
+![Task_visual_reasoning](https://img.shields.io/badge/Task-visual_reasoning-gray?style=flat&labelColor=red)
+![Task_visual_spatial_reasoning](https://img.shields.io/badge/Task-visual_spatial_reasoning-gray?style=flat&labelColor=red)<br>
+
+![Model_Claude](https://img.shields.io/badge/Model-Claude-gray?logo=claude&style=flat&labelColor=blue)
+![Model_Claude](https://img.shields.io/badge/Model-GPT4-gray?logo=openai&style=flat&labelColor=blue)
+![Model_Claude](https://img.shields.io/badge/Model-Gemini-gray?logo=googlegemini&style=flat&labelColor=blue)<br>
+
+![Environment_sliding_tile_puzzle](https://img.shields.io/badge/Environment-sliding_tile_puzzle-gray?style=flat&labelColor=darkgreen)
+![Environment_sliding_geom_puzzle](https://img.shields.io/badge/Environment-sliding_geom_puzzle-gray?style=flat&labelColor=darkgreen)<br>
+
 
 
 # :jigsaw: iVISPAR

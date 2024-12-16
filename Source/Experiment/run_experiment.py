@@ -33,6 +33,8 @@ async def run_experiment(games, agents, sim_param):
     run_socketserver_in_background(webApp_dir)
 
     uri = "ws://localhost:1984"
+    # the ivispar on the server
+    uri_remote = "wss://ivispar.microcosm.ai:1984"
     websocket, network_id, partner_id = await initialize_connection(uri)
 
     # Loop over agents, games and game configurations
@@ -87,11 +89,25 @@ async def run_experiment(games, agents, sim_param):
                     agent = agent_systems.AIAgent(config.get(move_set, []))
                 elif agent_type == 'UserAgent':
                     agent = agent_systems.UserAgent()
-                elif (agent_type == 'GPT4Agent' or
-                      agent_type == 'ClaudeAgent' or
-                      agent_type == 'GeminiAgent'):
+                elif agent_type == 'GPT4Agent':
                     agent_parameters = agent_details.get('params', {})
-                    agent = agent_class(
+                    agent = agent_systems.GPT4Agent(
+                        api_key_file_path=agent_parameters.get('api_keys_file_path', None),
+                        instruction_prompt_file_path=agent_parameters.get('instruction_prompt_file_path', None),
+                        single_images=agent_parameters.get('single_images', True),
+                        COT=agent_parameters.get('COT', False),
+                    )
+                elif agent_type == 'ClaudeAgent':
+                    agent_parameters = agent_details.get('params', {})
+                    agent = agent_systems.ClaudeAgent(
+                        api_key_file_path=agent_parameters.get('api_keys_file_path', None),
+                        instruction_prompt_file_path=agent_parameters.get('instruction_prompt_file_path', None),
+                        single_images=agent_parameters.get('single_images', True),
+                        COT=agent_parameters.get('COT', False),
+                    )
+                elif agent_type == 'GeminiAgent':
+                    agent_parameters = agent_details.get('params', {})
+                    agent = agent_systems.GeminiAgent(
                         api_key_file_path=agent_parameters.get('api_keys_file_path', None),
                         instruction_prompt_file_path=agent_parameters.get('instruction_prompt_file_path', None),
                         single_images=agent_parameters.get('single_images', True),
@@ -120,7 +136,6 @@ async def run_experiment(games, agents, sim_param):
                     )
 
                 try:
-
                     # Set up environment
                     setup_config_file = util.load_single_json_from_directory(episode_path)
                     message_data = {

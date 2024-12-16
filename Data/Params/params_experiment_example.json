@@ -1,9 +1,12 @@
 {
   "agents": {
-    "AIAgent": {
-      "class": "agent_systems.AIAgent",
+    "GPT4Agent": {
+      "class": "agent_systems.GPT4Agent",
       "params": {
-        "move_set": "shortest_move_sequence"
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": false
       }
     }
   },
@@ -12,9 +15,9 @@
     "InteractivePuzzle": {
       "class": "game_systems.InteractivePuzzle",
       "params": {
-        "config_id": "SGP_ID_20241212_144703",
+        "config_id": "SGP_ID_20241212_024852",
         "num_game_env": 2,
-        "max_game_length": 5,
+        "max_game_length": 10,
         "representation_type": "vision",
         "planning_steps": 1,
         "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_text_based.txt",

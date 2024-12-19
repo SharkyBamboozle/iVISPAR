@@ -27,6 +27,7 @@ The benchmark supports evaluation through both visual modality and text-based re
   <p><em>Figure 1: Visualization of GPT-4's interaction with the Sliding Geom Puzzle (SGP).</em></p>
 </div>
 
+This is our submission to the [Berkley LLM Agents Hackathon 2024](https://rdi.berkeley.edu/llm-agents-hackathon/), please find our submission [video on YouTube](https://www.youtube.com/watch?v=6s1ova1tgwo).
 
 ## Table of Contents
 1. [Features](#joystick-features)

@@ -185,9 +185,9 @@ The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## :bookmark: Citation
+## :bookmark: Citation (coming soon)
 
-Please find our publication on iVISPAR on [arXiv](https://arxiv.org/abs/xxxx.xxxxx). If you use iVISPAR in your work, we kindly ask you to cite our paper:
+Please find our publication on iVISPAR on [arXiv](https://arxiv.org/abs/xxxx.xxxxx) (coming soon). If you use iVISPAR in your work, we kindly ask you to cite our paper:
 
 *Mayer J., Nezami F., Ballout M., Serwan J., Bruni E. (2024). iVISPAR: An Interactive Visual-Spatial Reasoning Benchmark for LVLMs. arXiv preprint arXiv:xxxx.xxxxx.*
 

@@ -153,6 +153,7 @@ class LLMAgent:
         cleaned_action = re.sub(r'\s+', ' ', cleaned_action).strip()
 
         return cleaned_action
+    
 
 def load_api_keys(api_key_file_path):
     """Load API keys from file"""
@@ -166,6 +167,70 @@ def load_api_keys(api_key_file_path):
                 keys[key] = value
     return keys
 
+## used for debugging claude and gpt
+def print_message_structure(messages):
+    """
+    Print message structure in a clean format, similar to:
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": [IMAGE]},
+        ...
+    ]
+    """
+    print("\nmessages=[")
+    for msg in messages:
+        content = msg['content']
+        
+        # Handle different content types
+        if isinstance(content, list):
+            # For messages with image content
+            if len(content) == 1 and content[0].get('type') in ['image', 'image_url']:
+                content_preview = "[IMAGE]"
+            else:
+                # For messages with multiple content items
+                content_preview = "["
+                for item in content:
+                    if item['type'] in ['image', 'image_url']:
+                        content_preview += "[IMAGE], "
+                    elif item['type'] == 'text':
+                        content_preview += f"text: '{item['text'][:50]}...', "
+                content_preview = content_preview.rstrip(', ') + "]"
+        elif isinstance(content, dict):
+            # For single image messages
+            if content.get('type') in ['image', 'image_url']:
+                content_preview = "[IMAGE]"
+            else:
+                content_preview = str(content)
+        else:
+            # For simple text messages
+            content_preview = f"'{content[:50]}...'" if len(str(content)) > 50 else f"'{content}'"
+        
+        print(f"    {{\"role\": \"{msg['role']}\", \"content\": {content_preview}}},")
+    print("]")
+
+def print_message_structure_gemini(content):
+    """
+    Print content structure in a clean format for Gemini API, similar to:
+    content=[
+        "instruction text...",
+        [IMAGE],
+        "Previous action taken: move_left",
+        [IMAGE],
+        ...
+    ]
+    """
+    print("\ncontent=[")
+    for item in content:
+        # Handle different content types
+        if isinstance(item, Image.Image):
+            content_preview = "[IMAGE]"
+        elif isinstance(item, str):
+            content_preview = f"'{item[:50]}...'" if len(item) > 50 else f"'{item}'"
+        else:
+            content_preview = str(item)
+        
+        print(f"    {content_preview},")
+    print("]")
 
 class GPT4Agent(LLMAgent):
     def __init__(self, api_key_file_path, instruction_prompt_file_path, single_images=True, COT=False):
@@ -177,7 +242,9 @@ class GPT4Agent(LLMAgent):
             "Authorization": f"Bearer {self.api_key}"
         }
         self.model = "gpt-4o"
-
+        self.max_history = 2  # number of old conversations to keep in memory
+        self.chat_history = []
+        self.content = []  
 
     def act(self, observation):
         sceneUnderstanding = False #TODO dirty quick code to manually change agent for scene understanding
@@ -224,46 +291,76 @@ class GPT4Agent(LLMAgent):
 
                 print("\n=== Processing Current State ===")
                 current_base64 = self.encode_image_from_pil(observation)
+                goal_base64 = self.encode_image_from_pil(self.goal_state)
+                messages = [{"role": "system", "content": self.system_prompt}]
 
-                if self.single_images:
-                    goal_base64 = self.encode_image_from_pil(self.goal_state)
-                    content = [
-                        {"type": "text", "text": """The first image shows the goal state, and the second image shows
-                          the current state. What action should be taken? (Keep in mind, you are not allowed to have two objects in 
-                         the same position)? no matter what always end with action: <your action> (dont add additional character
-                        after the word action)"""},
-                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{goal_base64}"}},
+                # Add history if available
+                if self.max_history > 0:
+                    for i, prev_exchange in enumerate(self.chat_history[-self.max_history:], 1):
+                        prev_image_base64 = self.encode_image_from_pil(prev_exchange['observation'])
+                        # User message with image
+                        messages.append({
+                            "role": "user", 
+                            "content": [
+                                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{prev_image_base64}"}}
+                            ]
+                        })
+                        # Assistant response
+                        messages.append({
+                            "role": "assistant",
+                            "content": f"Action: {prev_exchange['response']}"
+                        })
+
+                # Add goal state image
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{goal_base64}"}}
+                    ]
+                })
+
+                # Add current state image
+                messages.append({
+                    "role": "user",
+                    "content": [
                         {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
                     ]
-                else:
-                    content = [
-                        {"type": "text", "text": """In this image you will see two boards, the one on the left is 
-                         your current state (written in the bottom of the board) and the one on the right is your
-                          goal state(written in the bottom of the board), what action you should take to match the
-                          current state to the goal state?"""},
-                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{current_base64}"}}
-                    ]
+                })
+
+                # Add instruction text
+                messages.append({
+                    "role": "user",
+                    "content": """The last image shows the current state, and the second to last image shows
+                          the goal state. (you are also shown the previous state image(s) and action suggested by you,
+                          you can use them to determine the next action) 
+                          What action should be taken? (Keep in mind, you are not allowed to have two objects in 
+                          the same position)? If you asked for an action and nothing moves (check previous image and action), 
+                          that means the action is not allowed, either blocked by another object or out of the board move. 
+                          No matter what always end with action: <your action> (dont add additional character after the word action)"""
+                })
+
+                print_message_structure(messages) # use it for debugging make sure the input is correct
 
                 payload = {
                     "model": self.model,
-                    "messages": [
-                        {"role": "system", "content": self.system_prompt},
-                        {"role": "user", "content": content}
-                    ],
-                    "max_tokens": 150
+                    "messages": messages,
+                    "max_tokens": 300
                 }
 
-
-                response = requests.post(
-                    "https://api.openai.com/v1/chat/completions",
+                response = requests.post("https://api.openai.com/v1/chat/completions",
                     headers=self.headers,
                     json=payload
                 )
-                print(response.json())
+
                 action, thoughts = self.parse_action(response.json()['choices'][0]['message']['content'])
+                # Store the current exchange in history
+                self.chat_history.append({
+                    "observation": observation,
+                    "response": action
+                })
 
                 print(f"\nGPT-4 Vision suggested action: {action}")
-                print(f"GPT-4 Vision thought: {thoughts}")
+                print(f"GPT-4 Vision thoughts: {thoughts}")
                 return self.parse_action_rmv_special_chars(action)
 
             except Exception as e:
@@ -279,27 +376,39 @@ class GPT4Agent(LLMAgent):
 
                 print("\n=== Processing Current State ===")
 
+                # Build messages with history
+                messages = [{"role": "system", "content": self.system_prompt}]
+                
+                # Add conversation history
+                if self.max_history > 0:
+                    for i, prev_exchange in enumerate(self.chat_history[-self.max_history:], 1):
+                        messages.extend([
+                            {"role": "user", "content": f"Previous observation {i}: {prev_exchange['observation']}"},
+                            {"role": "assistant", "content": f"Previous action {i}: {prev_exchange['response']}"}
+                        ])
 
-                content = [
+                # Add current observation
+                current_content = [
                     {"type": "text", "text": f"""The first coordinates show the goal state, and the second coordinates show
                     the current state. What action should be taken (Keep in mind, you are not allowed to have two objects in the same position)?
-                    The board is 4 by 4, coordinates go from a to d and 1 to 4 but not beyond that.
+                    If you asked for an action for an object, and you still see that this object is still in the same position, 
+                    that means the action is not allowed, either blocked by another object or out of the board move,
+                    The board is 4 by 4, coordinates go from a to d and 1 to 4 but not beyond that (there is no 0, so if you are at position A1,
+                     you cannot go down or left, and if you are at position D4, you cannot go up or right).
                     goal state: {self.goal_state} 
                     current state: {observation}
                     no matter what always end with action: <your action> (dont add additional character
                     after the word action) """},
                 ]
-
+                messages.append({"role": "user", "content": current_content})
 
                 payload = {
                     "model": self.model,
-                    "messages": [
-                        {"role": "system", "content": self.system_prompt},
-                        {"role": "user", "content": content}
-                    ],
-                    "max_tokens": 150
+                    "messages": messages,
+                    "max_tokens": 150,
+                    "temperature": 0.5 # default is 0
                 }
-                print(payload)
+                
 
                 response = requests.post(
                     "https://api.openai.com/v1/chat/completions",
@@ -308,8 +417,13 @@ class GPT4Agent(LLMAgent):
                 )
                 print(response.json())
                 action, thoughts = self.parse_action(response.json()['choices'][0]['message']['content'])
-                print(f"\nGPT-4 Vision suggested action: {action}")
-                print(f"GPT-4 Vision thought: {thoughts}")
+
+                # Store the exchange in history
+                self.chat_history.append({
+                    "observation": observation,
+                    "response": action
+                })
+
                 return self.parse_action_rmv_special_chars(action)
 
             except Exception as e:
@@ -322,7 +436,10 @@ class ClaudeAgent(LLMAgent):
         super().__init__(api_key_file_path, instruction_prompt_file_path, single_images, COT)
         self.client = Anthropic(api_key=self.api_keys['CLAUDE_API_KEY'])
         self.model = "claude-3-5-sonnet-20241022"
-        
+        self.max_history = 2  
+        self.chat_history = []
+        self.content = []  
+       
     def act(self, observation):
         if isinstance(observation, Image.Image):
             try:
@@ -331,44 +448,74 @@ class ClaudeAgent(LLMAgent):
 
                 print("\n=== Processing Current State ===")
                 current_base64 = self.encode_image_from_pil(observation)
+                goal_base64 = self.encode_image_from_pil(self.goal_state)
+                messages = []
 
-                if self.single_images:
-                    goal_base64 = self.encode_image_from_pil(self.goal_state)
-                    content = [
-                        {"type": "text", "text": "obs_0_init"},
-                        {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": goal_base64}},
-                        {"type": "text", "text": "Current state:"},
-                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": current_base64}},
-                    {"type": "text", "text": """The first image shows the goal state, and the second image shows
-                          the current state. What action should be taken? (Keep in mind, you are not allowed to have two objects in 
-                         the same position)? no matter what always end with action: <your action> (dont add additional character
-                        after the word action)"""}
+                # Add history if available
+                if self.max_history > 0:
+                    for i, prev_exchange in enumerate(self.chat_history[-self.max_history:], 1):
+                        prev_image_base64 = self.encode_image_from_pil(prev_exchange['observation'])
+                        # Add previous image
+                        messages.append({
+                            "role": "user",
+                            "content": [
+                                {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": prev_image_base64}}
+                            ]
+                        })
+                        # Add assistant's response
+                        messages.append({
+                            "role": "assistant",
+                            "content": f"Action: {prev_exchange['response']}"
+                        })
+
+                # Add goal state image
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": goal_base64}}
                     ]
-                else:
-                    content = [
-                        {"type": "text", "text": """In this image you will see two boards, the one on the left 
-                        is your current state (written in the bottom of the board) and
-                        the one on the right is your goal state(written in the bottom of the board).
-                        Keep in mind, if you ask for an action and nothing moves,
-                    that means the action is not allowed, either blocked by another object or out of the board move,if you think all objects match
-                    their position with the original, write done, if you write done, and the game continues, 
-                    that means the objects are not placed in the correct positions, keep moving pieces around.
-                    what action you should take to match the current state to the goal state?"""},
-                    {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": current_base64}}
-                ]
+                })
 
+                # Add current state image
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": current_base64}}
+                    ]
+                })
+
+                # Add instruction text
+                messages.append({
+                    "role": "user",
+                    "content": """The last image shows the current state, and the second to last image shows
+                          the goal state. (you are also shown the previous state image(s) and action suggested by you,
+                          you can use them to determine the next action) 
+                          What action should be taken? (Keep in mind, you are not allowed to have two objects in 
+                          the same position)? If you asked for an action and nothing moves (check previous image and action), 
+                          that means the action is not allowed, either blocked by another object or out of the board move. 
+                          No matter what always end with action: <your action> (dont add additional character after the word action)"""
+                })
+
+                print_message_structure(messages)
                 message = self.client.messages.create(
                     model=self.model,
                     max_tokens=150,
                     system=self.system_prompt,
-                    temperature=0.5,  # maybe needs too be tuned
-                    messages=[{"role": "user", "content": content}]
+                    temperature=0.5,
+                    messages=messages
                 )
 
-                action,thoughts = self.parse_action(message.content[0].text, split_at='description:')
+                action, thoughts = self.parse_action(message.content[0].text)
+                
+                # Store the current exchange in history
+                self.chat_history.append({
+                    "observation": observation,
+                    "response": action
+                })
+                
                 print(f"\nClaude suggested action: {action}")
-                print(f"\nClaude suggested action: {thoughts}")
-                return self.parse_action_rmv_special_chars(action) 
+                print(f"\nClaude suggested thoughts: {thoughts}")
+                return self.parse_action_rmv_special_chars(action)
 
             except Exception as e:
                 print(f"\nError calling Claude API: {e}")
@@ -381,26 +528,43 @@ class ClaudeAgent(LLMAgent):
                 if self.goal_state is None:
                     return self.process_goal_state(observation)  
                 print("\n=== Processing Current State ===")
+                messages = []
 
-                content = [
+
+                if self.max_history > 0:
+                    for i, prev_exchange in enumerate(self.chat_history[-self.max_history:], 1):
+                        messages.extend([
+                            {"role": "user", "content": f"Previous observation {i}: {prev_exchange['observation']}"},
+                            {"role": "assistant", "content": f"Previous action {i}: {prev_exchange['response']}"}
+                        ])
+                current_content = [
                     {"type": "text", "text": f"""The first coordinates show the goal state, and the second coordinates show
                     the current state. What action should be taken (Keep in mind, you are not allowed to have two objects in the same position)?
-                    The board is 4 by 4, coordinates go from a to d and 1 to 4 but not beyond that.
+                    If you asked for an action for an object, and you still see that this object is still in the same position, 
+                    that means the action is not allowed, either blocked by another object or out of the board move,
+                    The board is 4 by 4, coordinates go from a to d and 1 to 4 but not beyond that (there is no 0, so if you are at position A1,
+                     you cannot go down or left, and if you are at position D4, you cannot go up or right).
                     goal state: {self.goal_state} 
                     current state: {observation}
                     no matter what always end with action: <your action> (dont add additional character
                     after the word action) """},
                 ]
-                
+
+                messages.append({"role": "user", "content": current_content})
+
                 message = self.client.messages.create(
                     model=self.model,
                     max_tokens=150,
                     system=self.system_prompt,
                     temperature=0.5,  # maybe needs too be tuned
-                    messages=[{"role": "user", "content": content}]
+                    messages= messages
                 )
 
-                action,thoughts = self.parse_action(message.content[0].text, split_at='description:')
+                action,thoughts = self.parse_action(message.content[0].text)
+                self.chat_history.append({
+                    "observation": observation,
+                    "response": action
+                })
                 print(f"\nClaude suggested action: {action}")
                 print(f"\nClaude suggested action: {thoughts}")
                 return self.parse_action_rmv_special_chars(action) 
@@ -414,48 +578,64 @@ class GeminiAgent(LLMAgent):
         super().__init__(api_key_file_path, instruction_prompt_file_path, single_images, COT)
         self.api_key = self.api_keys['GEMINI_API_KEY']
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel(model_name="models/gemini-2.0-flash-exp", system_instruction=self.system_prompt)
+        self.model = genai.GenerativeModel(model_name="models/gemini-1.5-flash-8b", system_instruction=self.system_prompt)
+        self.max_history = 2
+        self.chat_history = []
+        self.content = [] 
 
     def act(self, observation):
+
         if isinstance(observation, Image.Image):
             try:
                 if self.goal_state is None:
                     return self.process_goal_state(observation)
 
                 print("\n=== Processing Current State ===")
-                # Convert PIL images to format expected by Gemini
-                current_image = observation
+                
+                # Initialize content list for Gemini
+                messages = []
+                
+                # Add history if available
+                if self.max_history > 0:
+                    for prev_exchange in self.chat_history[-self.max_history:]:
+                        # Add previous image and its response to content
+                        messages.extend([
+                            prev_exchange['observation'],
+                            f"Previous action: {prev_exchange['response']}"
+                        ])
 
-                if self.single_images:
-                    goal_image = self.goal_state
-                    content = [
-                        """The first image shows the goal state, and the second image shows
-                          the current state. What action should be taken to match the goal state? 
-                         (Keep in mind, you are not allowed to have two objects in the same position,
-                           if you think all objects match their position with the original, write done, if you write done, and the game continues, 
-                     that means the objects are not placed in the correct positions, keep moving pieces around)""",
-                    goal_image,
-                    current_image
-                    ]
-                else:
-                    content = [
-                        """In this image you will see two boards, the one on the left 
-                        is your current state (written in the bottom of the board) and
-                        the one on the right is your goal state(written in the bottom of the board).
-                        Keep in mind, if you ask for an action and nothing moves,
-                    that means the action is not allowed, either blocked by another object or out of the board move,if you think all objects match
-                    their position with the original, write done, if you write done, and the game continues, 
-                    that means the objects are not placed in the correct positions, keep moving pieces around.
-                    what action you should take to match the current state to the goal state?""",
-                    current_image
-                ]
+                # Add goal and current state images
+                messages.extend([
+                    self.goal_state,  # Goal state image
+                    observation,      # Current state image
+                ])
 
-                response = self.model.generate_content(content)
-                print(response.text)
-                action, thoughts = self.parse_action(response.text, split_at='description:')
+                # Add instruction text
+                instruction = """The last image shows the current state, and the second to last image shows
+                        the goal state. (you are also shown the previous state image(s) and action suggested by you,
+                        you can use them to determine the next action) 
+                        What action should be taken? (Keep in mind, you are not allowed to have two objects in 
+                        the same position)? If you asked for an action and nothing moves (check previous image and action), 
+                        that means the action is not allowed, either blocked by another object or out of the board move. 
+                        No matter what always end with action: <your action> (dont add additional character after the word action)"""
+            
+                messages.extend([instruction])
+                print_message_structure_gemini(messages) # use it for debugging make sure the input is correct
+
+                # Generate response using Gemini
+                response = self.model.generate_content(messages)
+                
+                action, thoughts = self.parse_action(response.text)
+                
+                # Store the current exchange in history
+                self.chat_history.append({
+                    "observation": observation,
+                    "response": action
+                })
+            
                 print(f"\nGemini suggested action: {action}")
-                print(f"\nGemini suggested action: {thoughts}")
-                return self.parse_action_rmv_special_chars(action) 
+                print(f"\nGemini suggested thoughts: {thoughts}")
+                return self.parse_action_rmv_special_chars(action)
 
             except Exception as e:
                 print(f"\nError calling Gemini API: {e}")
@@ -467,8 +647,16 @@ class GeminiAgent(LLMAgent):
             try:
                 if self.goal_state is None:
                     return self.process_goal_state(observation)  
+                print("\n=== Processing Current State ===")
 
-                content = [ f"""The first coordinates show the goal state, and the second coordinates show
+                if self.max_history > 0:
+                    history_context = ""
+                    for prev_exchange in self.chat_history[-self.max_history:]:
+                        history_context += f"Previous observation: {prev_exchange['observation']}\n"
+                        history_context += f"Previous action: {prev_exchange['response']}\n\n"
+                
+                content = [f"""{history_context if self.max_history > 0 else ''}
+                    The first coordinates show the goal state, and the second coordinates show
                     the current state. What action should be taken (Keep in mind, you are not allowed to have two objects in the same position)?
                     The board is 4 by 4, coordinates go from a to d and 1 to 4 but not beyond that.
                     goal state: {self.goal_state} 
@@ -476,9 +664,15 @@ class GeminiAgent(LLMAgent):
                     no matter what always end with action: <your action> (dont add additional character
                     after the word action) """
                 ]
+
                 response = self.model.generate_content(content)
                 print(response.text)
-                action, thoughts = self.parse_action(response.text, split_at='description:')
+                action, thoughts = self.parse_action(response.text)
+                self.chat_history.append({
+                    "observation": observation,
+                    "response": action
+                    })
+
                 print(f"\nGemini suggested action: {action}")
                 print(f"\nGemini suggested action: {thoughts}")
                 return self.parse_action_rmv_special_chars(action) 

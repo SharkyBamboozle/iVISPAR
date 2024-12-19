@@ -13,6 +13,7 @@
 ![Environment_sliding_tile_puzzle](https://img.shields.io/badge/Environment-sliding_tile_puzzle-gray?style=flat&labelColor=darkgreen)
 ![Environment_sliding_geom_puzzle](https://img.shields.io/badge/Environment-sliding_geom_puzzle-gray?style=flat&labelColor=darkgreen)<br>
 
+This is our submission to the [Berkley LLM Agents Hackathon 2024](https://rdi.berkeley.edu/llm-agents-hackathon/), please find our submission [video on YouTube](https://www.youtube.com/watch?v=6s1ova1tgwo).
 
 
 # :jigsaw: iVISPAR
@@ -26,8 +27,6 @@ The benchmark supports evaluation through both visual modality and text-based re
   <img src="Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
   <p><em>Figure 1: Visualization of GPT-4's interaction with the Sliding Geom Puzzle (SGP).</em></p>
 </div>
-
-This is our submission to the [Berkley LLM Agents Hackathon 2024](https://rdi.berkeley.edu/llm-agents-hackathon/), please find our submission [video on YouTube](https://www.youtube.com/watch?v=6s1ova1tgwo).
 
 ## Table of Contents
 1. [Features](#joystick-features)

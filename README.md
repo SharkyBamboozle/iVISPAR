@@ -32,11 +32,12 @@ The benchmark supports evaluation through both visual modality and text-based re
 1. [Features](#joystick-features)
 2. [Environments](#video_game-puzzle-environments)
 3. [Results](#test_tube-results)
-4. [Overview](#mount_fuji-overview)
-5. [Setup](#package-setup)
-6. [Quick Start](#rocket-quick-start)
-7. [Citation](#bookmark-citation)
-8. [Contact](#mailbox_with_mail-contact)
+4. [Leaderboard](#trophy-leaderboard)
+5. [Overview](#mount_fuji-overview)
+6. [Setup](#package-setup)
+7. [Quick Start](#rocket-quick-start)
+8. [Citation](#bookmark-citation)
+9. [Contact](#mailbox_with_mail-contact)
 
 ## :joystick: Features
 ### Benchmarking
@@ -96,6 +97,18 @@ Preliminary results from the latest evaluation (Dec. '24) on the SGP problem for
   <img src="Resources/README/results.png" alt="Sliding Geom Puzzle" width="900"/>
   <p><em>Figure 4: Preliminary results from the most recent evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon.</em></p>
 </div>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## :trophy: Leaderboard
+
+These are preliminary results and will be updated with a more detailed analysis and more models soon. 
+
+| **#** | **Model**           | **ALL**  | **SGP_t** | **SGP_v** | **SGP_l** |
+| ----- | ------------------- | -------- | --------- | --------- | --------- |
+| 1     | **GPT-4o**           | **78.2** | 76.4      | 80.1      | 79.3      |
+| 2     | **Claude**           | **72.5** | 70.8      | 74.1      | 71.9      |
+| 3     | **Gemini**           | **75.9** | 74.3      | 77.6      | 76.2      |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -185,7 +198,7 @@ The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## :bookmark: Citation (coming soon)
+## :bookmark: Citation
 
 Please find our publication on iVISPAR on [arXiv](https://arxiv.org/abs/xxxx.xxxxx) (coming soon). If you use iVISPAR in your work, we kindly ask you to cite our paper:
 

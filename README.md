@@ -64,7 +64,11 @@ This is our submission to the [Berkley LLM Agents Hackathon 2024](https://rdi.be
 ## :video_game: Puzzle Environments
 
 ### Sliding Geom Puzzle (SGP)
-This is a 3D implementation of the generalized sliding tile puzzle (GSTP), where agents are tasked with moving geoms from a randomly sampled initial to a randomly sampled goal state. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference their color and shape. Configuration options include board size, number of geoms, shapes and colors of geoms, camera angles, visibility of board labels, representation types (vision or text), complexity (minimal move sequence length), and more.
+This is a 3D implementation of the generalized sliding tile puzzle (GSTP), where agents are tasked with moving geoms from a randomly sampled initial to a randomly sampled goal state. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference their color and shape. Configuration options include board size, number of geoms, shapes and colors of geoms, camera angles, visibility of board labels, representation types (vision or text), complexity (minimal move sequence length), and more. 
+```bash
+# Example action:
+move blue sphere right
+```
 
 <div align="center">
   <img src="Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
@@ -74,6 +78,10 @@ This is a 3D implementation of the generalized sliding tile puzzle (GSTP), where
 
 ### Sliding Tile Puzzle (STP)
 This is a 3D implementation of the classic Sliding Tile Puzzle (STP), commonly known as the 15-Puzzle or n-Puzzle. Agents are tasked with moving tiles from a randomly sampled initial configuration to a goal state where the numbered tiles are arranged in order. Agents can move tiles in the four cardinal directions (following the von Neumann neighborhood) using text prompts that reference the tile number. STP is a well-known NP-hard problem. Configuration options include board size, number of tiles, camera angles, visibility of board labels, representation types (vision or text), complexity (minimal move sequence length), and more.
+```bash
+# Example action:
+move tile 5 down
+```
 
 <div align="center">
   <img src="Resources/README/STP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>

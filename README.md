@@ -104,11 +104,12 @@ Preliminary results from the latest evaluation (Dec. '24) on the SGP problem for
 
 These are preliminary results and will be updated with a more detailed analysis and more models soon. 
 
-| **#** | **Model**           | **ALL**  | **SGP_t** | **SGP_v** | **SGP_l** |
-| ----- | ------------------- | -------- | --------- | --------- | --------- |
-| 1     | **GPT-4o**           | **78.2** | 76.4      | 80.1      | 79.3      |
-| 2     | **Claude**           | **72.5** | 70.8      | 74.1      | 71.9      |
-| 3     | **Gemini**           | **75.9** | 74.3      | 77.6      | 76.2      |
+| **#** | **Model**           | **ALL**    | **Text**   | **Vision** |
+| ----- | ------------------- | ---------- | ---------- | ---------- |
+| 1     | **Claude**           | **2.877551** | 2.346939   | 3.408163   |
+| 2     | **Gemini**           | **3.469388** | 3.081633   | 3.857143   |
+| 3     | **GPT-4**            | **4.734694** | 5.142857   | 4.326531   |
+| 4     | **InternVL**         | **5.938776** | 5.938776   | 5.938776   |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

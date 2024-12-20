@@ -91,7 +91,7 @@ move tile 5 down
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :test_tube: Results
-Preliminary results from the latest evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon are shown below. For more details, see [Citation](#bookmark-citation). More details about the results can be found  [here](Resources/HowTo/result_details.md). 
+Preliminary results from the latest evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon are shown below. For more details, see [Citation](#bookmark-citation). More details about the results can be found  [here](Resources/HowTo/). 
 
 <div align="center">
   <img src="Resources/README/results1.png" alt="Sliding Geom Puzzle" width="600"/>

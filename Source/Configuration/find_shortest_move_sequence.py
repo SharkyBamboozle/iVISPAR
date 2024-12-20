@@ -1,6 +1,7 @@
 # Import statements
 import heapq
 import numpy as np
+import random
 
 def calculate_manhattan_heuristic(initial_states, goal_states):
     """Calculate the cumulative Manhattan distance of all geoms from their initial to their goal positions."""
@@ -97,6 +98,60 @@ def a_star(n, initial_state, goal_state, max_depth=None):
     return None  # No solution found within the max depth
 
 
+def find_config_by_random_expand(n, goal_state, path_length, max_steps=100):
+    """
+    Generate a valid initial configuration for a sliding tile puzzle that has a path length of 'path_length'
+    from the initial state to the goal state.
+
+    Args:
+        n (int): The board size (n x n).
+        goal_state (list): The goal state of the puzzle (list of [x, y] pairs).
+        path_length (int): The required distance (in optimal moves) from the generated initial state to the goal state.
+        max_steps (int, optional): Maximum number of backward moves to try before stopping.
+
+    Returns:
+        list: The generated initial state, or None if no valid state was found.
+    """
+    current_state = goal_state.copy()
+    for step in range(max_steps):
+        # Calculate the current path length to the goal
+        current_path = a_star(n, current_state, goal_state, max_depth=path_length)
+        if current_path is None:
+            print(f"Failed to calculate path from {current_state} to the goal.")
+            break
+        current_path_length = len(current_path) - 1  # Subtract 1 since the first state doesn't count as a step
+
+        #print(f"Step {step + 1}: Current path length from state to goal is {current_path_length}")
+
+        # Get all possible neighbors of the current state
+        neighbors = get_neighbors(current_state, n)
+        random.shuffle(neighbors)  # Randomize the neighbor selection process
+
+        valid_next_state = None  # Track if we find a valid next state
+        for neighbor in neighbors:
+            neighbor_path = a_star(n, neighbor, goal_state, max_depth=path_length)
+
+            if neighbor_path is not None:
+                neighbor_path_length = len(neighbor_path) - 1  # Subtract 1 since the first state doesn't count as a step
+                if neighbor_path_length > current_path_length:  # Check if the neighbor's path is longer than the current
+                    valid_next_state = neighbor
+                    #print(f"  Found a valid next state with path length {neighbor_path_length} (previous was {current_path_length})")
+                    break  # We only need one valid neighbor
+
+        if valid_next_state is not None:
+            current_state = valid_next_state  # Move to the new state
+        else:
+            pass
+            #print(f"Step {step + 1}: No valid backward step found from state {current_state}")
+
+        # If the current state's path to the goal has the desired path length, return it
+        final_path = a_star(n, current_state, goal_state, max_depth=path_length)
+        if final_path is not None and len(final_path) - 1 == path_length:
+            print(f"Found valid initial configuration after {step + 1} steps")
+            return current_state
+
+    print("Failed to find a valid initial configuration within the max steps.")
+    return None
 
 if __name__ == "__main__":
     board_size = 5

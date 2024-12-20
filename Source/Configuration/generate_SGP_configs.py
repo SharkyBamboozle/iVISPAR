@@ -163,7 +163,7 @@ def generate_SGP_configs(board_size, num_geoms_min_max, complexity_min_max, comp
 
 if __name__ == "__main__":
     # Load parameters from the JSON file
-    params = util.load_params_from_json('params_SGP_config_example.json')
+    params = util.load_params_from_json('params_SGP_config_hackathon_submission.json')
 
     # Generate Sliding Geom Puzzle (SGP) configuration files
     config_id = generate_SGP_configs(board_size=params.get('board_size', 5),

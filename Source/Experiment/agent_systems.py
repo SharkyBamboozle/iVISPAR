@@ -577,8 +577,9 @@ class GeminiAgent(LLMAgent):
     def __init__(self, api_key_file_path, instruction_prompt_file_path, single_images=True, COT=False):
         super().__init__(api_key_file_path, instruction_prompt_file_path, single_images, COT)
         self.api_key = self.api_keys['GEMINI_API_KEY']
+        print(self.api_keys['GEMINI_API_KEY'])
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel(model_name="models/gemini-1.5-flash-8b", system_instruction=self.system_prompt)
+        self.model = genai.GenerativeModel(model_name="models/gemini-2.0-flash-exp", system_instruction=self.system_prompt)
         self.max_history = 2
         self.chat_history = []
         self.content = [] 

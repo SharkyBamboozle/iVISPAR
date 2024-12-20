@@ -282,7 +282,7 @@ def evaluate_a_star_heuristic(experiment_id, experiment_signature="InteractivePu
 
     # Evaluate and plot for each episode of the experiment
     evaluate_episodes_a_star_heuristic(experiment_id, experiment_signature=experiment_signature)
-    plot_episode_evaluate_a_star_heuristic(experiment_id, experiment_signature=experiment_signature)
+    #plot_episode_evaluate_a_star_heuristic(experiment_id, experiment_signature=experiment_signature)
 
     # Evaluate and plot for the entire experiment
     evaluate_experiment_a_star_heuristic(experiment_id, experiment_signature=experiment_signature)

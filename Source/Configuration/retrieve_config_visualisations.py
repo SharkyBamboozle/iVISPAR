@@ -17,7 +17,7 @@ def retrieve_config_visualisations(config_id, experiment_id):
 
     # Locate all subdirectories starting with 'experiment_AStarAgent'
     target_subdirs = [os.path.join(experiment_dir, d) for d in os.listdir(experiment_dir)
-                      if os.path.isdir(os.path.join(experiment_dir, d)) and d.startswith('episode_AStarAgent')]
+                      if os.path.isdir(os.path.join(experiment_dir, d)) and d.startswith('episode_AIAgent')]
     if not target_subdirs:
         raise FileNotFoundError(
             "No subdirectories starting with 'episode_AStarAgent' found in the experiment directory.")
@@ -72,7 +72,7 @@ def retrieve_config_visualisations(config_id, experiment_id):
 
 
 if __name__ == "__main__":
-    config_id = "SGP_ID_20241210_091800"
-    experiment_id = "experiment_ID_20241210_144709"
+    config_id = "SGP_ID_Berkeley_submission"
+    experiment_id = "experiment_ID_20241219_152121"
 
     retrieve_config_visualisations(config_id, experiment_id)

@@ -2,6 +2,170 @@ import os
 import json
 import numpy as np
 import pandas as pd
+import shutil
+
+
+def copy_and_episodes(experiment_id_1, experiment_id_2, add_identifier="", experiment_signature="InteractivePuzzle"):
+    """
+    Copies subdirectories from one experiment directory to another and appends an identifier
+    to the subdirectory names after the experiment signature.
+
+    Args:
+        experiment_id_1 (str): The source experiment ID.
+        experiment_id_2 (str): The destination experiment ID.
+        add_identifier (str): The identifier to add after the experiment signature in the directory name.
+        experiment_signature (str): The signature used to identify episode directories.
+    """
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    src_experiment_dir = os.path.join(base_dir, 'Data', 'Experiments', experiment_id_1)
+    dest_experiment_dir = os.path.join(base_dir, 'Data', 'Experiments', experiment_id_2)
+
+    # Ensure destination directory exists
+    os.makedirs(dest_experiment_dir, exist_ok=True)
+
+    # Filter subdirectories that match the signature (full paths are already returned)
+    sub_dirs = filter_experiment_sub_dirs(src_experiment_dir, experiment_signature=experiment_signature)
+
+    for src_sub_dir_path in sub_dirs:
+        # Extract the original folder name from the path
+        original_folder_name = os.path.basename(src_sub_dir_path)
+
+        # Insert the identifier after the experiment signature in the directory name
+        if f"_{experiment_signature}_" in original_folder_name:
+            modified_folder_name = original_folder_name.replace(
+                f"_{experiment_signature}_",
+                f"_{experiment_signature}_{add_identifier}_"
+            )
+        else:
+            # If the experiment signature is not in the folder name, just add the identifier at the end
+            modified_folder_name = f"{original_folder_name}_{add_identifier}"
+
+        dest_sub_dir_path = os.path.join(dest_experiment_dir, modified_folder_name)
+
+        try:
+            shutil.copytree(src_sub_dir_path, dest_sub_dir_path)
+            print(f"Copied {src_sub_dir_path} to {dest_sub_dir_path}")
+        except Exception as e:
+            print(f"Error copying {src_sub_dir_path} to {dest_sub_dir_path}: {e}")
+
+
+
+def clean_and_process_pd_frame(experiment_id):
+    """
+    Cleans and processes the a_star_heuristic.csv file for an experiment.
+    Ensures all episodes are 20 steps long and sets all subsequent steps to 0
+    if any agent reaches 0 at any step in an episode.
+
+    Args:
+        experiment_id (str): The experiment identifier.
+    """
+    # Define the base and results directories
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    results_dir = os.path.join(base_dir, 'Data', 'Results', experiment_id)
+    os.makedirs(results_dir, exist_ok=True)
+
+    # Path to the CSV file
+    csv_path = os.path.join(results_dir, 'a_star_heuristic.csv')
+
+    # Load the CSV file into a DataFrame
+    df = pd.read_csv(csv_path)
+
+    # Define the maximum episode length
+    max_steps = 20
+
+    # Get the list of agent columns (excluding 'episode_nr' and 'episode_step')
+    agent_columns = [col for col in df.columns if col not in ['episode_nr', 'episode_step']]
+
+    # Pad the episodes to ensure each episode has 20 steps
+    complete_episodes = []
+    for episode_nr, group in df.groupby('episode_nr'):
+        # Create a DataFrame with steps 0 to max_steps-1
+        episode_df = pd.DataFrame({'episode_step': range(max_steps)})
+        episode_df['episode_nr'] = episode_nr
+
+        # Merge the existing episode with the full 0-19 step range, filling missing values with 0
+        merged_df = pd.merge(episode_df, group, on=['episode_nr', 'episode_step'], how='left')
+
+        # Fill NaN values with 0 for the agent columns
+        merged_df[agent_columns] = merged_df[agent_columns].fillna(0)
+
+        # Ensure that after an agent hits 0, all subsequent steps remain 0
+        for agent in agent_columns:
+            zero_hit = False
+            for i in range(len(merged_df)):
+                if merged_df.loc[i, agent] == 0:
+                    zero_hit = True
+                if zero_hit:
+                    merged_df.loc[i, agent] = 0
+
+        complete_episodes.append(merged_df)
+
+    # Concatenate all processed episodes back into a single DataFrame
+    cleaned_df = pd.concat(complete_episodes, ignore_index=True)
+
+    # Save the cleaned DataFrame as a CSV file
+    cleaned_csv_path = os.path.join(results_dir, 'cleaned_a_star_heuristic.csv')
+    cleaned_df.to_csv(cleaned_csv_path, index=False)
+    print(f"Cleaned data saved to {cleaned_csv_path}")
+
+def clean_and_process_normalized_progress(experiment_id):
+    """
+    Cleans and processes the normalized_progress.csv file for an experiment.
+    Ensures all episodes are 20 steps long and sets all subsequent steps to 100%
+    if any agent reaches 100% at any step in an episode.
+
+    Args:
+        experiment_id (str): The experiment identifier.
+    """
+    # Define the base and results directories
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    results_dir = os.path.join(base_dir, 'Data', 'Results', experiment_id)
+    os.makedirs(results_dir, exist_ok=True)
+
+    # Path to the CSV file
+    csv_path = os.path.join(results_dir, 'normalized_progress.csv')
+
+    # Load the CSV file into a DataFrame
+    df = pd.read_csv(csv_path)
+
+    # Define the maximum episode length
+    max_steps = 20
+
+    # Get the list of agent columns (excluding 'episode_nr' and 'episode_step')
+    agent_columns = [col for col in df.columns if col not in ['episode_nr', 'episode_step']]
+
+    # Pad the episodes to ensure each episode has 20 steps
+    complete_episodes = []
+    for episode_nr, group in df.groupby('episode_nr'):
+        # Create a DataFrame with steps 0 to max_steps-1
+        episode_df = pd.DataFrame({'episode_step': range(max_steps)})
+        episode_df['episode_nr'] = episode_nr
+
+        # Merge the existing episode with the full 0-19 step range, filling missing values with 100
+        merged_df = pd.merge(episode_df, group, on=['episode_nr', 'episode_step'], how='left')
+
+        # Fill NaN values with 100 for the agent columns (since missing steps after 100% should be 100)
+        merged_df[agent_columns] = merged_df[agent_columns].fillna(100)
+
+        # Ensure that after an agent hits 100%, all subsequent steps remain 100%
+        for agent in agent_columns:
+            reached_100 = False
+            for i in range(len(merged_df)):
+                if merged_df.loc[i, agent] == 100:
+                    reached_100 = True
+                if reached_100:
+                    merged_df.loc[i, agent] = 100
+
+        complete_episodes.append(merged_df)
+
+    # Concatenate all processed episodes back into a single DataFrame
+    cleaned_df = pd.concat(complete_episodes, ignore_index=True)
+
+    # Save the cleaned DataFrame as a CSV file
+    cleaned_csv_path = os.path.join(results_dir, 'cleaned_normalized_progress.csv')
+    cleaned_df.to_csv(cleaned_csv_path, index=False)
+    print(f"Cleaned data saved to {cleaned_csv_path}")
+
 
 def make_results_dir(experiment_id):
     # Set up paths for experiment directory and results directory
@@ -155,3 +319,9 @@ def compile_episode_data_to_data_frame(experiment_id, experiment_signature, epis
 
 
     return df
+
+
+
+
+if __name__ == "__main__":
+    copy_and_episodes("experiment_ID_20241219_222228_Gemini_l", "evaluate_Berkeley", add_identifier="Gemini_vision", experiment_signature="InteractivePuzzle")

@@ -94,9 +94,21 @@ move tile 5 down
 Preliminary results from the latest evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon are shown below. For more details, see [Citation](#bookmark-citation).
 
 <div align="center">
-  <img src="Resources/README/results.png" alt="Sliding Geom Puzzle" width="900"/>
-  <p><em>Figure 4: Preliminary results from the most recent evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon.</em></p>
+  <img src="Resources/README/results1.png" alt="Sliding Geom Puzzle" width="900"/>
+  <p><em>Figure 4: Preliminary results from the most recent evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon. Regret values for different models in vision and text scenarios, where lower regret indicates better performance.</em></p>
 </div>
+
+<div align="center">
+  <img src="Resources/README/results2.png" alt="Sliding Geom Puzzle" width="900"/>
+  <p><em>Figure 5: Preliminary results from the most recent evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon. Stepwise progression towards the goal for different models using vision-based inputs</em></p>
+</div>
+
+
+<div align="center">
+  <img src="Resources/README/results3.png" alt="Sliding Geom Puzzle" width="900"/>
+  <p><em>Figure 6: Preliminary results from the most recent evaluation (Dec. '24) on the SGP problem for the Berkeley LLM Agents Hackathon. Stepwise progression towards the goal for different models using text-based inputs</em></p>
+</div>
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -184,7 +196,7 @@ The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of
 
 <div align="center">
   <img src="Resources/README/webapp.png" alt="webapp image" width="500"/>
-  <p><em>Figure 5: Web app with UI for human experiments.</em></p>
+  <p><em>Figure 7: Web app with UI for human experiments.</em></p>
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

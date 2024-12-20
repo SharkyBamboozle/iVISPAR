@@ -165,8 +165,8 @@ async def run_experiment(games, agents, sim_param):
 
 if __name__ == "__main__":
     # Load parameters from the JSON file
-    params = util.load_params_from_json('params_experiment_example.json')
-
+    params = util.load_params_from_json('params_experiment_Berkeley_submission_vision.json')
+    print(params)
     # Run the experiment
     experiment_id = asyncio.run(run_experiment(
         games=params.get('games', {}),

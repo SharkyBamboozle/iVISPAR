@@ -47,7 +47,7 @@ class GzipRequestHandler(SimpleHTTPRequestHandler):
 async def start_server_fix(BUILD_DIRECTORY):
     # Configuration
     PORT = 8000  # Port to serve the WebGL build
-    #BUILD_DIRECTORY = r"C:\Users\Sharky\RIPPLE\iVISPAR"  # Replace with the path to your WebGL build folder
+    BUILD_DIRECTORY = r"C:\Users\Sharky\iVISPAR\iVISPAR"  # Replace with the path to your WebGL build folder
 
     # Change working directory to the WebGL build folder
     os.chdir(BUILD_DIRECTORY)
@@ -82,7 +82,7 @@ if __name__ == "__main__":
     #run_socketserver_in_background(webApp_dir)
     #start_server_fix(webApp_dir)
     PORT = 8000  # Port to serve the WebGL build
-    # BUILD_DIRECTORY = r"C:\Users\Sharky\RIPPLE\iVISPAR"  # Replace with the path to your WebGL build folder
+    BUILD_DIRECTORY = r"C:\Users\Sharky\RIPPLE\iVISPAR"  # Replace with the path to your WebGL build folder
 
     # Change working directory to the WebGL build folder
     os.chdir(webApp_dir)

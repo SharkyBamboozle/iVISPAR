@@ -52,5 +52,6 @@ def count_lines_of_code(file_extensions=None, subdirs=None):
 
 if __name__ == "__main__":
     # Example usage: Count Python and C# files in 'src' and 'tests' subdirectories
-    subdirs = ['Source/Configuration/', 'Source/Experiment/', 'Source/Evaluation/', 'Source/iVISPAR/Assets/Scripts', 'Source/']
+    subdirs = ['Source/Configure/', 'Source/Experiment/', 'Source/Evaluate/', 'Source/Visualize/','Source/Utility/', 'Source/iVISPAR/Assets/Scripts']
+    #subdirs = ['Source/']
     count_lines_of_code(file_extensions=['.py', '.cs'], subdirs=subdirs)

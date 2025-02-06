@@ -3,8 +3,8 @@ You can see your current board state in the image. Study the current state caref
 Your task is to give an accurate text representation of the scene that describes the objects and their coordinate positions. 
 These are the valid properties of objects
 
-Colors: green, red, blue
-Shapes: cube, sphere, pyramid
+Colors: green, red, blue, yellow
+Shapes: cube, sphere, pyramid, cylinder
 
 an example description is
 

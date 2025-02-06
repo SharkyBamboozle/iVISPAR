@@ -2,8 +2,10 @@ import websockets
 import base64
 import time
 import json
+import logging
 import experiment_utilities as util
 
+from experiment_logging import log_separator
 
 async def initialize_connection(uri):
     """
@@ -21,16 +23,18 @@ async def initialize_connection(uri):
         response = await websocket.recv()
         message_data = json.loads(response)
         if message_data.get("command") != "Handshake":
+            logging.error("Handshake failed: Unexpected response from server.")
             raise RuntimeError("Handshake failed: Unexpected response from server.")
 
         network_id = message_data.get("to")
-        print(message_data.get("messages"))
+        logging.info(message_data.get("messages"))
 
         # Register partner ID
         isConnected = False
         partner_id = None
         while not isConnected:
             partner_id = input("Please enter the remote client id: ")
+            print()  # This ensures the cursor moves to a new line
             message_data = {
                 "command": "Handshake",
                 "from": network_id,
@@ -39,11 +43,11 @@ async def initialize_connection(uri):
                 "payload": base64.b64encode(b"nothing here").decode("utf-8"),
             }
             await websocket.send(json.dumps(message_data))
-            print("Sending handshake...")
+            logging.info("Sending handshake...")
             response = await websocket.recv()
             message_data = json.loads(response)
             command = message_data.get("command")
-            print(f"Received {command}: {message_data.get('messages')}")
+            logging.info(f"Received {command}: {message_data.get('messages')}")
             if command == "ACK":
                 isConnected = True
 
@@ -53,7 +57,7 @@ async def initialize_connection(uri):
         raise e
 
 
-async def interact_with_server(websocket, network_id, partner_id, agent, game):
+async def interact_with_server(websocket, network_id, partner_id, agent, game, episode_logger):
     """
     Perform repeated interactions with the server after the connection has been established.
 
@@ -67,13 +71,15 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game):
     """
     response = await websocket.recv()
     message_data = json.loads(response)
+    delay = agent.delay
 
     i = 0
     while not game.check_done(message_data):
-        time.sleep(0.2)
+        log_separator(f"Action-Perception Loop: {i}", logger=episode_logger)
+        time.sleep(delay)
         if message_data.get("command") == "Screenshot" or message_data.get("command") == "ActionAck":
             observation = game.feed_sim_response(message_data, i)
-            user_message = agent.act(observation)
+            user_message = agent.act(observation, i)
             game.feed_agent_response(user_message)
 
         # Exit the loop if the user wants to close the connection
@@ -88,7 +94,7 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game):
             await websocket.send(json.dumps(message_data))
             break
         if user_message.lower() == "exit":
-            print("Closing connection...")
+            episode_logger.info("Closing connection...")
             message_data = {
                 "command": "Reset",
                 "from": network_id,
@@ -98,7 +104,7 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game):
             }
             await websocket.send(json.dumps(message_data))
             await websocket.close()
-            print("Connection closed")
+            episode_logger.info("Connection closed")
             break
         else:
             message_list = [msg.strip() for msg in user_message.split(",")]
@@ -117,7 +123,12 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game):
 
         i += 1
         game._save_logs()
-        # Send the JSON message to the server
+
+    #save last observation after game is done
+    observation = game.feed_sim_response(message_data, i)
+    game._save_logs()
+
+    # Send the JSON message to the server
     #response = await websocket.recv()
     message_data = {
         "command": "Reset",

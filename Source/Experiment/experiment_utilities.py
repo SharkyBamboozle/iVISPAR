@@ -6,6 +6,7 @@ import csv
 import json
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
+import fnmatch
 
 
 def load_params_from_json(file_name):
@@ -23,10 +24,8 @@ def load_params_from_json(file_name):
     try:
         with open(file_path, 'r') as file:
             params = json.load(file)
-        print(f"Loaded parameters from {file_path} successfully.")
         return params
     except Exception as e:
-        print(f"Error loading parameters from {file_path}: {e}")
         return {}
 
 
@@ -49,7 +48,7 @@ def load_single_json_from_directory(directory_path):
         raise FileNotFoundError(f"The directory does not exist: {directory_path}")
 
     # Find all JSON files in the directory
-    json_files = [f for f in os.listdir(directory_path) if f.endswith('.json')]
+    json_files = [f for f in os.listdir(directory_path) if fnmatch.fnmatch(f, 'config*.json')]
 
     if len(json_files) == 0:
         raise FileNotFoundError(f"No JSON files found in the directory: {directory_path}")
@@ -66,7 +65,7 @@ def load_single_json_from_directory(directory_path):
         raise json.JSONDecodeError(f"Error decoding JSON file: {file_path}. Details: {str(e)}")
 
 
-def expand_config_file(experiment_path, grid_label, camera_offset, camera_auto_override, screenshot_alpha):
+def expand_config_file(experiment_path, grid_label, camera_offset, camera_auto_override, screenshot_alpha, auto_done_check=True):
     """
     Traverse a dictionary containing nested paths or process a single directory path,
     locate JSON files, update them with additional values, and save the updated JSONs back to the same files.
@@ -96,7 +95,8 @@ def expand_config_file(experiment_path, grid_label, camera_offset, camera_auto_o
                     continue
 
                 # Locate JSON files in the directory
-                json_files = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if f.endswith('.json')]
+                json_files = [os.path.join(directory_path, f) for f in os.listdir(directory_path) if
+                              fnmatch.fnmatch(f, 'config*.json')]
 
                 if not json_files:
                     print(f"No JSON files found in directory: {directory_path}")
@@ -113,6 +113,8 @@ def expand_config_file(experiment_path, grid_label, camera_offset, camera_auto_o
                         config["camera_offset"] = camera_offset
                         config['camera_auto_override'] = camera_auto_override
                         config["screenshot_alpha"] = screenshot_alpha
+                        config["auto_done_check"] = auto_done_check
+
 
                         # Save the updated JSON back to the file
                         with open(json_file, 'w') as file:

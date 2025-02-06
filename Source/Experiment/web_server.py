@@ -9,6 +9,7 @@ import json
 import base64
 import time  # Example to show main script continuing work
 import threading
+import logging
 
 connected_clients = {}
 
@@ -16,7 +17,7 @@ async def handle_client(websocket, path):
 
     client_id = str(uuid.uuid4())
     connected_clients[client_id] = websocket
-    print(f"Client connected and registered with network id: {client_id}")
+    logging.info(f"Client connected and registered with network id: {client_id}")
 
     #sending handshake to client
 
@@ -50,7 +51,7 @@ async def handle_client(websocket, path):
                 from_client_id = message_data.get("from")
                 command =  message_data.get("command")
                 msg = message_data.get("messages")[0]
-                print(f"Packet from {from_client_id} to {to_client_id}: command {command} with message {msg}")
+                logging.debug(f"Packet from {from_client_id} to {to_client_id}: command {command} with message {msg}")
 
                 if to_client_id in connected_clients:
                     # Route the message to the intended recipient
@@ -68,11 +69,11 @@ async def handle_client(websocket, path):
                 message = ""
 
     except json.JSONDecodeError:
-        print("Received invalid JSON message")
+        logging.warning("Received invalid JSON message")
     except websockets.ConnectionClosed:
-        print(f"Client {client_id} disconnected")
+        logging.error(f"Client {client_id} disconnected")
     finally:
-        print(f"removing connection {client_id}")
+        logging.warning(f"removing connection {client_id}")
         # Remove the client from the connected clients dictionary on disconnection
 
         del connected_clients[client_id]
@@ -82,23 +83,23 @@ async def start_server():
     # Define the host and port for the server
     server = await websockets.serve(handle_client, "localhost", 1984,max_size=10000000,ping_interval=10, ping_timeout=360)  # Replace "localhost" and 8765 if needed
 
-    print("WebSocket server started on ws://localhost:1984")
+    logging.info("WebSocket server started on ws://localhost:1984")
     #await server.wait_closed()
     await asyncio.Future()
 
 
 # WebSocket server logic
 async def start_WebSocket_server():
-    print("Starting WebSocket Server...")
+    logging.info("Starting WebSocket Server...")
     server = await websockets.serve(handle_client, "localhost", 1984, max_size=10000000, ping_interval=10, ping_timeout=360)
-    print("WebSocket server started on ws://localhost:1984")
+    logging.info("WebSocket server started on ws://localhost:1984")
     await asyncio.Future()  # Keep running indefinitely
 
 # Background server runners
 def run_WebSocket_server_in_background():
     thread = threading.Thread(target=lambda: asyncio.run(start_WebSocket_server()), daemon=True)
     thread.start()
-    print("WebSocket server started in the background.")
+    logging.info("WebSocket server started in the background.")
 
 
 if __name__ == "__main__":

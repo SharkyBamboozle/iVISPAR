@@ -1,3 +1,9 @@
+"""
+- functions to calculate the shortest path length between two board states, given the size of the board
+- used mainly for evaluation to check how far agents are away from the goal state or if a move was productive
+- uses Astar to find a shortest path solution, which is also used to create config files
+"""
+
 # Import statements
 import heapq
 import numpy as np
@@ -80,6 +86,10 @@ def a_star(n, initial_state, goal_state):
     return None  # No solution found
 
 
+def calculate_shortest_path_length(board_size, initial_state, goal_state):
+    return len(a_star(board_size, initial_state, goal_state)) -1
+
+
 if __name__ == "__main__":
     board_size = 5
     initial_state = np.array([
@@ -97,4 +107,5 @@ if __name__ == "__main__":
         [1, 0],
     ])
 
-    solution = a_star(board_size, initial_state, goal_state)
+    shortest_path_length = calculate_shortest_path_length(board_size, initial_state, goal_state)
+    print(shortest_path_length)

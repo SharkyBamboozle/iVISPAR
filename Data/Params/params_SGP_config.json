@@ -1,0 +1,22 @@
+{
+  "config_id": "ICML",
+  "description": "Parameter for a SGP dataset with 300 samples used for the ICML experiment.",
+  "board_size": 4,
+  "num_geoms_min_max": {
+    "min": 2,
+    "max": 11
+  },
+  "complexity_min_max": {
+    "c1": {
+      "min": 2,
+      "max": 11
+    },
+    "c2": {
+      "min": 0,
+      "max": 0
+    }
+  },
+  "complexity_bin_size": 3,
+  "shapes": ["cube", "pyramid", "sphere", "cylinder"],
+  "colors": ["red", "blue", "green", "yellow"]
+}

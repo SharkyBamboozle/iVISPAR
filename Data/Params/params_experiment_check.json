@@ -1,0 +1,81 @@
+{
+  "experiment_id": null,
+  "agents": {
+    "Claude0": {
+        "agent_type": "ClaudeAgent",
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_vision_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": true,
+        "delay": 0.2,
+        "visual_state_embedding": "both",
+        "max_history": 0,
+        "max_tokens": 300
+    },
+    "Claude1": {
+        "agent_type": "ClaudeAgent",
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_vision_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": true,
+        "delay": 0.2,
+        "visual_state_embedding": "both",
+        "max_history": 1,
+        "max_tokens": 300
+    },
+    "Claude3": {
+        "agent_type": "ClaudeAgent",
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_vision_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": true,
+        "delay": 0.2,
+        "visual_state_embedding": "both",
+        "max_history": 3,
+        "max_tokens": 300
+    },
+    "Claude4": {
+        "agent_type": "ClaudeAgent",
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_vision_based.txt",
+        "api_keys_file_path": "Data/API-keys/api-keys.txt",
+        "single_images": true,
+        "COT": true,
+        "delay": 0.2,
+        "visual_state_embedding": "both",
+        "max_history": 4,
+        "max_tokens": 300
+    }
+  },
+
+  "games": {
+    "InteractivePuzzle": {
+        "game_type": "InteractivePuzzle",
+        "config_id": "ICML_checks_modded",
+        "num_game_env": 55,
+        "max_game_length": 20,
+        "representation_type": "vision",
+        "planning_steps": 1,
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_vision_based.txt",
+        "chain_of_thoughts": true,
+        "predict_board_state": false
+      }
+  },
+
+  "envs": {
+    "sim_param1": {
+      "grid_label": "both",
+      "camera_offset": [
+        0,
+        5.57,
+        -3.68
+      ],
+      "camera_auto_override": [
+        6.8,
+        -1,
+        6.8
+      ],
+      "screenshot_alpha": 0.0,
+      "auto_done_check": true
+    }
+  }
+}

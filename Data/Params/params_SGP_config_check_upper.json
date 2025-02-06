@@ -1,0 +1,22 @@
+{
+  "config_id": "ICML_check_upper",
+  "description": "Check how Claude is doing on higher range of difficulties.",
+  "board_size": 4,
+  "num_geoms_min_max": {
+    "min": 10,
+    "max": 15
+  },
+  "complexity_min_max": {
+    "c1": {
+      "min": 10,
+      "max": 15
+    },
+    "c2": {
+      "min": 0,
+      "max": 0
+    }
+  },
+  "complexity_bin_size": 1,
+  "shapes": ["cube", "pyramid", "sphere", "cylinder"],
+  "colors": ["red", "blue", "green", "yellow"]
+}

@@ -1,0 +1,40 @@
+{
+  "experiment_id": null,
+  "agents": {
+        "optimalAIAgent": {
+            "agent_type": "AIAgent",
+            "model_type": "optimal-AI",
+            "move_set": "shortest_move_sequence"
+        }
+  },
+  "games": {
+    "InteractivePuzzle": {
+        "game_type": "InteractivePuzzle",
+        "config_id": "ICML",
+        "num_game_env": 1000,
+        "max_game_length": 20,
+        "representation_type": "text",
+        "planning_steps": 1,
+        "instruction_prompt_file_path": "Data/Instructions/ICML_instruction.txt",
+        "chain_of_thoughts": true,
+        "predict_board_state": false
+      }
+  },
+  "envs": {
+    "text": {
+      "grid_label": "both",
+      "camera_offset": [
+        0,
+        5.57,
+        -3.68
+      ],
+      "camera_auto_override": [
+        6.8,
+        -1,
+        6.8
+      ],
+      "screenshot_alpha": 0.0,
+      "auto_done_check": true
+    }
+  }
+}

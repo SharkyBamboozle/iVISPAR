@@ -1,0 +1,20 @@
+{
+  "board_size": 4,
+  "num_geoms_min_max": {
+    "min": 6,
+    "max": 6
+  },
+  "complexity_min_max": {
+    "c1": {
+      "min": 10,
+      "max": 10
+    },
+    "c2": {
+      "min": 0,
+      "max": 0
+    }
+  },
+  "complexity_bin_size": 5,
+  "shapes": ["cube", "pyramid", "sphere"],
+  "colors": ["red", "blue", "green"]
+}

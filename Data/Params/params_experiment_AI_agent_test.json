@@ -1,0 +1,52 @@
+{
+  "agents": {
+    "OptimalAgent": {
+        "agent_type": "AIAgent",
+        "move_set": "shortest_move_sequence",
+        "delay": 0.2
+      }
+  },
+
+  "games": {
+    "InteractivePuzzle1": {
+        "game_type": "InteractivePuzzle",
+        "config_id": "SGP_ID_20250103_191207",
+        "num_game_env": 2,
+        "max_game_length": 20,
+        "representation_type": "vision",
+        "planning_steps": 1,
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_vision_based.txt",
+        "chain_of_thoughts": true,
+        "predict_board_state": false
+      },
+    "InteractivePuzzle2": {
+        "game_type": "InteractivePuzzle",
+        "config_id": "SGP_ID_20241230_144834",
+        "num_game_env": 1000,
+        "max_game_length": 5,
+        "representation_type": "vision",
+        "planning_steps": 1,
+        "instruction_prompt_file_path": "Data/Instructions/instruction_prompt_SGP_Interactive_vision_based.txt",
+        "chain_of_thoughts": true,
+        "predict_board_state": false
+      }
+  },
+
+  "envs": {
+    "sim_param1": {
+      "grid_label": "both",
+      "camera_offset": [
+        0,
+        5.57,
+        -3.68
+      ],
+      "camera_auto_override": [
+        6.8,
+        -1,
+        6.8
+      ],
+      "screenshot_alpha": 0.0,
+      "auto_done_check": true
+    }
+  }
+}

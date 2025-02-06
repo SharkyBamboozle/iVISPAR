@@ -160,14 +160,14 @@ Results on the SGP problem are shown below. More details about the results can b
 
 <div align="center">
   <img src="Resources/README/barplot_won_with_baselines_and_ci.png" alt="Sliding Geom Puzzle" width="600"/>
-  <p><em>Figure 7: VLM evaluation on 900 episodes per model across all three modalities, with 95% confidence intervals. Baseline comparisons for human performance and random moves are shown. VLMs’ success rates of episodes completed with higher values denoting
+  <p><em>Figure 6: VLM evaluation on 900 episodes per model across all three modalities, with 95% confidence intervals. Baseline comparisons for human performance and random moves are shown. VLMs’ success rates of episodes completed with higher values denoting
 better performance</em></p>
 </div>
 
 
 <div align="center">
   <img src="Resources/README/barplot_action_counts_with_error_bars_per_model_and_representation.png" alt="Sliding Geom Puzzle" width="600"/>
-  <p><em>Figure 8: VLMs’ average action counts per episode. Effective / ineffective actions respectively decrease / increase the path length to the
+  <p><em>Figure 7: VLMs’ average action counts per episode. Effective / ineffective actions respectively decrease / increase the path length to the
 goal state. Occupied destination and out-of-bounds are invalid moves, while illegal commands break the instructed action format, all of
 which leave the board state unchanged. </em></p>
 </div>
@@ -175,7 +175,7 @@ which leave the board state unchanged. </em></p>
 
 <div align="center">
   <img src="Resources/README/heatmap_all.png" alt="Sliding Geom Puzzle" width="600"/>
-  <p><em>Figure 9:  Cumulative heatmaps of VLMs’ minimal paths to the goal state after 20 steps across varying complexities, with the number of
+  <p><em>Figure 8:  Cumulative heatmaps of VLMs’ minimal paths to the goal state after 20 steps across varying complexities, with the number of
 geoms and shortest path solutions ranging from 2 to 11. Evaluated over 5400 episodes across all modalities (vision 3D, vision 2D, text).</em></p>
 </div>
 
@@ -252,7 +252,7 @@ The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of
 
 <div align="center">
   <img src="Resources/README/webapp.png" alt="webapp image" width="500"/>
-  <p><em>Figure 10: Web app with UI for human experiments.</em></p>
+  <p><em>Figure 9: Web app with UI for human experiments.</em></p>
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

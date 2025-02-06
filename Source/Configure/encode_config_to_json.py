@@ -112,7 +112,7 @@ def translate_moves_to_commands(shortest_move_sequence, landmarks):
 
                     commands.append(command)
 
-    commands.append("done")
+    #commands.append("done")
     return commands
 
 
@@ -145,6 +145,7 @@ def encode_SGP_config_to_json(board_size, state_combination, geoms_sample,
         "complexity_c2": complexity['c2'],
         "grid_size": board_size,
         "landmarks": landmarks,
+        "use_rendering": True,
         "shortest_move_sequence": translate_moves_to_commands(shortest_move_sequence, landmarks),
         'random_valid_move_sequence': translate_moves_to_commands(random_valid_move_sequence, landmarks),
         'random_invalid_move_sequence': translate_moves_to_commands(random_invalid_move_sequence, landmarks),

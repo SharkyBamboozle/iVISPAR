@@ -10,7 +10,6 @@ from datetime import datetime
 
 from find_shortest_move_sequence import a_star, calculate_manhattan_heuristic
 from encode_config_to_json import encode_SGP_config_to_json
-from visualise_configs_statistics import visualise_config_stats
 from find_random_move_sequence import generate_random_valid_path, generate_random_invalid_path
 import configuration_utilities as util
 
@@ -163,7 +162,7 @@ def generate_SGP_configs(board_size, num_geoms_min_max, complexity_min_max, comp
 
 if __name__ == "__main__":
     # Load parameters from the JSON file
-    params = util.load_params_from_json('params_SGP_config_hackathon_submission.json')
+    params = util.load_params_from_json('params_SGP_config_ICML.json')
 
     # Generate Sliding Geom Puzzle (SGP) configuration files
     config_id = generate_SGP_configs(board_size=params.get('board_size', 5),
@@ -174,6 +173,3 @@ if __name__ == "__main__":
                                      shapes=params.get('shapes', ['sphere', 'cylinder', 'cone']),
                                      colors=params.get('colors', ['red', 'green', 'blue']))
     print(f"Finished Generate Sliding Geom Puzzle (SGP) configuration files with ID: {config_id}")
-
-    # Visualise config stats
-    visualise_config_stats(config_id)

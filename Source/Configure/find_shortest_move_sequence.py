@@ -147,7 +147,7 @@ def find_config_by_random_expand(n, goal_state, path_length, max_steps=100):
         # If the current state's path to the goal has the desired path length, return it
         final_path = a_star(n, current_state, goal_state, max_depth=path_length)
         if final_path is not None and len(final_path) - 1 == path_length:
-            print(f"Found valid initial configuration after {step + 1} steps")
+            #print(f"Found valid initial configuration after {step + 1} steps")
             return current_state
 
     print("Failed to find a valid initial configuration within the max steps.")

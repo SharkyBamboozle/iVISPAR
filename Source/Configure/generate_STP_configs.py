@@ -10,13 +10,12 @@ from datetime import datetime
 import hashlib
 import zlib
 import pickle
-from tqdm import tqdm
 
 import configuration_utilities as util
 from find_shortest_move_sequence import a_star, find_config_by_random_expand
 from check_is_STP_solvable import is_solvable
 from encode_config_to_json import encode_STP_config_to_json
-from visualise_configs_statistics import visualise_config_stats
+from Source.Plot.visualise_configs_statistics import visualise_config_stats
 from find_random_move_sequence import generate_random_valid_path, generate_random_invalid_path
 
 

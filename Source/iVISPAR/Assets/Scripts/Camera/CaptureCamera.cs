@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,9 +9,10 @@ public class CaptureCamera : MonoBehaviour
     private Camera screenshotCamera;
     public RenderTexture userPhoto; // Assign the RenderTexture in the Inspector
     public bool imageToggle = true;
+    public bool uiControlled = false;
     [Range(0f,1f)]
     public float percentage = 0.3f;
-    private string boardSatus = "";
+    public string boardSatus = "";
     public int fontSize = 20;
     public Vector2 lableSize = new Vector2(300,200);
     public Vector2 lablePosition = new Vector2(10,10);
@@ -29,19 +31,50 @@ public class CaptureCamera : MonoBehaviour
              
         }
         if(ExperimentManager.Instance.humanExperiment)
-            screenshotCamera.backgroundColor = new Color(screenshotCamera.backgroundColor.r , screenshotCamera.backgroundColor.g, screenshotCamera.backgroundColor.b,0f);
+        {
+             InteractionUI.Instance.captureCamera = this;
+             screenshotCamera.backgroundColor = new Color(screenshotCamera.backgroundColor.r , screenshotCamera.backgroundColor.g, screenshotCamera.backgroundColor.b,alpha);
+        }          
         else
             screenshotCamera.backgroundColor = new Color(screenshotCamera.backgroundColor.r , screenshotCamera.backgroundColor.g, screenshotCamera.backgroundColor.b,alpha);
     }
     void Update()
     {
-        if(ExperimentManager.Instance.humanExperiment)
+        if(ExperimentManager.Instance.humanExperiment && !uiControlled)
         {
-            if(Input.GetKeyDown(KeyCode.Space))
+            if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {
-                imageToggle = !imageToggle;
+                //imageToggle = !imageToggle;
+                imageToggle = true;
             }
+            else
+            {
+                imageToggle = false;
+                GUI.FocusControl("goal");
+                InteractionUI.Instance.refocusGUI("InputField");
+            }
+                
         }
+    }
+    public void HandleEvent(Event e, bool pressed)
+    {
+        // Custom handling for Enter key or other events
+            if(pressed)
+            {
+                imageToggle = true;
+                uiControlled = true;
+                GUI.FocusControl("goal");
+            }     
+            else
+            {
+                uiControlled = false;
+                imageToggle = false;
+                GUI.FocusControl("goal");
+                InteractionUI.Instance.refocusGUI("InputField");
+            }
+                
+
+        
     }
     private void OnDestroy() {
         StopAllCoroutines();
@@ -129,7 +162,9 @@ public class CaptureCamera : MonoBehaviour
                 if(imageToggle)
                 {
                     float DIMENTION = Screen.width * percentage;
-                    GUI.DrawTexture(new Rect(20, 20, DIMENTION, DIMENTION), userPhoto, ScaleMode.ScaleToFit, false);
+                    //GUI.DrawTexture(new Rect(20, 20, DIMENTION, DIMENTION), userPhoto, ScaleMode.ScaleToFit, false);
+                    GUI.SetNextControlName("goal");
+                    GUI.DrawTexture(new Rect(0, 0, Screen.width,  Screen.height), userPhoto, ScaleMode.ScaleToFit, false);
                 }
             }
         }
@@ -148,7 +183,7 @@ public class CaptureCamera : MonoBehaviour
                         lablePosition.x,lablePosition.y, 
                         lableSize.x,lableSize.y
                     );
-                    
+                    GUI.SetNextControlName("gaol");
                     GUI.Label(rect, boardSatus, style);
                 }      
             }

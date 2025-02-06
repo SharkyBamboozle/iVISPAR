@@ -24,6 +24,7 @@ public class InteractionUI : MonoBehaviour
     public bool isLevelLoaded = false;
     private List<string> humanLogs;
     
+    public CaptureCamera captureCamera;
     [DllImport("__Internal")]
     private static extern void OpenFileDialog(string ObjectName, string Target);
     public void setHumanExperiment(bool isHumanExperiment)
@@ -62,15 +63,20 @@ public class InteractionUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Return) && isLevelLoaded)
+        if(isLevelLoaded && captureCamera != null)
         {
-            if(inputText != "")
+            if(Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
             {
-                List<string> commands = inputText.Split(",").ToList();
-                UserInteraction(commands);
-                inputText = "";
+                //imageToggle = !imageToggle;
+                captureCamera.imageToggle = true;
             }
+            else
+                captureCamera.imageToggle = false;
         }
+    }
+    public void refocusGUI(string controlName)
+    {
+        GUI.FocusControl(controlName);
     }
      void OnGUI() {
         if(isHumanExperiment && isLevelLoaded)
@@ -92,10 +98,29 @@ public class InteractionUI : MonoBehaviour
 
             // Create a horizontal layout for the text box and button
             GUILayout.BeginHorizontal();
-            
             // Create a text box and store the user input in the 'inputText' variable
+            GUI.SetNextControlName("InputField");
             inputText = GUILayout.TextField(inputText,textFieldStyle, GUILayout.Width(textFieldWidth), GUILayout.Height(elementHeight));
-
+            if (Event.current.keyCode == KeyCode.Return)
+            {
+                if (GUI.GetNameOfFocusedControl() == "InputField")
+                {
+                   if(inputText != "")
+                    {
+                        List<string> commands = inputText.Split(",").ToList();
+                        UserInteraction(commands);
+                        inputText = "";
+                        //Event.current.Use();
+                    }
+                }
+            }
+            else if(Event.current.keyCode == KeyCode.LeftControl)
+            {
+                if(Event.current.type == EventType.KeyUp)
+                    captureCamera.HandleEvent(Event.current,false);
+                else
+                    captureCamera.HandleEvent(Event.current,true);
+            }
             // Create a button next to the text box
             if (GUILayout.Button("Submit",buttonStyle, GUILayout.Width(buttonWidth), GUILayout.Height(elementHeight)))
             {

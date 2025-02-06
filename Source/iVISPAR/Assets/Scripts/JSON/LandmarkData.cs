@@ -18,7 +18,7 @@ public class LandmarkData
     
     public int grid_size;             // Size of the grid (grid_size x grid_size)
     public bool use_rendering;
-
+    public bool auto_done_check;
     public string grid_label;
     public float[] camera_offset;
     public float[] camera_auto_override;

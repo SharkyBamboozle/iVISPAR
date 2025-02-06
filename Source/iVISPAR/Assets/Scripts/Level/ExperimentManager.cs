@@ -64,7 +64,11 @@ public class ExperimentManager : MonoBehaviour
             if(parameters["human"] == "true")
                 humanExperiment = true;
             if(url != "localhost")
+            {
                 configURL = string.Format("https://{0}:{1}/",url,configPort);
+                Debug.LogFormat("Config url is {0}",configURL);
+            }
+
 
         }
     #endif
@@ -77,6 +81,8 @@ public class ExperimentManager : MonoBehaviour
         else
         {
             serverAddress = string.Format("wss://{0}:{1}",url,socketPort);
+            configURL = string.Format("https://{0}:{1}/",url,configPort);
+            Debug.LogFormat("Config url is {0}",configURL);
         }
         if(!humanExperiment)
             NetworkManger.Instance.ConnectToServer(serverAddress);
@@ -101,7 +107,7 @@ public class ExperimentManager : MonoBehaviour
         try
         {
             loadedLandmarkData = JsonUtility.FromJson<LandmarkData>(config);
-            loadedLandmarkData.use_rendering = true;
+            
         }
         catch
         {

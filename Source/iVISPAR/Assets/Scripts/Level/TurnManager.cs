@@ -10,10 +10,12 @@ public class TurnManager : MonoBehaviour
 {
     // Start is called before the first frame update
     private List<string> turnCommands;
-    bool isPuzzleSolved = false;
+    private bool isPuzzleSolved = false;
     bool recievedDoneCommand = false;
     private int command_count = 0;
     private int action_count = 0;
+    private Color originalCameraBackground;
+    public Color solvedCameraBackground;
     private Dictionary<string, int> wordToNumber = new Dictionary<string, int>
     {
         {"one", 1}, {"two", 2}, {"three", 3}, {"four", 4}, {"five", 5},
@@ -24,12 +26,29 @@ public class TurnManager : MonoBehaviour
     string[] knownCommands = { "move", "start", "reset","done" };
     void Start()
     {
+        originalCameraBackground = Camera.main.backgroundColor;
         turnCommands = new List<string>();
         if(EventHandler.Instance != null)
         {
             EventHandler.Instance.RegisterEvent("GameInteraction",ActionDecoder);
             EventHandler.Instance.RegisterEvent("ActionAck",ResponseAck);
+            EventHandler.Instance.RegisterEvent("AutoDoneCheck",AutoDoneCheck);
         }
+    }
+
+    public void Update()
+    {
+        if(ExperimentManager.Instance.humanExperiment)
+        {
+            if(isPuzzleSolved)
+            {
+                Camera.main.backgroundColor = solvedCameraBackground;
+            }
+            else
+            {
+                Camera.main.backgroundColor = originalCameraBackground;
+            }
+        } 
     }
     public Tuple<string,string,string,string,int> decodeCommand(string command)
     {
@@ -181,8 +200,17 @@ public class TurnManager : MonoBehaviour
                 Debugger.Instance.SetValidity("not a legal command");
             }
         }
-        
         EventHandler.Instance.InvokeCommand("capture_screenshot_for_ack"); 
+         
+    }
+    public void AutoDoneCheck()
+    {
+        isPuzzleSolved = true;
+        GameObject[] targets = GameObject.FindGameObjectsWithTag("Commandable");
+        foreach (GameObject target in targets)
+        {
+            isPuzzleSolved  &= isPuzzleSolved &  target.GetComponent<TargetBehaviour>().evaluateGoal();
+        }
     }
     public void ResponseAck(DataPacket response)
     {
@@ -202,7 +230,7 @@ public class TurnManager : MonoBehaviour
             response.data = Convert.FromBase64String("null");
             response.PrepareForSerialization();
         }
-        if(recievedDoneCommand)
+        if(recievedDoneCommand || ExperimentManager.Instance.loadedLandmarkData.auto_done_check)
         {
             recievedDoneCommand = false;
             if(isPuzzleSolved)
@@ -222,14 +250,16 @@ public class TurnManager : MonoBehaviour
             }
             else
             {
-                Debugger.Instance.SetValidity("Puzzle is not solved correctly, try again");
+                if(!ExperimentManager.Instance.loadedLandmarkData.auto_done_check)
+                    Debugger.Instance.SetValidity("Puzzle is not solved correctly, try again");
             }
         }
         if(!InteractionUI.Instance.IsHumanExperiment())
             NetworkManger.Instance.SendWebSocketMessage(JsonUtility.ToJson(response));
         else
         {
-            InteractionUI.Instance.saveActionAck(JsonUtility.ToJson(response));
+            if(!ExperimentManager.Instance.loadedLandmarkData.auto_done_check)
+                InteractionUI.Instance.saveActionAck(JsonUtility.ToJson(response));
         }
         EmptyLog();
             
@@ -247,6 +277,7 @@ public class TurnManager : MonoBehaviour
         {
             EventHandler.Instance.UnregisterEvent("GameInteraction",ActionDecoder);
             EventHandler.Instance.UnregisterEvent("ActionAck",ResponseAck);
+            EventHandler.Instance.UnregisterEvent("AutoDoneCheck",AutoDoneCheck);
         }
           
     }

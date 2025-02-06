@@ -860,6 +860,7 @@ MonoBehaviour:
     experiment_type: 
     grid_size: 0
     use_rendering: 0
+    auto_done_check: 0
     grid_label: 
     camera_offset: []
     camera_auto_override: []
@@ -920,6 +921,7 @@ MonoBehaviour:
   ButtonFontSize: 40
   isHumanExperiment: 0
   isLevelLoaded: 0
+  captureCamera: {fileID: 0}
 --- !u!4 &791907620
 Transform:
   m_ObjectHideFlags: 0

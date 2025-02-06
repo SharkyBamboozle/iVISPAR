@@ -178,6 +178,8 @@ public class TargetBehaviour : MonoBehaviour
             Debugger.Instance.SetValidity("Destination occupied");
         else
             Debugger.Instance.SetValidity("Destination out of bounds");
+        if(ExperimentManager.Instance.loadedLandmarkData.auto_done_check || ExperimentManager.Instance.humanExperiment)
+            EventHandler.Instance.InvokeCommand("AutoDoneCheck"); 
     }
     public void MoveRight(int units)
     {
@@ -193,6 +195,8 @@ public class TargetBehaviour : MonoBehaviour
             Debugger.Instance.SetValidity("Destination occupied");
         else
             Debugger.Instance.SetValidity("Destination out of bounds");
+        if(ExperimentManager.Instance.loadedLandmarkData.auto_done_check || ExperimentManager.Instance.humanExperiment)
+            EventHandler.Instance.InvokeCommand("AutoDoneCheck"); 
     }
 
     public Vector2 goalCoordinate

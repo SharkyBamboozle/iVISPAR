@@ -171,6 +171,9 @@ MonoBehaviour:
   mainCamera: {fileID: 963194228}
   verticalOffset: 5
   screenshotCamera: {fileID: 345199729}
+  fontSize: 30
+  lableSize: {x: 800, y: 600}
+  lableOffset: {x: 0, y: 150}
 --- !u!1 &339738198
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,6 +203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd12b352f3a171c4aa790ff4ed6f5227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPuzzleSolved: 0
+  solvedCameraBackground: {r: 0.25882354, g: 0.6039216, b: 0.18431373, a: 0}
 --- !u!4 &339738200
 Transform:
   m_ObjectHideFlags: 0
@@ -228,7 +233,7 @@ GameObject:
   - component: {fileID: 345199730}
   m_Layer: 0
   m_Name: Screenshot Camera
-  m_TagString: MainCamera
+  m_TagString: CaptureCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -260,6 +265,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c2e1a43d922c1d4284ff575f6f1dda3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userPhoto: {fileID: 0}
+  imageToggle: 1
+  uiControlled: 0
+  percentage: 0.3
+  boardSatus: 
+  fontSize: 20
+  lableSize: {x: 300, y: 200}
+  lablePosition: {x: 10, y: 10}
 --- !u!20 &345199732
 Camera:
   m_ObjectHideFlags: 0

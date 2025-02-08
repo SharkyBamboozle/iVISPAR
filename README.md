@@ -158,7 +158,7 @@ move tile 5 down
 ## :test_tube: Results
 - Results on the SGP problem are shown below
 - More details about the results can be found [here](#bookmark-citation)
-- Watch more examples on [YouTube](https://www.youtube.com/watch?v=Djis_xkgtW8)
+- Watch example interactions on [YouTube](https://www.youtube.com/watch?v=Djis_xkgtW8)
 
 <div align="center">
   <img src="Resources/README/barplot_won_with_baselines_and_ci.png" alt="Sliding Geom Puzzle" width="600"/>

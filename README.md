@@ -25,7 +25,7 @@ Results indicate that while some VLMs perform well on simple spatial tasks, they
 
 <div align="center">
   <img src="Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
-  <p><em>Figure 1: Visualization of GPT-4o's interaction with the Sliding Geom Puzzle (SGP).</em></p>
+  <p><em>Figure 1: GPT-4o interacting with the Sliding Geom Puzzle (SGP). Watch more examples on <a href="https://www.youtube.com/watch?v=Djis_xkgtW8">YouTube</a>.</em></p>
 </div>
 
 ## Table of Contents
@@ -156,7 +156,9 @@ move tile 5 down
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :test_tube: Results
-Results on the SGP problem are shown below. More details about the results can be found [here](#bookmark-citation).
+- Results on the SGP problem are shown below
+- More details about the results can be found [here](#bookmark-citation)
+- Watch more examples on [YouTube](https://www.youtube.com/watch?v=Djis_xkgtW8)
 
 <div align="center">
   <img src="Resources/README/barplot_won_with_baselines_and_ci.png" alt="Sliding Geom Puzzle" width="600"/>

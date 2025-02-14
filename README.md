@@ -255,8 +255,10 @@ python main.py
 
 ### Unity
 
-The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of the box on any common operating system with a web browser installed. The web app is built with C# using Unity, and its source code is available in [Source/iVISPAR](Source/iVISPAR). No knowledge of C# or compilation of the Unity project is required to run experiments with iVISPAR. We also provide a fully online working version for human experiments.
+The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of the box on any common operating system with a web browser installed. The web app is built with C# using Unity, and its source code is available in [Source/iVISPAR](Source/iVISPAR). We also provide a fully online working version for human experiments.
 
+> [!NOTE]
+> No knowledge of C# or compilation of the Unity project is required to run experiments with iVISPAR.
 
 <div align="center">
   <img src="Resources/README/webapp.png" alt="webapp image" width="500"/>

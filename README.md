@@ -15,9 +15,10 @@
 
 
 
-## :trophy: 2nd Place – Berkeley LLMs as Agents Hackathon 2025 :trophy:
+## :trophy: 2nd Place – Berkeley LLM Agent Hackathon 2025 :trophy:
 
-:silver_medal: [Benchmarking Track](https://rdi.berkeley.edu/llm-agents-hackathon/) – Recognized for advancing AI agent evaluation and LLM benchmarking.
+**[Benchmarking Track](https://rdi.berkeley.edu/llm-agents-hackathon/) – Recognized for advancing AI agent evaluation and LLM benchmarking.**
+
 # :jigsaw: iVISPAR
 
 Vision-Language Models (VLMs) are known to struggle with spatial reasoning and visual alignment. To help overcome these limitations, we introduce iVISPAR, an interactive multi-modal benchmark designed to evaluate the spatial reasoning capabilities of VLMs acting as agents. iVISPAR is based on a variant of the sliding tile puzzle—a classic problem that demands logical planning, spatial awareness, and multi-step reasoning. The benchmark supports visual 2D, 3D, and text-based input modalities, enabling comprehensive assessments of VLMs' planning and reasoning skills. 

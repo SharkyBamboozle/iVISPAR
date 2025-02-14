@@ -14,10 +14,11 @@
 ![Environment_sliding_geom_puzzle](https://img.shields.io/badge/Environment-sliding_geom_puzzle-gray?style=flat&labelColor=darkgreen)<br>
 
 
-
-## :trophy: 2nd Place – Berkeley LLM Agent Hackathon 2025 :trophy:
-
-**[Benchmarking Track](https://rdi.berkeley.edu/llm-agents-hackathon/) – Recognized for advancing AI agent evaluation and LLM benchmarking.**
+> \[!IMPORTANT\]
+>
+> ## :trophy: 2nd Place – Berkeley LLM Agent Hackathon 2025 :trophy:
+>
+> **[Benchmarking Track](https://rdi.berkeley.edu/llm-agents-hackathon/) – Recognized for advancing AI agent evaluation and LLM benchmarking.**
 
 # :jigsaw: iVISPAR
 
@@ -161,9 +162,9 @@ move tile 5 down
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## :test_tube: Results
-- Results on the SGP problem are shown below
-- More details about the results can be found [here](#bookmark-citation)
-- Watch example interactions on [YouTube](https://www.youtube.com/watch?v=Djis_xkgtW8)
+> [!TIP]
+> - More details about the results can be found [here](#bookmark-citation)
+> - Watch example interactions on [YouTube](https://www.youtube.com/watch?v=Djis_xkgtW8)
 
 <div align="center">
   <img src="Resources/README/barplot_won_with_baselines_and_ci.png" alt="Sliding Geom Puzzle" width="600"/>

@@ -16,7 +16,7 @@
 
 > \[!IMPORTANT\]
 >
-> ## :trophy: 2nd Place – Berkeley LLM Agent Hackathon 2025 :trophy:
+> ## :trophy: 2nd Place – Berkeley LLM Agent Hackathon 2024 :trophy:
 >
 > **[Benchmarking Track](https://rdi.berkeley.edu/llm-agents-hackathon/) – Recognized for advancing AI agent evaluation and LLM benchmarking.**
 

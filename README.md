@@ -28,6 +28,8 @@ We evaluate a broad suite of state-of-the-art open-source and closed-source VLMs
 
 Results indicate that while some VLMs perform well on simple spatial tasks, they encounter difficulties with more complex configurations and problem properties. Notably, while VLMs generally perform better in 2D vision compared to 3D or text-based representations, they consistently fall short of human performance, illustrating the persistent challenge of visual alignment. This highlights critical gaps in current VLM capabilities, highlighting their limitations in achieving human-level cognition.
 
+Find out more on our [website](http://ivispar.ai/).
+
 
 <div align="center">
   <img src="Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
@@ -302,6 +304,6 @@ Mayer, J., Ballout, M., Jassim, S., Nosrat Nezami, F., & Bruni, E. (2025). *iVIS
 
 ## :mailbox_with_mail: Contact
 
-Julius Mayer - research@jmayer.ai
+[Julius Mayer](http://jmayer.ai/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

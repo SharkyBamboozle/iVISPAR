@@ -28,11 +28,9 @@ We evaluate a broad suite of state-of-the-art open-source and closed-source VLMs
 
 Results indicate that while some VLMs perform well on simple spatial tasks, they encounter difficulties with more complex configurations and problem properties. Notably, while VLMs generally perform better in 2D vision compared to 3D or text-based representations, they consistently fall short of human performance, illustrating the persistent challenge of visual alignment. This highlights critical gaps in current VLM capabilities, highlighting their limitations in achieving human-level cognition.
 
-Find out more on our [website](http://ivispar.ai/).
-
 
 <div align="center">
-  <img src="Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/sliding_geom_puzzle_viz.gif" alt="Sliding Geom Puzzle" width="700"/>
   <p><em>Figure 1: GPT-4o interacting with the Sliding Geom Puzzle (SGP). Watch more examples on <a href="https://www.youtube.com/watch?v=Djis_xkgtW8">YouTube</a>.</em></p>
 </div>
 
@@ -56,7 +54,7 @@ Find out more on our [website](http://ivispar.ai/).
 - **Customizable and automated:** Offers high customizability with automated tools for testing, evaluation, and comparative analysis.
 
 <div align="center">
-  <img src="Resources/README/modalities.png" alt="Sliding Geom Puzzle" width="500"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/modalities.png" alt="Sliding Geom Puzzle" width="500"/>
   <p><em>Figure 2: Visualizations of VLMs’ observations for the active and goal states for all modalities: vision 3D (left), vision 2D (middle),
 text-base representation, provided to models as a string (right) on a 4x4 board at each step during the Sliding Geom Puzzle environment.</em></p>
 </div>
@@ -69,9 +67,8 @@ text-base representation, provided to models as a string (right) on a 4x4 board 
 - **Move sequence visualization:** Each puzzle configuration includes an animated optimal move sequence (computed using A*) to illustrate puzzle complexity.
 
 <div align="center">
-  <img src="Resources/README/game_flow.png" alt="Sliding Geom Puzzle" width="600"/>
-  <p><em>Figure 3: Depiction of the interaction flow between VLM agents and the iVISPAR Simulator with a progression through an episode with
-the shortest path solution of 4 steps being solved by prompted actions from a VLM agent.
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/game_flow.png" alt="Sliding Geom Puzzle" width="600"/>
+  <p><em>Figure 3: Depiction of the interaction flow between VLM agents and the iVISPAR Simulator with a progression through an episode with the shortest path solution of 4 steps being solved by prompted actions from a VLM agent.
 </em></p>
 </div>
 
@@ -87,7 +84,7 @@ move blue sphere right
 ```
 
 <div align="center">
-  <img src="Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/SGP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
   <p><em>Figure 4: Visualization of Sliding Geom Puzzle (SGP) configuration examples of varying sizes solved by A*.</em></p>
 </div>
 
@@ -100,7 +97,7 @@ move tile 5 down
 ```
 
 <div align="center">
-  <img src="Resources/README/STP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/STP_panorama.gif" alt="Sliding Geom Puzzle" width="900"/>
   <p><em>Figure 5: Visualization of Sliding Tile Puzzle (STP) configuration examples of varying sizes solved by A*.</em></p>
 </div>
 
@@ -169,14 +166,14 @@ move tile 5 down
 > - Watch example interactions on [YouTube](https://www.youtube.com/watch?v=Djis_xkgtW8)
 
 <div align="center">
-  <img src="Resources/README/barplot_won_with_baselines_and_ci.png" alt="Sliding Geom Puzzle" width="600"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/barplot_won_with_baselines_and_ci.png" alt="Sliding Geom Puzzle" width="600"/>
   <p><em>Figure 6: VLM evaluation on 900 episodes per model across all three modalities, with 95% confidence intervals. Baseline comparisons for human performance and random moves are shown. VLMs’ success rates of episodes completed with higher values denoting
 better performance</em></p>
 </div>
 
 
 <div align="center">
-  <img src="Resources/README/barplot_action_counts_with_error_bars_per_model_and_representation.png" alt="Sliding Geom Puzzle" width="600"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/barplot_action_counts_with_error_bars_per_model_and_representation.png" alt="Sliding Geom Puzzle" width="600"/>
   <p><em>Figure 7: VLMs’ average action counts per episode. Effective / ineffective actions respectively decrease / increase the path length to the
 goal state. Occupied destination and out-of-bounds are invalid moves, while illegal commands break the instructed action format, all of
 which leave the board state unchanged. </em></p>
@@ -184,7 +181,7 @@ which leave the board state unchanged. </em></p>
 
 
 <div align="center">
-  <img src="Resources/README/heatmap_all.png" alt="Sliding Geom Puzzle" width="600"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/heatmap_all.png" alt="Sliding Geom Puzzle" width="600"/>
   <p><em>Figure 8:  Cumulative heatmaps of VLMs’ minimal paths to the goal state after 20 steps across varying complexities, with the number of
 geoms and shortest path solutions ranging from 2 to 11. Evaluated over 5400 episodes across all modalities (vision 3D, vision 2D, text).</em></p>
 </div>
@@ -257,13 +254,13 @@ python main.py
 
 ### Unity
 
-The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of the box on any common operating system with a web browser installed. The web app is built with C# using Unity, and its source code is available in [Source/iVISPAR](Source/iVISPAR). We also provide a fully online working version for human experiments.
+The project includes the compiled [iVISPAR](app_builds) web app, which works out of the box on any common operating system with a web browser installed. The web app is built with C# using Unity, and its source code is available in [Source/iVISPAR](Source/iVISPAR). We also provide a fully online working version for human experiments.
 
 > [!NOTE]
 > No knowledge of C# or compilation of the Unity project is required to run experiments with iVISPAR.
 
 <div align="center">
-  <img src="Resources/README/webapp.png" alt="webapp image" width="500"/>
+  <img src="https://raw.githubusercontent.com/SharkyBamboozle/iVISPAR/main/Resources/README/webapp.png" alt="webapp image" width="500"/>
   <p><em>Figure 9: Web app with UI for human experiments.</em></p>
 </div>
 
@@ -304,6 +301,6 @@ Mayer, J., Ballout, M., Jassim, S., Nosrat Nezami, F., & Bruni, E. (2025). *iVIS
 
 ## :mailbox_with_mail: Contact
 
-[Julius Mayer](http://jmayer.ai/)
+Julius Mayer - research@jmayer.ai
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

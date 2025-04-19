@@ -1,0 +1,44 @@
+{
+  "start": {
+    "type": "start",
+    "color": "grey",
+    "rgb": [141, 153, 174],
+    "comment": "Initial state. Only used for post-visual"
+  },
+  "active_1": {
+    "type": "active",
+    "color": "blue",
+    "rgb": [82, 138, 174],
+    "comment": "Productive current state (progress towards goal)"
+  },
+  "active_0": {
+    "type": "active",
+    "color": "orange",
+    "rgb": [255, 165, 0],
+    "comment": "Unproductive current state (no progress, but not failure). Only used for post-visual"
+  },
+  "last": {
+    "type": "last",
+    "color": "blue",
+    "rgb": [82, 138, 174],
+    "comment": "Last active state before episode end.Only used for post-visual"
+  },
+  "past": {
+    "type": "past",
+    "color": "grey",
+    "rgb": [141, 153, 174],
+    "comment": "Past state"
+  },
+  "goal_1": {
+    "type": "goal",
+    "color": "green",
+    "rgb": [100, 191, 106],
+    "comment": "Correct goal state (agent successfully identifies goal)"
+  },
+  "goal_0": {
+    "type": "goal",
+    "color": "red",
+    "rgb": [242, 92, 84],
+    "comment": "Incorrect goal state (agent misidentifies goal). Only used for post-visual"
+  }
+}

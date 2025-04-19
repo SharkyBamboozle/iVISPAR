@@ -1,0 +1,32 @@
+[
+  {
+    "pattern": "[\\\\/*?:\"<>|]",
+    "replacement": "",
+    "flags": 0
+  },
+  {
+    "pattern": "[\\r\\n\\t]",
+    "replacement": " ",
+    "flags": 0
+  },
+  {
+    "pattern": "[^a-zA-Z0-9\\s]",
+    "replacement": "",
+    "flags": 0
+  },
+  {
+    "pattern": "^[\\\\/]+",
+    "replacement": "",
+    "flags": "MULTILINE"
+  },
+  {
+    "pattern": "^'+|'+$",
+    "replacement": "",
+    "flags": "MULTILINE"
+  },
+  {
+    "pattern": "\\s+",
+    "replacement": " ",
+    "flags": 0
+  }
+]

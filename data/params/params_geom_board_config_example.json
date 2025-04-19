@@ -1,0 +1,47 @@
+{
+  "config_id": "geom_board_example_ds",
+  "description": "Parameters for a Geom Board Puzzle configuration-files dataset",
+  "game_type": "geom_board",
+  "game_params":{
+    "board_width_range":{
+      "min": 4,
+      "max": 4
+    },
+    "board_height_range":{
+      "min": 4,
+      "max": 4
+    },
+    "num_geoms_range":{
+      "min": 3,
+      "max": 5
+    },
+    "shortest_solution_path_range":{
+      "min": 3,
+      "max": 5
+    },
+    "path_interference_factor_range":{
+      "min": 0,
+      "max": 0
+    },
+    "stacking_level": 5,
+    "instances_per_configuration": 3,
+    "action_set": {
+        "move": false,
+        "flip": true,
+        "addrmv": false
+    },
+    "shape_set": {
+        "cube": true,
+        "diamond": true,
+        "sphere": true,
+        "cylinder": true
+    },
+    "color_set": {
+        "red": true,
+        "blue": true,
+        "green": true,
+        "yellow": true,
+        "purple": true
+    }
+  }
+}

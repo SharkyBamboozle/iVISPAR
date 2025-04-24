@@ -27,3 +27,12 @@ class DataPathHandler:
         dir_path.mkdir(parents=True, exist_ok=True)
 
         return dir_path
+
+
+    @staticmethod
+    def get_app_builds_dir() -> Path:
+
+        # Automatically calculate base directory
+        dir_path = Path(__file__).resolve().parent.parent.parent.parent / "app_builds"
+
+        return dir_path

@@ -6,6 +6,7 @@ Minimal interface: adjust the experiment parameters signature to change the conf
 import asyncio
 
 from core.experiment.experiment_runner import ExperimentRunner
+import core.experiment.experiment_runner_geom_board # Required for ExperimentRunner's factory pattern
 
 
 async def main(experiment_params_signature: str) -> None:

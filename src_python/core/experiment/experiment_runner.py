@@ -61,7 +61,7 @@ class ExperimentRunner(ABC):
     #-------------------------------#
     def __new__(cls, experiment_param_signature: str) -> "ExperimentRunner":
         config_params: Dict[str, Any] = JsonFileHandler.load_json(experiment_param_signature, source_dir='params')
-        game_type: str = config_params.get("game_type", None).lower()
+        game_type: str = config_params["game"]["game_type"].lower()
 
         if game_type in cls._registry:
             instance = super().__new__(cls._registry[game_type])

@@ -1,5 +1,6 @@
 from .agent_systems import Agent
 
+@Agent.register_subclass("user")
 class UserAgent(Agent):
     """
     A simple interactive agent that simulates the role of an LLM for user interaction.

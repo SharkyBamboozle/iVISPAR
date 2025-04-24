@@ -4,6 +4,8 @@ import json
 from .experiment_runner import ExperimentRunner
 from ..utility.json_file_handler import JsonFileHandler
 from ..utility.data_path_handler import DataPathHandler
+
+# Agent imports
 from ..agent.agent_observation import Observation
 from ..agent.agent_action import Action
 from ..agent.agent_systems import Agent
@@ -25,7 +27,10 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
         # Load dataset and expand config files with env params
         config_dataset_dict = JsonFileHandler.load_all_jsons(
             source_dir=f"configs/{self.game_params.get('config_id', None)}/dataset")
+        print(f"configs/{self.game_params.get('config_id', None)}/dataset")
+        print(len(config_dataset_dict))
         self.config_dataset_dict = JsonFileHandler.expand_jsons(config_dataset_dict, self.env_params)
+        print(len(self.config_dataset_dict))
 
         # Create a dictionary to save env, agent, and game data
         self.metadata = {
@@ -34,7 +39,9 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
             "game": self.game_params
         }
 
-        self.episode_name_template = f"episode_{agent_name}_{game_name}_{env_name}_{{}}"
+        self.episode_name_template = (f"episode_{self.agent_params['agent_type']}{self.agent_params['model_type']}"
+                                      f"_{self.game_params['game_type']}{self.game_params['config_id']}"
+                                      f"_{self.env_params['env_type']}_{{}}")
 
     async def run_episodes(self) -> None:
         """Run evaluation or training loop. Must be implemented by subclasses."""

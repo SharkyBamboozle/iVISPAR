@@ -37,7 +37,7 @@ async def initialize_connection(uri):
                 "command": "Handshake",
                 "from": network_id,
                 "to": partner_id,
-                "messages": ["Action Perception client attempting to register partner id with the game"],
+                "messages": ["ActionModel Perception client attempting to register partner id with the game"],
                 "payload": base64.b64encode(b"nothing here").decode("utf-8"),
             }
             await websocket.send(json.dumps(message_data))

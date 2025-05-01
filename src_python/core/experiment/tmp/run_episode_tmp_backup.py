@@ -9,7 +9,7 @@ async def run_episode2(self, agent, game, episode_logger=None):
 
     i = 0
     while not game.check_done(state):
-        # log_separator(f"Action-Perception Loop: {i}", logger=episode_logger)
+        # log_separator(f"ActionModel-Perception Loop: {i}", logger=episode_logger)
         # time.sleep(delay)
 
         # if message_data.get("command") == "Screenshot" or message_data.get("command") == "ActionAck":

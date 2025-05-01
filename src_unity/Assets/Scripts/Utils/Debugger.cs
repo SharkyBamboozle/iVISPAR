@@ -49,6 +49,7 @@ public class Debugger : MonoBehaviour
         
         logs.Clear();
         jsonLogs = new EventLogs();
+
     }
     public void Log(string message)
     {
@@ -68,12 +69,14 @@ public class Debugger : MonoBehaviour
     }
     public void CreateNewAction()
     {
+
         jsonLogs.Actions.Add(new NetAction());
     }
     public void SetCommandCount(int count)
     {
         //jsonLogs.Actions.Last<NetAction>().command_count = count;
         jsonLogs.Actions[jsonLogs.Actions.Count -1].command_count = count;
+        jsonLogs.step_num = count;
     }
     public void SetActionCount(int count)
     {

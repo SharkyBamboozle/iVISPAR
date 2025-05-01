@@ -14,7 +14,7 @@
   },
   "game": {
     "game_type": "geom_board",
-    "config_id": "ICML",
+    "config_id": "single_new",
     "num_game_env": 1000,
     "max_game_length": 20,
     "representation_type": "vision",

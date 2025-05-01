@@ -4,10 +4,9 @@ import json
 from src_python.core.experiment.experiment_runner import ExperimentRunner
 from src_python.core.utility.json_file_handler import JsonFileHandler
 from src_python.core.utility.data_path_handler import DataPathHandler
-from src_python.core.agent.agent_observation import Observation
-from src_python.core.agent.agent_action import Action
-from src_python.core.agent.agent_systems import Agent
-from src_python.core.agent.agent_system_user import UserAgent  # Required for Agent's factory pattern
+from src_python.core.models.tmp.observation_model2 import Observation
+from src_python.core.models.tmp.action_model2 import ActionModel
+from src_python.core.agent.agent import Agent
 
 
 @ExperimentRunner.register_subclass("geom_board")
@@ -109,7 +108,7 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
                 while not self.is_done(state):
                     observation = Observation(state)
                     response = agent.act(observation)
-                    action = Action(response)
+                    action = ActionModel(response)
 
                     state = await self.env_step(action.get_action)
                     self.save_episode_data(observation, action, state)

@@ -5,13 +5,11 @@ from tqdm import tqdm
 import random
 import numpy as np
 import hashlib
-from collections import Counter
 
-from .config_model_new import ConfigModel
+from src_python.core.models.config_model_new import ConfigModel
 from .config_generator import ConfigGenerator
-from .param_model_geom_board import GeomBoardGameParamsModel
+from src_python.core.models.param_model_geom_board import GeomBoardGameParamsModel
 
-from src_python.core.environment.tmp.find_shortest_move_sequence import calculate_manhattan_heuristic
 from src_python.core.environment.game_solver_geom_board import GameSolverGeomBoard
 from src_python.core.environment.game_system_geom_board import GameSystemGeomBoard
 

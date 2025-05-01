@@ -106,8 +106,8 @@ public class ExperimentManager : MonoBehaviour
         
         try
         {
+            Debug.Log($"TMP debug flag 1: {config}", this);
             loadedExperimentData = JsonUtility.FromJson<ExperimentData>(config);
-            
         }
         catch
         {

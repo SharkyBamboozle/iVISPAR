@@ -188,7 +188,7 @@ class ExperimentRunner(ABC):
             "command": "Handshake",
             "from": self.network_id,
             "to": partner_id,
-            "messages": ["Action Perception client attempting to register partner id with the game"],
+            "messages": ["ActionModel Perception client attempting to register partner id with the game"],
             "payload": base64.b64encode(b"nothing here").decode("utf-8"),
         }
         await self.websocket.send(json.dumps(message_data))
@@ -221,6 +221,24 @@ class ExperimentRunner(ABC):
         }
         await self.websocket.send(json.dumps(message_data))
 
+        #Receive initial state from simulator
+        simulation_data = await self.websocket.recv() #only data from setup, no need to return
+        goal_image = simulation_data
+
+        # Create a JSON-formatted message
+        message_data = {
+            "command": "GameInteraction",
+            "from": self.network_id,
+            "to": self.partner_id,  # Server ID or specific target ID
+            "messages": ["start"],
+            "payload": base64.b64encode(b"Optional binary data").decode("utf-8")
+        }
+        await self.websocket.send(json.dumps(message_data))
+
+        simulation_data2 = await self.websocket.recv()
+        return JsonFileHandler.deep_decode_json(simulation_data2), goal_image
+
+
     async def env_step(self, action):
         # Exit the loop if the user wants to close the connection
         if action.lower() == "reset":
@@ -236,9 +254,9 @@ class ExperimentRunner(ABC):
 
             return {None}
         else:
-            message_data = self.send_msg(user_message=action)
+            simulation_data = await self.send_msg(user_message=action)
 
-            return message_data
+            return JsonFileHandler.deep_decode_json(simulation_data)
 
     async def send_reset(self):
         message_data = {
@@ -262,8 +280,8 @@ class ExperimentRunner(ABC):
         }
         await self.websocket.send(json.dumps(message_data))
 
-        response = await self.websocket.recv()
-        return json.loads(response)
+        simulation_data = await self.websocket.recv()
+        return JsonFileHandler.deep_decode_json(simulation_data)
 
     def add_checkpoint(self, episode_name):
         self.checkpoint_state["completed"].append(episode_name)

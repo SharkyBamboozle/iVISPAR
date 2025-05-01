@@ -38,7 +38,7 @@ async def initialize_connection(uri):
                 "command": "Handshake",
                 "from": network_id,
                 "to": partner_id,
-                "messages": ["Action Perception client attempting to register partner id with the game"],
+                "messages": ["ActionModel Perception client attempting to register partner id with the game"],
                 "payload": base64.b64encode(b"nothing here").decode("utf-8"),
             }
             await websocket.send(json.dumps(message_data))
@@ -74,7 +74,7 @@ async def interact_with_server(websocket, network_id, partner_id, agent, game, e
 
     i = 0
     while not game.check_done(message_data):
-        log_separator(f"Action-Perception Loop: {i}", logger=episode_logger)
+        log_separator(f"ActionModel-Perception Loop: {i}", logger=episode_logger)
         time.sleep(delay)
         if message_data.get("command") == "Screenshot" or message_data.get("command") == "ActionAck":
             observation = game.feed_sim_response(message_data, i)

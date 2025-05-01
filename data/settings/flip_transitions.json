@@ -1,0 +1,14 @@
+{
+    "1":  { "left":  8,  "right": 12, "up":   9,  "down":  5 },
+    "2":  { "left":  6,  "right": 10, "up":   5,  "down":  9 },
+    "3":  { "left": 10,  "right":  6, "up":   7,  "down": 11 },
+    "4":  { "left": 12,  "right":  8, "up":  11,  "down":  7 },
+    "5":  { "left":  7,  "right":  9, "up":   1,  "down":  2 },
+    "6":  { "left":  3,  "right":  2, "up":   8,  "down": 10 },
+    "7":  { "left": 11,  "right":  5, "up":   4,  "down":  3 },
+    "8":  { "left":  4,  "right":  1, "up":  12,  "down":  6 },
+    "9":  { "left":  5,  "right": 11, "up":   2,  "down":  1 },
+    "10": { "left":  2,  "right":  3, "up":   6,  "down": 12 },
+    "11": { "left":  9,  "right":  7, "up":   3,  "down":  4 },
+    "12": { "left":  1,  "right":  4, "up":  10,  "down":  8 }
+}

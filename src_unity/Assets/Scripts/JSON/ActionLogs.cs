@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class EventLogs 
 {
+    public int step_num;
     public List<NetAction> Actions;
     public List<string> board_state;
 
@@ -13,6 +14,7 @@ public class EventLogs
 
     public EventLogs()
     {
+        step_num = 0;
         Actions = new List<NetAction>();
         board_state = new List<string>();
         board_data = new List<ObjectData>();

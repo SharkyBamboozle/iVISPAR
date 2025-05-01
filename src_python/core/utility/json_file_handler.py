@@ -107,6 +107,21 @@ class JsonFileHandler:
         return json.dumps(data, indent=4, ensure_ascii=False)  # Preserve UTF-8 characters
 
     @staticmethod
+    def expand_json(data: Dict[str, Any], additional_params: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Injects values from additional_params into a config dictionary.
+
+        Args:
+            data (Dict): A config dictionary to expand.
+            additional_params (Dict): Key-value pairs to merge in.
+
+        Returns:
+            Dict: The updated config dictionary.
+        """
+        data.update(additional_params)
+        return data
+
+    @staticmethod
     def expand_jsons(
         data: List[Dict[str, Any]],
         additional_params: Dict[str, Any]
@@ -124,3 +139,33 @@ class JsonFileHandler:
         for json_data in data:
             json_data.update(additional_params)
         return data
+
+    @staticmethod
+    def deep_decode_json(data: Any) -> Any:
+        """
+        Recursively parses nested JSON strings within a Python dictionary or list.
+
+        Args:
+            data (Any): Input data that may contain nested JSON-encoded strings.
+
+        Returns:
+            Any: Fully parsed data structure.
+        """
+        if isinstance(data, dict):
+            return {k: JsonFileHandler.deep_decode_json(v) for k, v in data.items()}
+        if isinstance(data, list):
+            return [JsonFileHandler.deep_decode_json(item) for item in data]
+        if isinstance(data, str):
+            try:
+                parsed = json.loads(data)
+                return JsonFileHandler.deep_decode_json(parsed)  # recurse further if needed
+            except (json.JSONDecodeError, TypeError):
+                return data  # not a JSON string, keep as is
+        return data
+
+    @staticmethod
+    def load_flip_transitions():
+        with open("flips.json", "r") as f:
+            raw = json.load(f)
+
+        return {int(k): v for k, v in raw.items()}

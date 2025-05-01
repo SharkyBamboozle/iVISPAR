@@ -20,10 +20,9 @@ from abc import ABC, abstractmethod
 from typing import Type, Callable, Optional, Dict, Any
 import logging
 
-from .param_model import BaseGameParamsModel, ConfigModel
+from src_python.core.models.param_model import BaseGameParamsModel, ConfigModel
 from ..utility.data_path_handler import DataPathHandler
 from ..utility.json_file_handler import JsonFileHandler
-from ..utility.log_handler import LogHandler
 
 
 class ConfigGenerator(ABC):

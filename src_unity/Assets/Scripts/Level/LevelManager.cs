@@ -154,7 +154,12 @@ public class LevelManager : MonoBehaviour
             }
 
             // Use the 'coordinate' array to set the object's position
+            Debug.Log($"SomeMethod called with x={gridX}, z={gridZ}");
             obj.transform.position = new Vector3(gridX, 0, gridZ);   
+            //TODO
+            //GPT suggests obj.transform.position = gridBoard.getGridWorldPos(gridX, gridZ);
+
+
             obj.transform.rotation = Quaternion.identity;
             obj.tag = "Commandable";  // Example tag for interactable objects
             obj.AddComponent<TargetBehaviour>();  // Assuming you have this script

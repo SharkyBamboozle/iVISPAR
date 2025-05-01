@@ -22,7 +22,7 @@ class GameSystemGeomBoard(GameSystem):
         self.actions = ActionSetGeomBoard()
 
     # -------------------------------
-    # Core Action Application
+    # Core ActionModel Application
     # -------------------------------
     def apply_action(self, board_state: dict, action_type: str) -> dict:
         """ Returns a new board checkpoint_state after applying the given action. """

@@ -1,7 +1,7 @@
 .DS_Store
 .idea
 
-data/*
-!/data/instructions
-!/data/params
-!/data/settings
+data/baselines
+data/configs
+data/experiments
+data/results

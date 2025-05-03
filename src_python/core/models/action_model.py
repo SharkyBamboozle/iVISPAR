@@ -6,7 +6,7 @@ from src_python.core.utility.json_file_handler import JsonFileHandler
 
 
 class ActionModel:
-    def __init__(self, raw_prompt: str, split_at: str = "action:", num_actions: int = None):
+    def __init__(self, raw_prompt: str, split_at: str = "action:", num_actions: int = None, game_params = None):
         """
         Create an ActionModel object from a raw model output prompt.
 

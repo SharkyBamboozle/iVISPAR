@@ -1,5 +1,5 @@
 class ObservationModel:
-    def __init__(self, simulation_data: dict, goal_image: str):
+    def __init__(self, simulation_data: dict, goal_image: str, game_params = None):
         messages = simulation_data.get("messages", [{}])
         payload = simulation_data.get("payload", [""])
 

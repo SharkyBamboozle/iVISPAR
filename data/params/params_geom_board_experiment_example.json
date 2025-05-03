@@ -1,16 +1,12 @@
 {
   "experiment_id": "geom_board_experiment_example",
   "agent": {
-    "agent_type": "user",
-    "model_type": "gpt-4o",
-    "instruction_prompt_file_path": "Data/Instructions/ICML_instruction_2D.txt",
-    "api_keys_file_path": "Data/API-keys/api-keys.txt",
-    "single_images": true,
-    "COT": true,
-    "delay": 0.2,
-    "visual_state_embedding": "both",
-    "max_history": 2,
-    "max_tokens": 500
+    "agent_type": "gpt",
+    "agent_params": {
+      "model_type": "gpt-4o",
+      "max_tokens": 500,
+      "temperature": 1.0
+    }
   },
   "game": {
     "game_type": "geom_board",
@@ -18,7 +14,10 @@
     "num_game_env": 1000,
     "max_game_length": 20,
     "representation_type": "vision",
+    "visual_state_embedding": "both",
     "planning_steps": 1,
+    "max_history": 2,
+    "delay": 0.2,
     "instruction_prompt_file_path": "Data/Instructions/ICML_instruction_2D.txt",
     "chain_of_thoughts": true,
     "predict_board_state": false

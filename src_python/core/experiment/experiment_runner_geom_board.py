@@ -1,19 +1,15 @@
 from tqdm import tqdm
+import time
 
 from .experiment_runner import ExperimentRunner
 
-# Model imports
 from ..models.observation_model import ObservationModel
 from ..models.action_model import ActionModel
 from ..models.experiment_model import ExperimentDataModel
-
-# Agent imports
-from ..agent.agent import Agent
-from ..agent.agent_user import UserAgent  # Required for Agent's factory pattern
-
-# Util imports
+from ..agent.agents_base import BaseAgent, UserAgent # All imports required for BaseAgent's factory pattern
+from ..agent.agents_model_api import GPTAgent, ClaudeAgent, GeminiAgent, GrokAgent, MistralAgent # All imports required for BaseAgent's factory pattern
+from ..agent.agents_model_local import QwenAgent, LLaVaAgent, LlamaAgent, DeepseekAgent, InternVLAgent # All imports required for BaseAgent's factory pattern
 from ..utility.json_file_handler import JsonFileHandler
-from ..utility.data_path_handler import DataPathHandler
 
 
 @ExperimentRunner.register_subclass("geom_board")
@@ -26,7 +22,7 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
         self.game_params = self._experiment_params.get("game", None)
         self.env_params = self._experiment_params.get("env", None)
 
-        self.agent = Agent(self.agent_params)
+        self.agent = BaseAgent(self.agent_params)
 
         # Load dataset and expand config files with env params
         config_dataset_dict = JsonFileHandler.load_all_jsons(
@@ -101,25 +97,26 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
             await self.websocket.close()
             return self.experiment_id
 
-    async def run_episode(self, simulation_config, episode_dir) -> None:
+    async def run_episode(self, simulation_config, episode_dir, action_sequence: str=None) -> None:
 
         simulation_data_state, simulation_data_init = await self.send_setup(simulation_config)
-        observation = ObservationModel(simulation_data_state, simulation_data_init)
+        observation = ObservationModel(simulation_data_state, simulation_data_init, self.game_params)
 
         #run steps until game done or max steps
         while not self.is_done(observation):
 
-            response_prompt = self.agent.act(observation)
-            action = ActionModel(response_prompt)
+            response_prompt = self.agent.act(observation) if action_sequence is None else action_sequence
+            action = ActionModel(response_prompt, self.game_params)
 
             # run predicted actions until game done, max steps or no predicted actions remain
             while not (self.is_done(observation) or action.is_empty):
 
                 simulation_data_state = await self.env_step(action.pop_action())
-                observation_new = ObservationModel(simulation_data_state, simulation_data_init)
+                observation_new = ObservationModel(simulation_data_state, simulation_data_init, self.game_params)
                 ExperimentDataModel.save_episode_data(observation, action, observation_new, episode_dir)
 
                 observation = observation_new
+                if self.game_params.get('delay', False): time.sleep(self.game_params['delay'])
 
         await self.send_reset()
 

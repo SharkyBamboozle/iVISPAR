@@ -1,7 +1,2 @@
 .DS_Store
 .idea
-
-data/baselines
-data/configs
-data/experiments
-data/results

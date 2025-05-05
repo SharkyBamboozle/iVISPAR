@@ -1,4 +1,5 @@
 import json
+import yaml  # PyYAML
 import shutil
 import fnmatch
 from pathlib import Path
@@ -8,18 +9,26 @@ from .data_path_handler import DataPathHandler
 
 
 class JsonFileHandler:
-    """Utility class for handling JSON files using PathHandler for directory management."""
+    """Utility class for handling JSON or YAML files using PathHandler for directory management."""
 
     @staticmethod
     def load_json(file_signature: str, source_dir: Union[str, Path]) -> Dict[str, Any]:
-        """Load JSON data from a file."""
-        file_path: Path = Path(DataPathHandler.ensure_dir(source_dir)) / f"{file_signature}.json"
+        """Load data from a .json file, or if missing, from a .yaml file."""
+        base_dir = Path(DataPathHandler.ensure_dir(source_dir))
+        json_path = base_dir / f"{file_signature}.json"
+        if json_path.exists():
+            with json_path.open('r', encoding='utf-8') as f:
+                return json.load(f)
 
-        if not file_path.exists():
-            raise FileNotFoundError(f"File not found: {file_path}")
+        # fallback to YAML
+        yaml_path = base_dir / f"{file_signature}.yaml"
+        if yaml_path.exists():
+            with yaml_path.open('r', encoding='utf-8') as f:
+                return yaml.safe_load(f)
 
-        with file_path.open('r', encoding='utf-8') as f:
-            return json.load(f)
+        raise FileNotFoundError(
+            f"Neither {json_path.name} nor {yaml_path.name} found in {base_dir!r}"
+        )
 
     @staticmethod
     def load_all_jsons(source_dir: Union[str, Path], pattern: str = "*") -> List[Dict[str, Any]]:

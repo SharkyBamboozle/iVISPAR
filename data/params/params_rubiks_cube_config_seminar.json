@@ -1,0 +1,12 @@
+{
+  "config_id": "rubiks_cube_seminar_ds",
+  "description": "Parameters for a Rubik's Cube configuration-files dataset",
+  "game_type": "rubiks_cube",
+  "game_params":{
+    "shortest_solution_path_range":{
+      "min": 3,
+      "max": 5
+    },
+    "instances_per_configuration": 3
+  }
+}

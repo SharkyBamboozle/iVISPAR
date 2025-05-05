@@ -87,24 +87,21 @@ async def start_server():
     await asyncio.Future()
 
 
-# WebSocket server logic
-async def start_WebSocket_server():
-    print("Starting WebSocket Server...")
-    server = await websockets.serve(handle_client, "localhost", 1984, max_size=10000000, ping_interval=10, ping_timeout=360)
-    print("WebSocket server started on ws://localhost:1984")
-    await asyncio.Future()  # Keep running indefinitely
-
-# Background server runners
-def run_WebSocket_server_in_background():
-    thread = threading.Thread(target=lambda: asyncio.run(start_WebSocket_server()), daemon=True)
-    thread.start()
-    print("WebSocket server started in the background.")
+# # WebSocket server logic
+# async def start_WebSocket_server():
+#     print("Starting WebSocket Server...")
+#     server = await websockets.serve(handle_client, "localhost", 1984, max_size=10000000, ping_interval=10, ping_timeout=360)
+#     print("WebSocket server started on ws://localhost:1984")
+#     await asyncio.Future()  # Keep running indefinitely
+#
+# # Background server runners
+# def run_WebSocket_server_in_background():
+#     thread = threading.Thread(target=lambda: asyncio.run(start_WebSocket_server()), daemon=True)
+#     thread.start()
+#     print("WebSocket server started in the background.")
 
 
 if __name__ == "__main__":
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    webApp_dir = os.path.join(base_dir, 'iVISPAR')
-
 
     #Run the server in the background
     asyncio.run(start_server())

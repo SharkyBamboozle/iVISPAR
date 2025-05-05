@@ -46,7 +46,7 @@ class BaseAgent(ABC):
         self.model_type = agent_params["agent_params"]["model_type"]
         self.max_tokens = agent_params["agent_params"]["max_tokens"]
         self.temperature = agent_params["agent_params"]["temperature"]
-        self.api_keys = JsonFileHandler.load_json(file_signature="api-keys", source_dir="settings")
+        self.api_keys = JsonFileHandler.load_json(file_signature="api_keys", source_dir="settings")
 
     @classmethod
     def register_subclass(cls, agent_type: str) -> Callable[[Type["BaseAgent"]], Type["BaseAgent"]]:

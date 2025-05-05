@@ -82,7 +82,7 @@ def extract_all_states_from_config(json_config):
     Extracts all current states from the board data in the JSON configuration for all steps.
 
     Args:
-        json_config (dict): The JSON configuration containing steps with 'board_data'.
+        json_config (dict): The JSON configuration containing steps with 'state_board_data'.
 
     Returns:
         list: A list of 2D NumPy arrays, where each array represents the current state
@@ -91,12 +91,12 @@ def extract_all_states_from_config(json_config):
     all_states = []
 
     for step_key, step_data in json_config.items():
-        board_data = step_data.get("board_data", [])
+        board_data = step_data.get("state_board_data", [])
 
         if not board_data:
-            raise ValueError(f"No 'board_data' found for {step_key} in the JSON config.")
+            raise ValueError(f"No 'state_board_data' found for {step_key} in the JSON config.")
 
-        # Extract the current coordinates from each item in board_data
+        # Extract the current coordinates from each item in state_board_data
         state = [item["current_coordinate"] for item in board_data]
 
         # Convert to NumPy array and append to the list of all states

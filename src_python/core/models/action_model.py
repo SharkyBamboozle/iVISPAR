@@ -6,7 +6,7 @@ from src_python.core.utility.json_file_handler import JsonFileHandler
 
 
 class ActionModel:
-    def __init__(self, raw_prompt: str, split_at: str = "action:", num_actions: int = None, game_params = None):
+    def __init__(self, raw_prompt: str, split_at: str = "action:", game_params = None):
         """
         Create an ActionModel object from a raw model output prompt.
 
@@ -25,8 +25,9 @@ class ActionModel:
         self.action_mistakes = {"missing_action": [], "extra_action": []}
 
         # Validate number of actions if requested
-        if num_actions is not None:
-            self._check_action_count(expected_count=num_actions)
+        self.num_actions = game_params["planning_steps"]
+        if self.num_actions is not None:
+            self._check_action_count(expected_count=self.num_actions)
 
     @property
     def action_data(self) -> str:

@@ -34,7 +34,9 @@ class RestAgent(BaseAgent, ABC):
     def act(self, observation: ObservationModel) -> str:
         messages = [
             {"role": "system", "content": observation.system_prompt},
-            {"role": "user", "content": observation.user_prompt}
+            {"role": "user", "content": observation.task_description},
+            {"role": "user", "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{observation.state_representation}"}}]},
+            {"role": "user", "content": [ {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{observation.goal_representation}"}}]}
         ]
 
         payload = {
@@ -128,10 +130,8 @@ class ClaudeAgent(BaseAgent):
             str: The model's text response.
         """
         messages = [
-            {"role": "user", "content": [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": observation.prev_image_base64}}]},
-            {"role": "assistant", "content": f"Action: {observation.prev_exchange['response']}"},
-            {"role": "user", "content": [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": observation.goal_base64}}]},
-            {"role": "user", "content": [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": observation.current_base64}}]},
+            {"role": "user", "content": [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": observation.goal_representation}}]},
+            {"role": "user", "content": [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": observation.state_representation}}]},
             {"role": "user", "content": observation.user_prompt}
         ]
 
@@ -177,8 +177,8 @@ class GeminiAgent(BaseAgent):
             str: The model's text response.
         """
         messages = [
-            {"mime_type": "image/png", "data": observation.goal_base64},
-            {"mime_type": "image/png", "data": observation.current_base64},
+            {"mime_type": "image/png", "data": observation.goal_representation},
+            {"mime_type": "image/png", "data": observation.state_representation},
             observation.user_prompt
         ]
 

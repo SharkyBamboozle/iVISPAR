@@ -7,6 +7,7 @@ from core.configuration.config_generator import ConfigGenerator
 from core.configuration.vis_configs_geom_board import vis_configs_geom_board
 from core.configuration.eval_configs_geom_board import eval_configs_geom_board
 import core.configuration.config_generator_geom_board  # Required for ConfigGenerator's factory pattern
+import core.configuration.config_generator_rubiks_cube # Required for ConfigGenerator's factory pattern
 
 def main(config_params_signature: str) -> None:
     config_generator = ConfigGenerator(config_params_signature)

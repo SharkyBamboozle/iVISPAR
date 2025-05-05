@@ -9,7 +9,7 @@
     }
   },
   "game": {
-    "game_type": "geom_board",
+    "game_type": "rubiks_cube",
     "config_id": "single_new",
     "num_game_env": 1000,
     "max_game_length": 20,
@@ -18,7 +18,7 @@
     "planning_steps": 1,
     "max_history": 2,
     "delay": 0.2,
-    "instructions": "instructions_geom_board",
+    "instructions": "instructions_rubiks_cube",
     "chain_of_thoughts": true,
     "predict_board_state": false
   },

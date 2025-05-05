@@ -236,7 +236,7 @@ class ExperimentRunner(ABC):
         await self.websocket.send(json.dumps(message_data))
 
         simulation_data2 = await self.websocket.recv()
-        return JsonFileHandler.deep_decode_json(simulation_data2), goal_image
+        return JsonFileHandler.deep_decode_json(simulation_data2), JsonFileHandler.deep_decode_json(goal_image)
 
 
     async def env_step(self, action):

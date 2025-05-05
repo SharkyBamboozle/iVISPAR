@@ -290,7 +290,7 @@ def check_won(interaction_log, env_config):
         # Check if 'game_done' is True at any step
         if step_data.get('game_done', False):
             # Check if the board state at this step matches the goal state
-            board_data = step_data.get('board_data', [])
+            board_data = step_data.get('state_board_data', [])
             all_goal_reached = all(
                 item['current_coordinate'] == item['goal_coordinate'] for item in board_data
             )

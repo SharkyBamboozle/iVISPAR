@@ -8,7 +8,7 @@ from ..models.action_model import ActionModel
 from ..models.experiment_model import ExperimentDataModel
 from ..agent.agents_base import BaseAgent, UserAgent # All imports required for BaseAgent's factory pattern
 from ..agent.agents_model_api import GPTAgent, ClaudeAgent, GeminiAgent, GrokAgent, MistralAgent # All imports required for BaseAgent's factory pattern
-from ..agent.agents_model_local import QwenAgent, LLaVaAgent, LlamaAgent, DeepseekAgent, InternVLAgent # All imports required for BaseAgent's factory pattern
+#from ..agent.agents_model_local import QwenAgent, LLaVaAgent, LlamaAgent, DeepseekAgent, InternVLAgent # All imports required for BaseAgent's factory pattern
 from ..utility.json_file_handler import JsonFileHandler
 
 
@@ -36,7 +36,7 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
             "game": self.game_params
         }
 
-        self.episode_name_template = (f"episode_{self.agent_params['agent_type']}{self.agent_params['model_type']}"
+        self.episode_name_template = (f"episode_{self.agent_params['agent_type']}{self.agent_params['agent_params']['model_type']}"
                                       f"_{self.game_params['game_type']}{self.game_params['config_id']}"
                                       f"_{self.env_params['env_type']}_{{}}")
 

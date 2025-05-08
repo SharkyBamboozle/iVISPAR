@@ -4,7 +4,7 @@ from anthropic import Anthropic
 from abc import ABC, abstractmethod
 
 from .agents_base import BaseAgent
-from ..models.observation_model import ObservationModel
+from ..models.observation_model_geom_board import ObservationModel
 
 class RestAgent(BaseAgent, ABC):
     """

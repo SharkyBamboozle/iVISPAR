@@ -4,7 +4,7 @@ from typing import Type, Callable, Dict, Any
 from vllm import LLM, SamplingParams
 
 from .agents_base import BaseAgent
-from ..models.observation_model import ObservationModel
+from ..models.observation_model_geom_board import ObservationModel
 
 class LocalAgent(BaseAgent, ABC):
     """

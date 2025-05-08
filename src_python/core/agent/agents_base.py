@@ -3,7 +3,7 @@ from typing import Type, Callable, Dict, Any
 import requests
 import logging
 
-from ..models.observation_model import ObservationModel
+from ..models.observation_model_geom_board import ObservationModel
 from ..utility.json_file_handler import JsonFileHandler
 
 class BaseAgent(ABC):

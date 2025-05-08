@@ -4,6 +4,8 @@ import time
 from .experiment_runner import ExperimentRunner
 
 from ..models.observation_model import ObservationModel
+from ..models.observation_model_geom_board import ObservationModelGeomBoard, ObservationModelGeomBoardPositionInference  # All imports required for ObservationModel's factory pattern
+
 from ..models.action_model import ActionModel
 from ..models.experiment_model import ExperimentDataModel
 from ..agent.agents_base import BaseAgent, UserAgent # All imports required for BaseAgent's factory pattern
@@ -26,7 +28,7 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
 
         # Load dataset and expand config files with env params
         config_dataset_dict = JsonFileHandler.load_all_jsons(
-            source_dir=f"configs/{self.game_params.get('config_id', None)}/dataset")
+            source_dir=f"datasets/{self.game_params.get('config_id', None)}/configurations")
         self.config_dataset_dict = JsonFileHandler.expand_jsons(config_dataset_dict, self.env_params)
 
         # Create a dictionary to save env, agent, and game data
@@ -82,7 +84,9 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
                     # episode_logger.info(f"Completed episode: {episode_signature}")
 
                     # Set up environment
-                    await self.run_episode(simulation_config, episode_dir)
+                    action_sequence = JsonFileHandler.load_json('test_sequence', 'experiments/test_action_sequence')
+
+                    await self.run_episode(simulation_config, episode_dir, action_sequence)
                     self.add_checkpoint(episode_signature)
                     # experiment_logger.info(f"Episode {episode_signature} completed successfully.")
 
@@ -106,7 +110,7 @@ class ExperimentRunnerGeomBoard(ExperimentRunner):
         while not self.is_done(observation):
 
             response_prompt = self.agent.act(observation) if action_sequence is None else action_sequence
-            action = ActionModel(response_prompt, self.game_params)
+            action = ActionModel(raw_prompt=response_prompt, game_params=self.game_params)
 
             # run predicted actions until game done, max steps or no predicted actions remain
             while not (self.is_done(observation) or action.is_empty):

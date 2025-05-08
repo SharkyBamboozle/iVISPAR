@@ -1,3 +1,7 @@
+"""
+This code launches the webapp in the browser
+"""
+
 import http.server
 import socketserver
 import os

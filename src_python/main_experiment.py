@@ -21,5 +21,5 @@ async def main(experiment_params_signature: str) -> None:
     # TODO: Add quick summary and plotting of experiments
 
 if __name__ == "__main__":
-    experiment_params_signature = "params_geom_board_experiment_example"
+    experiment_params_signature = "params_geom_board_experiment_position_inference"
     asyncio.run(main(experiment_params_signature=experiment_params_signature))

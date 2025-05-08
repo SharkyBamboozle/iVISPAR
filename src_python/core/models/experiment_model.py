@@ -15,8 +15,8 @@ class ExperimentDataModel:
 
         new_step_dict = {
             f"step {observation.step_num}": {
-                "prompt": observation.prompt,
-                "observation": observation.board_dataa,
+                "prompt": observation.system_prompt,
+                "observation": observation.board_data,
             }
         }
 

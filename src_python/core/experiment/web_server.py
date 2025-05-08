@@ -1,3 +1,8 @@
+"""
+This code connects the webapp with the python side
+"""
+
+
 import http.server
 import socketserver
 import os

@@ -9,10 +9,14 @@ public class LevelManager : MonoBehaviour
     
     //private (int, int) gridSize;
     private List<GameObject> landmarks = new List<GameObject>();
+    public GameObject Cube_H;
     public GameObject Cube;
+    public GameObject Sphere_H;
     public GameObject Sphere;
+    public GameObject Pyramid_H;
     public GameObject Pyramid;
-    public GameObject Diamond;
+    public GameObject Diamond_H;
+    public GameObject Cylinder_H;
     public GameObject Cylinder;
     public GameObject Cone;
     public GameObject Prism;
@@ -100,6 +104,12 @@ public class LevelManager : MonoBehaviour
             // Determine the object type (cube, ball, capsule, etc.)
             switch (data.body.ToLower())
             {
+                case "cube_h":
+                    if(Cube_H != null)
+                        obj = GameObject.Instantiate(Cube_H);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
                 case "cube":
                     if(Cube != null)
                         obj = GameObject.Instantiate(Cube);
@@ -112,9 +122,21 @@ public class LevelManager : MonoBehaviour
                     else
                         obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;
+                case "sphere_h":
+                    if(Sphere_H != null)
+                        obj = GameObject.Instantiate(Sphere_H);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
                 case "cylinder":
                     if(Cylinder != null)
                         obj = GameObject.Instantiate(Cylinder);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
+                case "cylinder_h":
+                    if(Cylinder_H != null)
+                        obj = GameObject.Instantiate(Cylinder_H);
                     else
                         obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;
@@ -124,9 +146,15 @@ public class LevelManager : MonoBehaviour
                     else
                         obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;
-                case "diamond":
-                    if(Pyramid != null)
-                        obj = GameObject.Instantiate(Diamond);
+                case "pyramid_h":
+                    if(Pyramid_H != null)
+                        obj = GameObject.Instantiate(Pyramid_H);
+                    else
+                        obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                    break;
+                case "diamond_h":
+                    if(Diamond_H != null)
+                        obj = GameObject.Instantiate(Diamond_H);
                     else
                         obj = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                     break;

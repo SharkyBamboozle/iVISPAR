@@ -869,7 +869,7 @@ MonoBehaviour:
   url: localhost
   socketPort: 1984
   isConnected: 0
-  humanExperiment: 0
+  humanExperiment: 1
 --- !u!4 &772065197
 Transform:
   m_ObjectHideFlags: 0
@@ -1444,6 +1444,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   logs: []
   jsonLogs:
+    step_num: 0
     Actions: []
     board_state: []
     board_data: []

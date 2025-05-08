@@ -666,11 +666,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectMaterials: []
-  Cube: {fileID: 8478642629565548488, guid: 77ce840afd37eb34c81012ff5d9b2cda, type: 3}
-  Sphere: {fileID: 8809113076707903851, guid: 9fd0afdd6fab3144099de3faf134e1ff, type: 3}
-  Pyramid: {fileID: 7627948964178526930, guid: 8841ce2e66d0aa848b27f1d05c3e561d, type: 3}
-  Diamond: {fileID: 919132149155446097, guid: bfd6f57b1d9fa0749bfb2e22c895a471, type: 3}
-  Cylinder: {fileID: 5937510685634670757, guid: 9c980763779f918438713a172578a1bc, type: 3}
+  Cube_H: {fileID: 8478642629565548488, guid: 77ce840afd37eb34c81012ff5d9b2cda, type: 3}
+  Cube: {fileID: 9197109889993621059, guid: ea1eaf9780124a4419fb7e2da5f0ee09, type: 3}
+  Sphere_H: {fileID: 8809113076707903851, guid: 9fd0afdd6fab3144099de3faf134e1ff, type: 3}
+  Sphere: {fileID: 1999809766668538988, guid: 54fd284139ec9ff4bb17e9b39dffd663, type: 3}
+  Pyramid_H: {fileID: 7627948964178526930, guid: 8841ce2e66d0aa848b27f1d05c3e561d, type: 3}
+  Pyramid: {fileID: 7831347204028009284, guid: b295b5576e18e2c4ea7f05d2aaba374a, type: 3}
+  Diamond_H: {fileID: 3760981787508762919, guid: 55e27e708046c884a820acad23f56cd8, type: 3}
+  Cylinder_H: {fileID: 5937510685634670757, guid: 9c980763779f918438713a172578a1bc, type: 3}
+  Cylinder: {fileID: 1819403049908712760, guid: 39bc147f6576e9c4892e967416a145fd, type: 3}
   Cone: {fileID: 5939586003277379805, guid: ff421b6e8992c5f4a96aae5614c66b5f, type: 3}
   Prism: {fileID: 1891942674354072434, guid: 3132afdb70a09a644b4e34903d1ad4df, type: 3}
   Tile: {fileID: 9197109889993621059, guid: f51a0e7d538d2ee4cbee28a1dd1287f6, type: 3}

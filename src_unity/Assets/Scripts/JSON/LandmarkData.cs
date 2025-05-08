@@ -27,10 +27,10 @@ public class ExperimentData
     
     public int grid_size;             // Size of the grid (grid_size x grid_size)
     public bool use_rendering;
-    public bool auto_done_check;
-    public string grid_label;
-    public float[] camera_offset;
-    public float[] camera_auto_override;
-    public float screenshot_alpha;
+    public bool auto_done_check  = true;
+    public string grid_label  = "both";
+    public float[] camera_offset = new float[] { 0, 5.57f, -3.68f };
+    public float[] camera_auto_override = new float[] { 6.8f, -1f, 6.8f };
+    public float screenshot_alpha = 0.0f;
     public BoardData[] board_data;      // Array of landmarks
 }

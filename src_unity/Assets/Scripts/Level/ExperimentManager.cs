@@ -68,6 +68,7 @@ public class ExperimentManager : MonoBehaviour
                 configURL = string.Format("https://{0}:{1}/",url,configPort);
                 Debug.LogFormat("Config url is {0}",configURL);
             }
+            
 
 
         }

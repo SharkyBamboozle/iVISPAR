@@ -281,22 +281,32 @@ The project includes the compiled [iVISPAR](iVISPAR) web app, which works out of
 
 ## :bookmark: Citation
 
-Please find our publication on iVISPAR on [arXiv](https://arxiv.org/abs/2502.03214). If you use iVISPAR in your work, we kindly ask you to cite our paper:
+Please find our publication in the [ACL Anthology](https://aclanthology.org/2025.emnlp-main.1359/) (EMNLP 2025) or on [arXiv](https://arxiv.org/abs/2502.03214). If you use iVISPAR in your work, we kindly ask you to cite our paper:
 
-
-Mayer, J., Ballout, M., Jassim, S., Nosrat Nezami, F., & Bruni, E. (2025). *iVISPAR -- An Interactive Visual-Spatial Reasoning Benchmark for VLMs*. arXiv. https://arxiv.org/abs/2502.03214
-
+Mayer, J., Ballout, M., Jassim, S., Nosrat Nezami, F., & Bruni, E. (2025). *iVISPAR — An Interactive Visual-Spatial Reasoning Benchmark for VLMs*. In Proceedings of EMNLP 2025, pages 26757–26781. https://aclanthology.org/2025.emnlp-main.1359/
 
 ### BibTeX
 ```bibtex
-@misc{mayer2025ivispar,
-      title={iVISPAR -- An Interactive Visual-Spatial Reasoning Benchmark for VLMs}, 
-      author={Julius Mayer and Mohamad Ballout and Serwan Jassim and Farbod Nosrat Nezami and Elia Bruni},
-      year={2025},
-      eprint={2502.03214},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2502.03214}, 
+@inproceedings{mayer-etal-2025-ivispar,
+    title = "i{VISPAR} {---} An Interactive Visual-Spatial Reasoning Benchmark for {VLM}s",
+    author = "Mayer, Julius  and
+      Ballout, Mohamad  and
+      Jassim, Serwan  and
+      Nezami, Farbod Nosrat  and
+      Bruni, Elia",
+    editor = "Christodoulopoulos, Christos  and
+      Chakraborty, Tanmoy  and
+      Rose, Carolyn  and
+      Peng, Violet",
+    booktitle = "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing",
+    month = nov,
+    year = "2025",
+    address = "Suzhou, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.emnlp-main.1359/",
+    doi = "10.18653/v1/2025.emnlp-main.1359",
+    pages = "26757--26781",
+    ISBN = "979-8-89176-332-6"
 }
 ```
 

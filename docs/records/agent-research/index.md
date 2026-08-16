@@ -29,6 +29,6 @@ found and why it was rated the way it was. New reports start from
 | Date | Report | Scope |
 |---|---|---|
 
-<!-- BLUEPRINT: one row per report, e.g.
+<!-- one row per report, e.g.
 | 2026-08 | [Design-space map — storage backends](storage-backends.md) | 12-lens fan-out over candidate backends, rated for fit and risk |
 -->

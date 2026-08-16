@@ -7,13 +7,11 @@ agent) running this checklist **is** the release engineer; do not skip a
 step by deferring it to someone else. Conventions and enforcers:
 [Releases](releases.md).
 
-<!-- BLUEPRINT: the promotion skeleton below is the shipped standard —
-extend the placeholder steps (build/publish) with the project's real ones
-as its release process takes shape. If this project never cuts releases,
-delete this page (plus its nav entry in mkdocs.yml, its *Find your act* row
-in `docs/process/contributing.md`, and the release mention in CLAUDE.md →
-"Where to read, by task") and declare `mode: off <reason>` in
-`.claude/release.txt` — the release-gate then passes with a note. -->
+<!-- Project note: releases are promotions of development to main. Next:
+2.0.0, the post-refactor re-launch; the EMNLP 2025 paper artifact is tag
+emnlp25 + its GitHub Release. Build/publish steps grow as the pipeline
+lands: WebGL app builds attach to the GitHub Release; container images
+(post-cutover epic) publish to GHCR. -->
 
 ## 0. Pre-flight
 

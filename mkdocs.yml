@@ -3,10 +3,10 @@
 # UNION of everything the templated pages rely on — def_list renders the
 # P#-principle format, attr_list + md_in_html render card/grid blocks,
 # admonitions carry the annotate-don't-rewrite convention. Trim with care.
-site_name: "{{PROJECT_NAME}}"
-site_description: "{{ONE_LINER}}"
-repo_name: "{{GITHUB_OWNER}}/{{PROJECT_SLUG}}"
-repo_url: "https://github.com/{{GITHUB_OWNER}}/{{PROJECT_SLUG}}"
+site_name: "iVISPAR"
+site_description: "Interactive multi-modal benchmark for evaluating the visual-spatial reasoning of vision-language models acting as agents."
+repo_name: "SharkyBamboozle/iVISPAR"
+repo_url: "https://github.com/SharkyBamboozle/iVISPAR"
 edit_uri: edit/development/docs/
 
 theme:

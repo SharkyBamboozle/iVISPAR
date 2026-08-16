@@ -124,4 +124,5 @@ reachable and would expose the docs.
 Sections likely to be added as the project expands — extend the act pages
 (and `CLAUDE.md`'s map) as they land, keeping each fact in one canonical home.
 
-<!-- BLUEPRINT: list the areas this project will likely grow into. -->
+python · unity · environments · agents · experiments · evaluation ·
+docs · infra — mirrored one-to-one by the `area:*` labels.

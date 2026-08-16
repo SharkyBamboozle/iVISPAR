@@ -47,11 +47,29 @@
   description: "Explicit exception — repo-hygiene binary check skipped for this PR"
 
 # --- Area labels ---
-# BLUEPRINT: rename/extend per project at init (or pass extra areas to
-# scripts/github_setup.sh --areas "a,b,c").
+# This project's domains — mirrored by docs/process/contributing.md → areas.
+# Synced by scripts/bootstrap_labels.sh (idempotent).
 - name: "area:docs"
   color: "1D76DB"
   description: ""
 - name: "area:infra"
+  color: "1D76DB"
+  description: ""
+- name: "area:python"
+  color: "1D76DB"
+  description: ""
+- name: "area:unity"
+  color: "1D76DB"
+  description: ""
+- name: "area:environments"
+  color: "1D76DB"
+  description: ""
+- name: "area:agents"
+  color: "1D76DB"
+  description: ""
+- name: "area:experiments"
+  color: "1D76DB"
+  description: ""
+- name: "area:evaluation"
   color: "1D76DB"
   description: ""

@@ -11,14 +11,7 @@ naming the gating question and session — the row stands as written.
 
 | # | Requirement | Driven by |
 |---|-------------|-----------|
-
-<!-- BLUEPRINT: add rows as requirements are established. Example:
-
-| R1 | Any published result is re-runnable from its own artifacts (config snapshot + seed) | Vision — credibility of results |
-| R2 | The stack runs end-to-end on a single dev machine | P2 — keep the loop tight |
-
-Annotation example, appended below the table when a premise weakens:
-
-!!! note "R1's force is contingent on Q3 (Session 8)"
-    If Q3 resolves to <X>, R1 relaxes to <Y>. The row stands as written until then.
--->
+| R1 | Any published result is re-runnable from its own artifacts (episode config + seed + app-build generation) | Vision — credibility; P3 |
+| R2 | The full action–perception loop runs end-to-end on a single dev machine (Python runner + served WebGL app, no cloud dependency) | Vision — accessible benchmark |
+| R3 | The EMNLP 2025 paper state stays reachable and byte-stable at tag `emnlp25` | P4 — immutable paper record |
+| R4 | Every VLM provider integrates through one adapter interface; adding a provider touches no runner code | P2 — comparable evaluation |

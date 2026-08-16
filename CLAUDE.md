@@ -3,44 +3,6 @@
 Guidance for working in this repository. Keep it **thin** — a map to the real
 docs, not a duplicate of them. Extend over time.
 
-> **Blueprint state.** This repository was seeded from **Project Blueprint**.
-> Until `BOOTSTRAP.md` has been run (interview → fill placeholders → delete the
-> blueprint machinery), `{{TOKEN}}` placeholders and `<!-- BLUEPRINT: ... -->`
-> comments mark unfinished sections — see `blueprint/TOKENS.md`. In the
-> blueprint repo itself, this file doubles as the template every new project
-> starts from.
->
-> **While this admonition is here, you are authoring the template, not working
-> in a seeded project.** The per-session *records* instructions below (*Repo
-> workflow* → session changelog; `.claude/commands/session-close.md`) — and
-> the expectation that merging an integration PR closes its issues — are
-> shipped furniture addressed to seeded projects. Four rules override them
-> here; reasoning and scope: `CONTRIBUTING.md` → *Two hats*.
->
-> 1. **No tracker IDs in seed-shipped content** — an issue or PR number from
->    this repo points at nothing downstream. Cite them in commits, PR bodies,
->    and the machinery deleted at bootstrap; in `docs/`, `.claude/`, and this
->    file, describe the change instead.
-> 2. **No session records during regular work** — `docs/records/changelog.md`
->    and `docs/records/lessons.md` ship to seeded projects and stay at their
->    stub state here; an entry written here reaches every seed as false
->    history. Durable findings go where they stay true downstream (a
->    regression case, a ritual card, a `docs/process/` page).
-> 3. **`blueprint/CHANGELOG.md` is written exactly once per release**, in the
->    caboose of the promotion PR that bumps `blueprint/VERSION`. It is the
->    blueprint's only log.
-> 4. **Issues do not auto-close at integration here — run the PR ritual
->    unchanged anyway.** Closing keywords fire only on PRs into the *default*
->    branch, which stays `main` in this repo (projects seed from it; seeded
->    repos flip theirs to `development`). Tick delivered boxes, post the
->    readout, and write `Closes #NN` on the completing PR exactly as
->    `docs/process/opening-a-pr.md` prescribes — never downgrade to
->    `Part of #NN` because the close "won't fire here". The `issue-link-guard`
->    vets the keyword at integration; the promotion PR restates it, and that
->    restatement is what closes the issue. A merged PR whose issue is still
->    open is expected state — no anomaly to report, never a manual close.
->
-> <!-- BLUEPRINT: delete this whole admonition, rules included, at bootstrap. -->
 
 ## Hard rules (never, without an explicit user request in THIS session)
 
@@ -50,18 +12,12 @@ path.*
 
 - Never push to `main`, and never commit directly to `main` or `development`.
   All work: feature branch → PR into `development`. Never merge your own PR.
-- Never commit binary files — D-007. Durable run artifacts go to the data
-  repo ({{DATA_REPO}}, if this project has one); if a task seems to need a
-  committed binary, stop and name the file + size.
-  <!-- BLUEPRINT: binary policy is a per-project decision — this bullet states
-  the default (strict/split) posture. At bootstrap, pick a posture per
-  modules/README.md → "Binary policy", finalize ADR-0007 (rewrite its Decision
-  to the chosen posture, flip it to ✅ Decided, update its registry row), and
-  rewrite this bullet to match; wire the same choice in .claude/asset-dirs.txt
-  — the single data file read by both the guard-git hook and the repo-hygiene
-  CI. For an in-repo-assets project (e.g. a static website) the bullet becomes:
-  "Binaries live ONLY under <assets dirs> (LFS for large types); generated
-  artifacts are never committed anywhere." -->
+- Never commit binary files outside the sanctioned asset directory — D-007.
+  Authored Unity assets live ONLY under `unity/` (plain git, no LFS);
+  generated artifacts — WebGL builds, run outputs, datasets, model weights —
+  are never committed anywhere (app builds ship as GitHub Release assets).
+  If a task seems to need a committed binary elsewhere, stop and name the
+  file + size.
 - Never force-push, rewrite published history, or delete branches you did not
   create in this session.
 - Never manually close or delete a GitHub issue — close authority is the
@@ -112,10 +68,12 @@ on the same failing check → stop and escalate (full rules:
 
 ## What this project is
 
-<!-- BLUEPRINT: Replace with 2–4 dense sentences of project identity: what it
-is, what it is for, and the one thing that makes it distinctive. -->
-
-**{{PROJECT_NAME}}** — {{ONE_LINER}}
+**iVISPAR** — Interactive multi-modal benchmark for evaluating the
+visual-spatial reasoning of vision-language models acting as agents. A Python
+experiment runner drives a Unity WebGL simulator over a WebSocket bridge;
+VLM, scripted, and human agents solve sliding geom-board, sliding-tile, and
+Rubik's-Cube puzzles observed in 3D, 2D, or text. Home of the EMNLP 2025
+benchmark (frozen at tag `emnlp25`); this line carries the v2 rebuild.
 
 ## Commands
 
@@ -125,9 +83,6 @@ The canonical commands — run these, don't guess:
 make verify    # the verification entrypoint (strict docs build + gate checks)
 ```
 
-<!-- BLUEPRINT: extend with the project's real build / test / run / lint
-commands as they land — one line each, a comment naming what it does. Every
-command an agent cannot guess belongs here; deeper how-tos stay in docs/. -->
 
 ## Canonical documentation lives in `docs/` (MkDocs Material)
 
@@ -136,10 +91,6 @@ Build/preview: `docs/process/contributing.md` → *Building the docs locally*.
 
 ### Where to read, by task
 
-<!-- BLUEPRINT: Add one row per domain area of this project. Embed any per-task
-obligation inline in its row (e.g. "Changing X? Ship the standard artifact
-pack — see <page>"). Never hardcode ID ranges or counts (e.g. "Q1–Q21") — they
-go stale; link to the registry instead. -->
 
 - **Orientation / vision:** `docs/index.md`, `docs/direction/` (thesis, design
   principles `P#`).
@@ -157,9 +108,6 @@ go stale; link to the registry instead. -->
 
 ## Repo layout
 
-<!-- BLUEPRINT: One bullet per top-level directory, each ≤2 lines, pointing at
-the ADR that governs it. Record the layout decision itself as an ADR (Context /
-Decision / Consequences / Reversibility) before code lands. -->
 
 - `docs/` — canonical documentation; `docs/.templates/` holds the reusable
   skeletons.
@@ -169,14 +117,7 @@ Decision / Consequences / Reversibility) before code lands. -->
   space (`working/`).
 - `scripts/` — repo tooling (see `scripts/README.md`); lasting product value
   never lives here.
-<!-- BLUEPRINT: delete the three bullets below at bootstrap — they describe
-machinery BOOTSTRAP.md → "Delete the machinery" removes (modules/, blueprint/,
-LICENSE). -->
-- `modules/` — optional payloads applied via `MODULE.md`; deleted at
-  instantiation.
-- `blueprint/` — blueprint machinery; deleted by `BOOTSTRAP.md`.
-- **LICENSE** — MIT with a template-use waiver; seeded projects choose their
-  own.
+- `LICENSE` — MIT © 2024 Julius Mayer.
 
 ## Conventions
 
@@ -204,9 +145,8 @@ LICENSE). -->
 Deterministic formatting and lint rules are the linter's job, never this
 file's — cite the config, don't restate it.
 
-<!-- BLUEPRINT: record only the conventions that DIFFER from tool defaults
-(naming, imports, idioms), each ≤1 line, pointing at the linter/formatter
-config — or state "none yet — linter defaults apply." -->
+None yet beyond tool defaults — a Python lint/format config arrives with the
+packaging wave and will be cited here.
 
 ## Repo workflow
 

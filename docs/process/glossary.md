@@ -8,11 +8,19 @@ why the term arrived. Group terms under thematic headings as the list grows; a
 heading may carry a scope disclaimer reusing the status legend (e.g. *"all 🟡
 ideas, nothing decided"*).
 
-<!-- BLUEPRINT: example entry format —
-
 ## Core concepts
 
-- **Scene Spec** — the engine-neutral contract produced by the scenario
-  service; both compilers read it, neither owns it. See the schemas page.
-  *(Session 1)*
--->
+- **Episode** — one puzzle instance solved in a closed loop: configuration +
+  seed → observations → actions → result log.
+- **Environment** — a puzzle family the simulator implements: sliding geom
+  board, sliding tile puzzle, Rubik's Cube.
+- **Modality** — how an episode is observed: 3D render, 2D schematic, or
+  text description.
+- **Action–perception loop** — the runner↔app cycle: the agent acts, the app
+  applies the action and returns the next observation.
+- **WebGL bridge** — the local WebSocket link between the Python runner and
+  the Unity WebGL app served in a browser.
+- **Agent** — the policy under evaluation: a VLM behind the adapter layer, a
+  scripted baseline (A*, random), or a human.
+- **App build** — the compiled Unity WebGL artifact the runner serves;
+  distributed as a GitHub Release asset, never committed.

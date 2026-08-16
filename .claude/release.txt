@@ -14,14 +14,6 @@
 #   mode: off <reason>  — this project does not version its promotions; the
 #                         gate passes with a note. The reason is mandatory
 #                         (D-004 advisory declaration).
-#
-# BLUEPRINT: at bootstrap, delete THIS comment block, then re-point the
-# seam: set version-file/changelog to this project's own paths (see
-# docs/process/release-checklist.md → "Caboose"), or declare
-# 'mode: off <one-line reason>' if this project does not cut releases.
-# The bootstrap gate (scripts/check_bootstrap_complete.sh) fails until this
-# marker is resolved. (blueprint/VERSION below is deleted at bootstrap, so
-# leaving the seam unresolved would also fail the release-gate loudly.)
 mode: configured
-version-file: blueprint/VERSION
-changelog: blueprint/CHANGELOG.md
+version-file: VERSION
+changelog: CHANGELOG.md

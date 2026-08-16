@@ -25,7 +25,7 @@ candidates — entries land only on explicit approval).
 
 ---
 
-<!-- BLUEPRINT: entries accumulate below as the project earns them. Entry
+<!-- entries accumulate below as the project earns them. Entry
 skeleton (copy, fill, keep newest first):
 
 ## YYYY-MM-DD — <short title of the lesson>

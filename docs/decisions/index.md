@@ -1,7 +1,7 @@
 # Decisions Registry
 
 This page is the canonical list of **Architecture Decision Records (ADRs)** for
-{{PROJECT_NAME}}. Each row corresponds to a decision with a stable `D-xxx` ID,
+iVISPAR. Each row corresponds to a decision with a stable `D-xxx` ID,
 its one-line statement, and its current status.
 
 Every decision has its own ADR page (Context / Decision / Consequences /

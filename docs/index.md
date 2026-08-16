@@ -1,9 +1,11 @@
-# {{PROJECT_NAME}}
+# iVISPAR
 
-<!-- BLUEPRINT: Write the landing page — 2–3 sentences on what this project is
-and who it is for, then keep the sections below. -->
-
-{{ONE_LINER}}
+iVISPAR is an interactive multi-modal benchmark that evaluates the
+visual-spatial reasoning of vision-language models acting as agents: models
+solve sliding geom-board, sliding-tile, and Rubik's-Cube puzzles in a closed
+action–perception loop, observed as 3D renders, 2D schematics, or text. This
+site is the project's single source of truth, written for the researchers
+running, extending, and reviewing the benchmark.
 
 !!! abstract "About this documentation"
     This site is the **single source of truth** for the project. It supersedes
@@ -29,12 +31,6 @@ directory layout under `docs/` mirrors the nav):
   [changelog](records/changelog.md).
 - **Process** — the [contributing guide](process/contributing.md) (the process
   manual) and the [glossary](process/glossary.md) (track new terminology here).
-
-<!-- BLUEPRINT: As domain areas appear (architecture, design, etc.), add each
-as its own top-level tab (a sibling of Home and Project; its own
-docs/<area>/ directory) — that is where topic pages live. Domain-area tabs
-need no ADR; promoting any other section to a top-level tab is a structural
-decision — record that as an ADR. -->
 
 ## Status legend
 

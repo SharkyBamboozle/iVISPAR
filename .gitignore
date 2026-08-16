@@ -26,14 +26,3 @@ site/
 # this directory is a gitignored local staging area only.
 data/*
 !data/README.md
-
-# Blueprint-only: this repo's OWN agent scratch stays untracked. /handoff moves
-# working docs here (.claude/commands/handoff.md) and forbids deleting them, so
-# committing the result ships blueprint-internal session notes — issue IDs,
-# blueprint versions, citations to machinery BOOTSTRAP step 7 deletes — into
-# every seeded project. README.md is the directory contract, so it stays.
-# BLUEPRINT: delete this whole block — comment and both rules — at bootstrap.
-# Seeded projects DO track their archive entries: HARVEST.md scans them from a
-# clone, so ignoring them would make a project's own history invisible.
-.claude/archive/*
-!.claude/archive/README.md

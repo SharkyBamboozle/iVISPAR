@@ -17,10 +17,7 @@ the row.
 
 | ID | Status | Summary | Pointers |
 |----|--------|---------|----------|
-
-<!-- BLUEPRINT: add rows as questions arise. One example per lifecycle state:
-
-| Q1 | 🔴 | Which storage backend fits the access pattern? | analysis: <topic page> · answered by Spike A |
-| Q2 | ✅ | Is X fast enough at scale? **Resolved (Session 4):** yes, 10× headroom. | Resolved by [ADR-0003](../decisions/adr-0003-slug.md) |
-| Q3 | 🧊 | Do we need multi-region? | Deferred — reactivate when the first non-EU user appears. |
--->
+| Q1 | 🔴 | How are geom-board datasets regenerated? The A* solver module never reached the dev tree; the algorithm survives only in the frozen tag (`Source/Configure/find_shortest_move_sequence.py`). | port task in the packaging wave · gates Spike A |
+| Q2 | 🔴 | May the bundled Poliigon textures be redistributed in the public repo? No license file accompanies them; they are already public in the frozen tag. | blocks the Unity wave |
+| Q3 | 🔴 | How deep must the pre-cutover reproduction gate be — transport smoke or full scripted episode? | answered by Spike A · operator decision |
+| Q4 | 🧊 | HPC/cluster support (Apptainer image, local open-weights models). | Deferred — reactivate as the first post-cutover epic; answers public issue #6. |

@@ -1,10 +1,22 @@
 # Vision
 
-<!-- BLUEPRINT: What is this project trying to be, and for whom? 2–4
-paragraphs. This page is the root of the traceability chain: vision →
-principles (P#) → requirements (R##) → decisions (D-xxx). -->
+iVISPAR exists to measure how well vision-language models *act* in space —
+not whether they can describe an image, but whether they can plan and execute
+multi-step spatial manipulations under feedback. A Python runner drives a
+Unity WebGL simulator through an action–perception loop; the same episode is
+observable as a 3D render, a 2D schematic, or text, so modality itself is an
+experimental variable rather than a fixed choice.
 
-{{ONE_LINER}}
+The benchmark serves two audiences at once: researchers comparing VLM agents
+against scripted and human baselines on a controlled, reproducible task
+family — and the project's own line of publications, from the EMNLP 2025
+paper (frozen at tag `emnlp25`) to the Rubik's-Cube follow-up in
+preparation. This public repository is the canonical, citable home of both.
+
+The near-term direction is the v2 rebuild: the privately refactored
+framework (installable `ivispar` package, provider-agnostic VLM adapters,
+headless execution) migrates here in staged waves and cuts over as release
+2.0.0.
 
 The vision translates into [design principles](design-principles.md) — the
 standing constraints — and [requirements](requirements.md) — the hard
@@ -15,6 +27,8 @@ criteria every architecture and tooling choice is judged against.
     rationale and the trigger that will force it — a deliberate non-decision,
     documented as such so it is never mistaken for an oversight.
 
-    <!-- BLUEPRINT: e.g. "research platform vs product — both exit ramps stay
-    open until <trigger>; here is why keeping both open is cheap." If none:
-    state "None recorded yet." -->
+    **Benchmark artifact vs. evaluation platform** — whether iVISPAR stays a
+    paper-anchored benchmark or grows into a general platform for interactive
+    spatial-reasoning evaluation stays open until the follow-up paper ships;
+    keeping both ramps open is cheap because the framework rebuild is the
+    same work either way.

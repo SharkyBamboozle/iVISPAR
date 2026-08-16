@@ -1,6 +1,6 @@
 # Epics
 
-Work on {{PROJECT_NAME}} is organised into **epics** — coherent bodies of
+Work on iVISPAR is organised into **epics** — coherent bodies of
 work, each tracked by a GitHub epic issue with build tasks as **sub-issues**
 and findings as **`note`** issues
 ([Filing work](../../process/filing-work.md)). This section
@@ -32,8 +32,8 @@ and the epic issue is closed with a short pointer comment
 | Epic | Status | Page | Issue |
 |---|---|---|---|
 
-<!-- BLUEPRINT: one row per epic, e.g.
-| **First vertical slice** | 🟡 In progress | [First slice](first-slice.md) | [#12](https://github.com/{{GITHUB_OWNER}}/{{PROJECT_SLUG}}/issues/12) |
+<!-- one row per epic, e.g.
+| **First vertical slice** | 🟡 In progress | [First slice](first-slice.md) | [#12](https://github.com/SharkyBamboozle/iVISPAR/issues/12) |
 -->
 
 *Status legend:* ✅ Done · 🟡 In progress · 🔴 Open · 🧊 Deferred/Superseded.

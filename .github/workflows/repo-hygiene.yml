@@ -1,0 +1,77 @@
+name: Repo hygiene
+
+# CI backstop for the "never commit binaries" hard rule (CLAUDE.md). The rule
+# is layered: prose (CLAUDE.md) → client guard (.claude hooks) → THIS
+# CHECK → branch protection. CI is the layer that survives every client
+# configuration — one merged .mp4 pollutes history permanently.
+#
+# Escape hatch: label the PR `allow-binaries` for a deliberate, explicitly
+# approved exception. It is ITEMIZED (D-003): the label waives ONLY the
+# binary-type finding, never the oversized-text lane — a blanket job-skip
+# would let an oversized text file ride in under a binaries waiver.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  no-binaries:
+    runs-on: ubuntu-latest
+    env:
+      MAX_BYTES: 200000 # non-LFS size ceiling for extension-less files; binary-hygiene hard rule (CLAUDE.md; D-007)
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Block binaries and oversized files outside LFS
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          # Itemized waiver, evaluated per-finding below — NOT a job-level skip (D-003).
+          ALLOW_BINARIES: ${{ contains(github.event.pull_request.labels.*.name, 'allow-binaries') }}
+        run: |
+          # Sanctioned asset dirs come from the SAME data file the edit-time
+          # guard reads (.claude/asset-dirs.txt) — one datum, both enforcement
+          # points (D-004; posture per D-007). Missing file = strict posture (empty).
+          ASSET_DIRS=$( (grep -hv '^[[:space:]]*#' .claude/asset-dirs.txt 2>/dev/null || true) | xargs)
+          fail=0
+          while IFS= read -r f; do
+            [ -f "$f" ] || continue
+            # Sanctioned asset dirs (in-repo-assets posture) skip the checks;
+            # size discipline there is a review concern.
+            skip=0
+            for d in $ASSET_DIRS; do
+              case "$f" in "$d"*) skip=1; break ;; esac
+            done
+            [ "$skip" -eq 1 ] && continue
+            # LFS-tracked paths are fine — they land as pointers, not blobs.
+            if git check-attr filter -- "$f" | grep -q 'filter: lfs'; then
+              continue
+            fi
+            size=$(stat -c%s "$f")
+            lower=$(echo "$f" | tr '[:upper:]' '[:lower:]')
+            case "$lower" in
+              *.png|*.jpg|*.jpeg|*.gif|*.webp|*.bmp|*.ico|*.mp4|*.mov|*.avi|*.mkv|*.webm|\
+              *.pdf|*.zip|*.tar|*.gz|*.tgz|*.7z|*.rar|\
+              *.pt|*.pth|*.ckpt|*.onnx|*.safetensors|*.npz|*.npy|*.parquet|\
+              *.uasset|*.umap|*.fbx|*.glb|*.gltf|*.blend|*.exr|*.hdr|*.psd|\
+              *.wav|*.mp3|*.flac|*.so|*.dylib|*.dll|*.exe|*.bin)
+                if [ "$ALLOW_BINARIES" = "true" ]; then
+                  echo "::notice file=$f::Binary-type file waived by the 'allow-binaries' label ($size bytes)."
+                else
+                  echo "::error file=$f::Binary-type file added without LFS ($size bytes) — artifacts go to the data repo (CLAUDE.md hard rules). Deliberate exception: add the 'allow-binaries' label."
+                  fail=1
+                fi
+                ;;
+              *)
+                # The oversized-text lane is NEVER waived by allow-binaries —
+                # that label is about binaries, not smuggling a huge text file.
+                if [ "$size" -gt "$MAX_BYTES" ]; then
+                  echo "::error file=$f::File exceeds ${MAX_BYTES} bytes ($size) and is not LFS-tracked — split it, LFS it, or move it to the data repo."
+                  fail=1
+                fi
+                ;;
+            esac
+          done < <(git diff --diff-filter=AM --name-only "$BASE_SHA"...HEAD)
+          exit $fail

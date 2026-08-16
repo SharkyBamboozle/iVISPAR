@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "{{PACKAGE_NAME}}"
+version = "0.0.1"
+description = "{{ONE_LINER}}"
+requires-python = ">=3.12"
+# Runtime deps stay minimal; heavy/optional stacks go in extras below so the
+# core package installs anywhere.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+]
+# BLUEPRINT: add heavy domain extras as their own groups, e.g.
+# sim = ["mujoco"]  # physics extras stay optional so core tooling installs anywhere
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{PACKAGE_NAME}}"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

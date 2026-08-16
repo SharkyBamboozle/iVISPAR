@@ -1,0 +1,148 @@
+# MkDocs Material configuration. Tokenized fields ({{...}}) are filled at
+# instantiation (blueprint/TOKENS.md). The markdown_extensions block is the
+# UNION of everything the templated pages rely on — def_list renders the
+# P#-principle format, attr_list + md_in_html render card/grid blocks,
+# admonitions carry the annotate-don't-rewrite convention. Trim with care.
+site_name: "{{PROJECT_NAME}}"
+site_description: "{{ONE_LINER}}"
+repo_name: "{{GITHUB_OWNER}}/{{PROJECT_SLUG}}"
+repo_url: "https://github.com/{{GITHUB_OWNER}}/{{PROJECT_SLUG}}"
+edit_uri: edit/development/docs/
+
+theme:
+  name: material
+  # Neutral light/dark toggle; restyle per project (extra_css) if wanted.
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    # Top-level groups become header TABS; deeper levels are collapsible
+    # dropdowns in the sidebar. Keep the top level shallow — depth goes inside
+    # a tab. Domain-area tabs are the sanctioned exception; any other new tab
+    # is an ADR-worthy structural decision (docs/process/adding-docs-pages.md).
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.indexes
+    - navigation.prune
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - search
+
+# Wires the shared status vocabulary into Material's per-page front-matter
+# `status:` feature — one legend everywhere (docs/process/adding-docs-pages.md).
+extra:
+  status:
+    decided: Decided
+    proposed: Proposed
+    open: Open
+    deferred: Deferred
+
+# A page under docs/ that no nav entry lists is unreachable on the site,
+# which breaks the docs-are-canonical promise (D-001). MkDocs reports that
+# at INFO by default, so the strict build lets it through; raising it to
+# warn is what makes `mkdocs build --strict` (make verify, docs.yml) the
+# enforcer of BOTH directions of the nav<->file pairing instead of only nav
+# entries pointing at files that do not exist (D-004 — a convention names
+# its gate). Dot-directories (docs/.templates/) are excluded by MkDocs
+# before this check, so the shipped skeletons need no exemption.
+validation:
+  nav:
+    omitted_files: warn
+
+# The nav mirrors the directory layout under docs/ (one section = one
+# directory). Project holds the project-meta sections (Direction, Decisions,
+# Records, Process); each domain area (architecture, design, ...) is its own
+# top-level tab, a sibling of Home and Project
+# (docs/process/adding-docs-pages.md).
+nav:
+  - Home: index.md
+  - Project:
+      - Direction:
+          - Vision: direction/vision.md
+          - Design principles: direction/design-principles.md
+          - Requirements: direction/requirements.md
+          - Open questions: direction/open-questions.md
+          - Roadmap: direction/roadmap.md
+      - Decisions:
+          - decisions/index.md
+          - "ADR-0001 — Documentation & records": decisions/adr-0001-documentation-and-records.md
+          - "ADR-0002 — Work tracking": decisions/adr-0002-work-tracking.md
+          - "ADR-0003 — Branch model": decisions/adr-0003-branch-model.md
+          - "ADR-0004 — Enforcement doctrine": decisions/adr-0004-enforcement-doctrine.md
+          - "ADR-0005 — Testing policy": decisions/adr-0005-testing-policy.md
+          - "ADR-0006 — Verification & honesty": decisions/adr-0006-verification-and-honesty.md
+          - "ADR-0007 — Binary hygiene": decisions/adr-0007-binary-hygiene.md
+      - Records:
+          - Epics:
+              - records/epics/index.md
+          - Agent-Research:
+              - records/agent-research/index.md
+          - Changelog: records/changelog.md
+          - Lessons: records/lessons.md
+      - Process:
+          # Hub first, then act pages in workflow order, then doctrine —
+          # the act-based split of the contributing guide (D-001, D-004).
+          - Contributing: process/contributing.md
+          - Filing work: process/filing-work.md
+          - Committing: process/committing.md
+          - Pushing: process/pushing.md
+          - Opening a PR: process/opening-a-pr.md
+          - Closing issues: process/closing-issues.md
+          - Running epics: process/running-epics.md
+          - Writing ADRs: process/writing-adrs.md
+          - Adding docs pages: process/adding-docs-pages.md
+          - Testing changes: process/testing-changes.md
+          - Ending a session: process/ending-a-session.md
+          - Releases: process/releases.md
+          - Release checklist: process/release-checklist.md
+          - Enforcement: process/enforcement.md
+          - Records & canon: process/records-and-canon.md
+          - Glossary: process/glossary.md

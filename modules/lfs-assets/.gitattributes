@@ -1,0 +1,29 @@
+# Git LFS — configured BEFORE any binaries exist, so large files cannot land
+# as plain git blobs. Run `git lfs install` once per machine.
+#
+# BLUEPRINT: pattern menu — keep only the blocks (and directories) this
+# project actually authors; scope every pattern to its directory, never
+# global. Every menu line below ships commented out: UNCOMMENT the chosen
+# lines (strip the leading "# ") and append them to the repo's root
+# .gitattributes — creating that file if it does not exist (the template
+# ships none). Then verify one representative chosen pattern:
+#     git check-attr filter -- <path matching it>
+# must print "filter: lfs" — "unspecified" means the lines are still
+# comments, or the file is not at the repo root.
+
+# --- 3D / engine assets (e.g. assets/, unreal/) ---
+# assets/**/*.fbx  filter=lfs diff=lfs merge=lfs -text
+# assets/**/*.glb  filter=lfs diff=lfs merge=lfs -text
+# assets/**/*.gltf filter=lfs diff=lfs merge=lfs -text
+# assets/**/*.blend filter=lfs diff=lfs merge=lfs -text
+# unreal/**/*.uasset filter=lfs diff=lfs merge=lfs -text
+# unreal/**/*.umap   filter=lfs diff=lfs merge=lfs -text
+
+# --- Image sources / HDR (authored, not generated plots) ---
+# assets/**/*.psd filter=lfs diff=lfs merge=lfs -text
+# assets/**/*.exr filter=lfs diff=lfs merge=lfs -text
+# assets/**/*.hdr filter=lfs diff=lfs merge=lfs -text
+
+# --- Audio / video source material ---
+# assets/**/*.wav filter=lfs diff=lfs merge=lfs -text
+# assets/**/*.mp4 filter=lfs diff=lfs merge=lfs -text

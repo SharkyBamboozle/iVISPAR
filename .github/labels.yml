@@ -1,0 +1,57 @@
+# Label taxonomy — the epic/note workflow (docs/process/filing-work.md) depends on
+# these existing per-repo. Labels are NOT copied by GitHub's template feature;
+# sync them with scripts/bootstrap_labels.sh (idempotent, safe to re-run —
+# also usable to roll taxonomy updates across existing repos).
+#
+# Shape: type labels (mirror the docs ID families) + sparse status/priority
+# (status mostly lives in issue bodies via the shared legend) + area:* labels.
+
+# --- Type labels ---
+- name: epic
+  color: "5319E7"
+  description: "Groups a body of work; children are native sub-issues"
+- name: note
+  color: "0E8A16"
+  description: "Finding/observation — NOT a build task, never a sub-issue"
+- name: task
+  color: "1D76DB"
+  description: "Build task — concrete deliverables tracked as checkboxes"
+- name: spike
+  color: "FBCA04"
+  description: "Timeboxed validation — proves one claim / answers one question"
+- name: decision
+  color: "C5DEF5"
+  description: "Work tracking a D-xxx decision"
+- name: open-question
+  color: "D4C5F9"
+  description: "Work tracking a Q## open question"
+- name: research
+  color: "BFD4F2"
+  description: "Research / survey / analysis work"
+- name: design
+  color: "F9D0C4"
+  description: "Design consideration or exploration"
+
+# --- Status / priority (sparse by design) ---
+- name: resolved
+  color: "2EA44F"
+  description: "Outcome accepted and recorded in the docs"
+- name: deferred
+  color: "C2E0C6"
+  description: "Parked (🧊) with a written reactivation trigger"
+- name: "priority:high"
+  color: "B60205"
+  description: ""
+- name: allow-binaries
+  color: "E99695"
+  description: "Explicit exception — repo-hygiene binary check skipped for this PR"
+
+# --- Area labels ---
+# BLUEPRINT: rename/extend per project at init (or pass extra areas to
+# scripts/github_setup.sh --areas "a,b,c").
+- name: "area:docs"
+  color: "1D76DB"
+  description: ""
+- name: "area:infra"
+  color: "1D76DB"
+  description: ""

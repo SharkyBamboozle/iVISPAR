@@ -1,0 +1,5 @@
+# Default owner for everything in the repo. With solo-dev branch protection
+# (0 required approvals — scripts/github_setup.sh) this is documentation +
+# auto-request rather than a merge gate; tighten to required code-owner
+# reviews when a second contributor arrives.
+* @{{GITHUB_OWNER}}

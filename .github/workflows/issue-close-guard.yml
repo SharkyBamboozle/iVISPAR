@@ -1,0 +1,51 @@
+name: Issue close guard
+
+# CLAUDE.md hard rule: manual issue closes are operator-only. The
+# client-side guard-issue-close.sh hook blocks agent closes at the source,
+# but hooks bind only sessions running this repo's harness config — this
+# workflow is the server-side backstop that binds every path (D-004
+# layering), plugging the residual named by docs/process/closing-issues.md
+# ("manual closes fire no PR event"). GitHub cannot gate closing by role —
+# Triage suffices, and coding agents act with the operator's own identity
+# via a GitHub App user-to-server token — so the boundary is the one thing
+# GitHub records: `performed_via_github_app` on the close event. Closes
+# from commits / merged PRs and plain human closes stand; app-/bot-mediated
+# manual closes are reverted (reopen + explanatory comment). Reverts are
+# performed with the workflow's own GITHUB_TOKEN, whose events never
+# retrigger workflows — no loop.
+#
+# ACTIVATION: `issues:`-triggered workflows run the workflow file from the
+# repo's DEFAULT branch. This gate goes live when this file lands there
+# (on a main-default repo: at the next promotion), not while it only
+# exists on a feature or integration branch.
+#
+# The decision logic lives in a script so it is unit-testable with a
+# mocked gh (scripts/issue_close_decision.sh; suite:
+# scripts/test_issue_close_guard.sh) — the workflow just supplies inputs.
+# scripts/check_ci_gates.py pins this workflow's presence (REQUIRED_GATES)
+# and its `issues: types:` list (REQUIRED_ISSUE_TYPES — a list narrowed
+# away from `closed` would silently kill the gate).
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  contents: read
+  issues: write
+
+# One run per issue at a time — rapid close/reopen/close sequences queue
+# instead of racing; each run judges the LAST close event at its own time.
+concurrency:
+  group: issue-close-guard-${{ github.event.issue.number }}
+
+jobs:
+  issue-close-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Manual closes are operator-only
+        env:
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/issue_close_decision.sh

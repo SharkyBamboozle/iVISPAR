@@ -1,0 +1,10 @@
+# Normalise line endings for the text files (configs, metrics, manifests).
+* text=auto
+
+# LFS is deliberately OFF (plain-git storage — see README). If the
+# escalation trigger fires and LFS is chosen over object storage, uncomment
+# and run `git lfs install` + `git lfs migrate import` per its docs:
+# *.mp4 filter=lfs diff=lfs merge=lfs -text
+# *.png filter=lfs diff=lfs merge=lfs -text
+# *.pt  filter=lfs diff=lfs merge=lfs -text
+# *.ckpt filter=lfs diff=lfs merge=lfs -text

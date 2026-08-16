@@ -1,0 +1,38 @@
+name: Python
+
+# Path-filtered to its area AND to itself, so docs-only changes don't run
+# tests and workflow edits self-test.
+on:
+  push:
+    branches:
+      - main
+      - development
+    paths:
+      - "python/**"
+      - ".github/workflows/python.yml"
+  pull_request:
+    paths:
+      - "python/**"
+      - ".github/workflows/python.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          # Test at the declared floor (requires-python in pyproject.toml).
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -e ".[dev]"
+      # python3 -m binds to the interpreter the package installed into.
+      - run: python3 -m ruff check .
+      - run: python3 -m pytest -q

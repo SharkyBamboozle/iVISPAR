@@ -1,0 +1,39 @@
+# Secret-scanning config, enforced by .github/workflows/security.yml (D-004).
+#
+# Extends gitleaks' built-in provider rules — never replaces them.
+#
+# Allowlist = named test-canary conventions ONLY. Widen it only for a new,
+# reviewed canary convention; a genuine leak is handled by remove + rotate,
+# never by allowlisting.
+#
+# HONEST LIMIT — this is convention-strength, not a mechanical
+# guarantee: the entries are bare-substring matches, so a REAL secret that
+# happened to contain one of these markers WOULD be silenced, and nothing but
+# this discipline stops a broader regex — gitleaks does not audit its own
+# allowlist. The markers are therefore chosen to be implausible inside a real
+# credential; keep them that way. (Earlier phrasing claimed the allowlist
+# "can never silence a real finding" — that overstated it.)
+#
+# D-003 ledger discipline, convention-strength here (no runtime auditor for a
+# TOML allowlist): a reason per entry (inline below); a ceiling of a small
+# handful of canary conventions — adding one is a reviewed diff, not silent
+# growth; itemized/value-scoped markers, never a path or blanket pass.
+#
+# Canary convention: fake secrets planted in tests/fixtures carry one of
+# these markers IN THE VALUE, so they are allowlisted by value, not by path
+# (a canary that moves files stays allowlisted; a real secret in the same
+# file still fails):
+#   - suffix:  ..._should_not_leak / ..._must_not_leak / ..._fake_for_tests
+#   - prefix:  CANARY_SECRET / CANARY_TOKEN / CANARY_KEY / CANARY_ENV
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Named test-canary conventions only — see header discipline"
+regexes = [
+  # suffix markers on fake test secrets — implausible inside a real credential
+  '''(should_not_leak|must_not_leak|fake_for_tests)''',
+  # explicit CANARY_* prefixes for planted fixture secrets
+  '''CANARY_(SECRET|TOKEN|KEY|ENV)''',
+]

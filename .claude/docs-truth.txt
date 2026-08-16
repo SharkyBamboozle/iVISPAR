@@ -1,0 +1,30 @@
+# Config seam for the flag/env-var citation lane of the docs truth-checker
+# (scripts/check_docs_truth.py, part of `make verify` — D-004/ADR-0004).
+#
+# THE LANE OWNS ITS ACTIVATION: while 'mode: unconfigured', the checker
+# fails the build the moment project code manifestly exists (a root
+# manifest like pyproject.toml/package.json, or a src/-style directory).
+# The two legal moves at that point:
+#
+#   mode: configured          verify cited flags/env vars against the code
+#   code-root: src            (repeatable) where the project's code lives
+#   env-prefix: MYPROJ_       the project's env-var naming prefix
+#   command: myproj           (repeatable) CLI name(s) whose --flags docs cite
+#
+#   mode: off <reason>        explicit advisory declaration (D-004) — the
+#                             reason is mandatory, e.g. "library only, docs
+#                             cite no flags or env vars"
+#
+# BLUEPRINT: at bootstrap, delete THIS comment block, then set the mode:
+#   - If the seed already has project code — a root OR nested manifest / src
+#     dir (e.g. the python-package module puts code under python/) — decide
+#     NOW: `mode: configured` with a `code-root:` (e.g. python/src), or
+#     `mode: off <reason>` if the code cites no flags/env vars yet. Leaving
+#     `unconfigured` FAILS the gate the moment code exists (the lane
+#     self-arms), so configuring it IS the bootstrap decision, not a deferral.
+#   - If there is no project code yet (a docs-only seed), leave the
+#     `mode: unconfigured` line below as-is: the lane stays dormant and
+#     self-arms — demanding this same decision — the moment code lands.
+# (Removing the comment is required — the completion gate blocks on
+# `BLUEPRINT:` markers.)
+mode: unconfigured

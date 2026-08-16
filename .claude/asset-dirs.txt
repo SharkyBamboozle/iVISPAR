@@ -1,0 +1,13 @@
+# Sanctioned binary-asset directory prefixes — one per line, ending in "/";
+# lines starting with "#" are comments. Empty (no entries) = the strict/split
+# posture: no binaries anywhere in this repo.
+#
+# SINGLE SOURCE for the binary posture's directory list, read by BOTH
+# enforcement points (one datum, one parser, both layers — D-004):
+#   - .claude/hooks/guard-git.sh        (edit-time guard)
+#   - .github/workflows/repo-hygiene.yml (CI backstop)
+#
+# BLUEPRINT: binary policy (modules/README.md) — for the in-repo-assets
+# posture, list the sanctioned prefixes here, e.g.:
+#   assets/
+#   static/

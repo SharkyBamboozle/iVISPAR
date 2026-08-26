@@ -9,7 +9,6 @@ module), not here.
 |---|---|
 | `github_setup.sh` | Idempotent GitHub setup — everything a template can't carry (labels, `development` branch + default, protection, Pages + environment policy, merge settings). `--profile data` for a paired data repo. |
 | `bootstrap_labels.sh` | Sync the label taxonomy from `.github/labels.yml` (create-or-update; safe to re-run). |
-| `check_bootstrap_complete.sh` | The objective bootstrap-finished gate: no unfilled placeholder tokens, no unresolved judgment blocks (see `blueprint/TOKENS.md`). Deleted at bootstrap — drop this row then. |
 | `check_ci_gates.py` | The CI meta-gate: pins the gate wiring so a gate can't be silently unwired (no `continue-on-error`; must fire on PRs into the integration branch) and the scaffolding wiring (every deny-hook has a wired suite, every checker a wired `--self-test`). Runs in `make verify`; ships with `--self-test`. |
 | `check_docs_truth.py` | The docs truth-checker: dead path citations, closed-issues-cited-as-open, flag/env citations, and cross-artifact registry consistency. Runs in `make verify`; ships with `--self-test`. |
 | `branch_flow_decision.sh` | The branch-flow-guard decision logic (extracted from `branch-flow-guard.yml` so it is hermetically testable): allow a same-repo `development`→`main` promotion, block a fork branch named `development`, fail **closed** on an inconclusive `gh` result. Called by the workflow. |

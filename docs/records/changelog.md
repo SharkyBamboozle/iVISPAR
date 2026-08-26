@@ -10,6 +10,14 @@ the bottom — mirroring `lessons.md`); session numbers are citable IDs
 what was attempted → what landed (PRs/commits) → what was found (link `note`
 issues) → what was decided (link `D-xxx`) → what carries forward.
 
-*(The first session entry lands with the bootstrap-completion commit —
-the blueprint's records lane G forbids dated entries while the machinery
-is still present.)*
+### Session 1 (2026-08-15) — Re-seeded from Project Blueprint v1.2.0
+
+The repository was re-seeded in place: the EMNLP 2025 tree was retired to the
+frozen tag `emnlp25` (with a GitHub Release and a protecting ruleset), and
+the Project Blueprint v1.2.0 scaffolding was instantiated on `development`.
+Module applied: python-package (package `ivispar`). Binary posture finalized
+as D-007: in-repo assets under `unity/` only, plain git, no LFS; generated
+artifacts (WebGL app builds) ship as Release assets. First design
+principles, requirements, and open questions seeded — see the registries.
+The refactored framework migrates from the private dev repository in staged
+waves tracked by the migration epic.

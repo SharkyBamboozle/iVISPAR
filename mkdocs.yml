@@ -1,5 +1,4 @@
-# MkDocs Material configuration. Tokenized fields ({{...}}) are filled at
-# instantiation (blueprint/TOKENS.md). The markdown_extensions block is the
+# MkDocs Material configuration. The markdown_extensions block is the
 # UNION of everything the templated pages rely on — def_list renders the
 # P#-principle format, attr_list + md_in_html render card/grid blocks,
 # admonitions carry the annotate-don't-rewrite convention. Trim with care.

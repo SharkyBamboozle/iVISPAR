@@ -6,7 +6,7 @@ docs, not a duplicate of them. Extend over time.
 
 ## Hard rules (never, without an explicit user request in THIS session)
 
-*Each rule is hook- and CI-enforced (`guard-git.sh`, `guard-adr.sh`,
+*Each rule is hook- and/or CI-enforced (`guard-git.sh`, `guard-adr.sh`,
 branch protection, the CI gates); every block message names the recovery
 path.*
 

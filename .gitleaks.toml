@@ -14,7 +14,7 @@
 # credential; keep them that way. (Earlier phrasing claimed the allowlist
 # "can never silence a real finding" — that overstated it.)
 #
-# D-003 ledger discipline, convention-strength here (no runtime auditor for a
+# D-004 ledger discipline, convention-strength here (no runtime auditor for a
 # TOML allowlist): a reason per entry (inline below); a ceiling of a small
 # handful of canary conventions — adding one is a reviewed diff, not silent
 # growth; itemized/value-scoped markers, never a path or blanket pass.

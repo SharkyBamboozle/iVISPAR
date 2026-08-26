@@ -12,7 +12,7 @@ top-level tab per **domain area**. Project holds four meta sections —
 **Direction** (vision → principles → requirements →
 open questions → roadmap, the traceability chain in reading order),
 **Decisions** (the ADR registry + one page per ADR), **Records** (epic
-stories, agent-research reports, the changelog), and **Process** (the process
+stories, agent-research reports, the changelog, the lessons ledger), and **Process** (the process
 pages + the glossary). The directory layout under `docs/` mirrors the nav — one
 section, one directory.
 

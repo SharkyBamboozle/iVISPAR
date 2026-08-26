@@ -54,7 +54,7 @@ here** — a push to a dead branch fires no PR event; the verdict line,
 this rule, and review are that net. PR watching/subscription (where a
 harness offers it) remains a **per-PR operator choice, never a standing
 default**: subscriptions are session-bound where this failure is
-cross-session, merge events are not reliably delivered, and the blueprint's
+cross-session, merge events are not reliably delivered, and this repository's
 conventions bind any agent — a harness-specific habit no gate can verify
 is not a rule (D-004).
 

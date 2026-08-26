@@ -37,7 +37,7 @@ body:
       description: Task-list boxes — tick each the moment its artifact lands; the issue-link-guard blocks a `Closes` while boxes are unchecked or absent.
       value: |
         - [ ]
-        - [ ] **Readout** posted on this issue, cross-linked to the epic — results live on the tracker; heavy artifacts live in the data repo.
+        - [ ] **Readout** posted on this issue, cross-linked to the epic — results live on the tracker; heavy artifacts live outside git (Release assets — D-007).
   - type: textarea
     id: acceptance
     attributes:

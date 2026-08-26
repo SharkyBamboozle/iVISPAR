@@ -6,7 +6,7 @@ name: Repo hygiene
 # configuration — one merged .mp4 pollutes history permanently.
 #
 # Escape hatch: label the PR `allow-binaries` for a deliberate, explicitly
-# approved exception. It is ITEMIZED (D-003): the label waives ONLY the
+# approved exception. It is ITEMIZED (D-004): the label waives ONLY the
 # binary-type finding, never the oversized-text lane — a blanket job-skip
 # would let an oversized text file ride in under a binaries waiver.
 
@@ -28,7 +28,7 @@ jobs:
       - name: Block binaries and oversized files outside LFS
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          # Itemized waiver, evaluated per-finding below — NOT a job-level skip (D-003).
+          # Itemized waiver, evaluated per-finding below — NOT a job-level skip (D-004).
           ALLOW_BINARIES: ${{ contains(github.event.pull_request.labels.*.name, 'allow-binaries') }}
         run: |
           # Sanctioned asset dirs come from the SAME data file the edit-time
@@ -60,7 +60,7 @@ jobs:
                 if [ "$ALLOW_BINARIES" = "true" ]; then
                   echo "::notice file=$f::Binary-type file waived by the 'allow-binaries' label ($size bytes)."
                 else
-                  echo "::error file=$f::Binary-type file added without LFS ($size bytes) — artifacts go to the data repo (CLAUDE.md hard rules). Deliberate exception: add the 'allow-binaries' label."
+                  echo "::error file=$f::Binary-type file added without LFS ($size bytes) — authored assets live under the sanctioned dirs, generated artifacts ship as Release assets (D-007). Deliberate exception: add the 'allow-binaries' label."
                   fail=1
                 fi
                 ;;
@@ -68,7 +68,7 @@ jobs:
                 # The oversized-text lane is NEVER waived by allow-binaries —
                 # that label is about binaries, not smuggling a huge text file.
                 if [ "$size" -gt "$MAX_BYTES" ]; then
-                  echo "::error file=$f::File exceeds ${MAX_BYTES} bytes ($size) and is not LFS-tracked — split it, LFS it, or move it to the data repo."
+                  echo "::error file=$f::File exceeds ${MAX_BYTES} bytes ($size) and is not LFS-tracked — split it, or keep it out of git (D-007: generated artifacts ship as Release assets)."
                   fail=1
                 fi
                 ;;

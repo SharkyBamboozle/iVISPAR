@@ -94,5 +94,5 @@ advisory — review-upheld conventions with no mechanical gate (D-004).*
 - **Run provenance.** One namespaced config file is a run's single source of
   truth; the **fully-resolved** config (overrides + seed applied) is
   snapshotted into the run's artifact folder; every parameter single-sourced;
-  validate and fail fast before running. Durable artifacts go to the data repo
-  (data-repo module), never into this repo's history.
+  validate and fail fast before running. Durable artifacts never enter
+  this repo's history — app builds ship as GitHub Release assets (D-007).

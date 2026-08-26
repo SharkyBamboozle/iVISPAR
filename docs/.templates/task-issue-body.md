@@ -37,7 +37,7 @@ the n/m progress and the gate counts unchecked boxes. Honest ticking
 
 - [ ] <Concrete artifact/change.>
 - [ ] **Readout** posted on this issue, cross-linked to the epic — results
-  live on the tracker; heavy artifacts live in the data repo.
+  live on the tracker; heavy artifacts live outside git (Release assets — D-007).
 
 ## Acceptance criteria
 

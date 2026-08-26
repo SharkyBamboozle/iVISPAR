@@ -15,7 +15,7 @@ The *process and behavior* in `CLAUDE.md` is tool-neutral and binding:
 
 - **Hard rules** — feature branch → PR into `development`; never push to or
   commit on `main`; no self-merges; no force-pushes or history rewrites; no
-  committed binaries; never change a ✅ Decided ADR (supersede it instead).
+  binaries outside the sanctioned asset dirs (D-007); never change a ✅ Decided ADR (supersede it instead).
 - **Autonomy contract** — when to proceed vs. stop and ask; review
   instructions critically instead of executing them blindly; reproduce before
   you fix; honest reporting and adversarial verification of load-bearing claims.

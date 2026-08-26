@@ -73,7 +73,7 @@ REQUIRED_ISSUE_TYPES = {
     "issue-close-guard.yml": ("closed",),
 }
 
-# (workflow, job) allowed to carry continue-on-error — a first-class D-003
+# (workflow, job) allowed to carry continue-on-error — a first-class D-004
 # ledger: a reason per entry, a ceiling, staleness fails loud (an entry whose
 # job no longer has continue-on-error is removed, checked in scan()).
 CONTINUE_ON_ERROR_EXEMPT = {
@@ -224,7 +224,7 @@ def check_no_continue_on_error(name: str, wf: dict) -> set:
 
 
 def validate_coe_ledger(ledger=None, ceiling=CONTINUE_ON_ERROR_CEILING) -> list:
-    """Static D-003 checks on the continue-on-error ledger: a non-empty reason
+    """Static D-004 checks on the continue-on-error ledger: a non-empty reason
     per entry, and a ceiling. (Staleness is checked in scan() against the
     actual workflows.)"""
     ledger = CONTINUE_ON_ERROR_EXEMPT if ledger is None else ledger
@@ -415,7 +415,7 @@ def self_test() -> int:
     scenario("paths/allow: no paths filter", False,
              lambda: check_not_paths_neutered("docs.yml", {"on": {"pull_request": None}}))
 
-    # The continue-on-error exemption is a D-003 ledger.
+    # The continue-on-error exemption is a D-004 ledger.
     if not validate_coe_ledger({("a.yml", "j"): ""}):
         problems.append("coe-ledger/deny: empty reason not rejected")
     if not validate_coe_ledger({("a.yml", "1"): "r", ("b.yml", "2"): "r"}, ceiling=1):
@@ -583,7 +583,7 @@ def scan(wf_dir: str) -> int:
                 "own clock; keep the weekly cron."
             )
 
-    # D-003 ledger: continue-on-error exemptions carry reasons + a ceiling, and
+    # D-004 ledger: continue-on-error exemptions carry reasons + a ceiling, and
     # a stale exemption (its job no longer has continue-on-error) fails loud.
     for problem in validate_coe_ledger():
         fail(problem)

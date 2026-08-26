@@ -22,7 +22,6 @@ site/
 .claude/working/UNLOCKED_ADRS
 
 # Local data staging: runs, bundles, checkpoints — never committed.
-# Durable artifacts live in the external data repo (data-repo module / its ADR);
-# this directory is a gitignored local staging area only.
+# Durable artifacts never enter git — app builds ship as Release assets
+# (D-007); this directory is a gitignored local staging area only.
 data/*
-!data/README.md

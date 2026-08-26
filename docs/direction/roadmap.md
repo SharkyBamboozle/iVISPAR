@@ -20,7 +20,7 @@ question, in isolation, as the narrowest slice that forecloses nothing. A
 spike is distinct from a **vertical slice / MVP**, which exercises all pillars
 end-to-end while deferring every hard choice to its `Q##`.
 
-## Phase 0 — validation spikes
+## Validation spikes
 
 ### Spike A — headless transport smoke
 

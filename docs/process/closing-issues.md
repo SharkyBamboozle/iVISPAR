@@ -68,7 +68,7 @@ itself is unaffected — it reads bodies with `gh api` on the runner.)*
 
 **Outcomes get written back to the issue** — run/build results land as a
 readout comment on the build issue, cross-linked to the epic; heavy
-artifacts live elsewhere (the data repo, if the project has one).
+artifacts live outside git (Release assets — D-007).
 
 ## Who closes
 

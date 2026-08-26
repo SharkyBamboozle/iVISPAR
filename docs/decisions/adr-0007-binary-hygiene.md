@@ -33,8 +33,10 @@ paired data repository.**
   media, kept small — advisory budget, single-digit MB). Both listed in
   `.claude/asset-dirs.txt`.
 - **Plain git, no LFS — a measured choice, not an omission:** the authored
-  binary payload is ~18 MB and write-once (the Unity project serializes
-  Force-Text, so scenes/prefabs/materials are diffable YAML, not binaries);
+  binary payload is ~18 MB and write-once — measured over the private dev
+  repository's Unity tree (du/find, 2026-08-15, n=1) — and the Unity
+  project serializes Force-Text, so scenes/prefabs/materials are diffable
+  YAML, not binaries;
   LFS's churn benefit does not apply to write-once assets, while its
   metered bandwidth quota on a public repository is a documented
   failure mode (every external clone bills the owner's free quota).
@@ -58,9 +60,7 @@ rule; its trailer-ization is a deferred item D-004 owns.
 repo-hygiene CI gate blocks binary-typed and oversized non-LFS files
 outside sanctioned directories on every PR; the git guard hook denies the
 common-extension subset of the same class (no size ceiling) at staging
-time; both read the one seam file. This enforcement is live while the page
-is 🟡 Proposed — the status marks only the pending posture choice, never a
-dormant rule. The "configure LFS before the first binary" ordering is
+time; both read the one seam file. The "configure LFS before the first binary" ordering is
 advisory — upheld by review, since no gate can see a pattern that doesn't
 exist yet.
 

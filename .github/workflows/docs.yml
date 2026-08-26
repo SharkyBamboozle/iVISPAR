@@ -44,6 +44,8 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r docs/requirements.txt
+      # make verify runs ruff + pytest (python-package module, D-008)
+      - run: pip install -e "python[dev]"
       - name: Verify (strict docs build + CI meta-gate)
         env:
           GH_TOKEN: ${{ github.token }} # arms check_docs_truth's issue-state lane in CI (D-004)

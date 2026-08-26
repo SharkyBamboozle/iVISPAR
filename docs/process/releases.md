@@ -42,9 +42,8 @@ promotion whose seam-named version file is not bumped by **exactly one
 semver step**, or whose release log lacks an entry for the new version
 (logic: `scripts/release_gate_decision.sh`; suite:
 `scripts/test_release_gate.sh`). A project that does not version its
-promotions declares `mode: off <reason>` in `.claude/release.txt` — the
-bootstrap gate forces every seeded project to resolve that seam either
-way. *Advisory, stated as such:* whether the operator was actually asked
+promotions declares `mode: off <reason>` in `.claude/release.txt` — this
+repo resolved the seam at bootstrap (`mode: configured`). *Advisory, stated as such:* whether the operator was actually asked
 (the ritual STOP + the promotion template's confirmation checkbox are the
 enforcers) and whether the restated `Closes` set is complete (the ritual
 generates it; review verifies it).

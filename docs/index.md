@@ -27,10 +27,12 @@ directory layout under `docs/` mirrors the nav):
 - **Decisions** — the [decisions registry](decisions/index.md) and one ADR page
   per `D-xxx`.
 - **Records** — the history lenses: [epic stories](records/epics/index.md),
-  [agent-research reports](records/agent-research/index.md), and the
-  [changelog](records/changelog.md).
-- **Process** — the [contributing guide](process/contributing.md) (the process
-  manual) and the [glossary](process/glossary.md) (track new terminology here).
+  [agent-research reports](records/agent-research/index.md), the
+  [changelog](records/changelog.md), and the
+  [lessons ledger](records/lessons.md).
+- **Process** — the act pages behind the
+  [contributing hub](process/contributing.md), and the
+  [glossary](process/glossary.md) (track new terminology here).
 
 ## Status legend
 

@@ -62,7 +62,8 @@ Closes — · Part of #___ (epic)    <!-- advances work, completes no issue: clo
 ## Hard-rule confirmations
 
 - [ ] Target branch is `development` (never `main`)
-- [ ] No binaries added (LFS-covered assets excepted; artifacts go to the data repo)
+- [ ] No binaries outside the sanctioned asset dirs `unity/` / `docs/assets/`
+  (D-007); generated artifacts ship as Release assets, never committed
 - [ ] Closing keywords, both ways: every issue this PR fully completes has
   one, and nothing this PR does not complete has one — an epic mid-flight
   never (closeout PR excepted; `issue-link-guard` gates epics by sub-issue

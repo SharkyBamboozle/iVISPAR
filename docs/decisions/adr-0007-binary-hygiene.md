@@ -1,24 +1,13 @@
 # ADR-0007 — Binary hygiene
 
-- **Status:** 🟡 Proposed
+- **Status:** ✅ Decided
 - **Decision ID:** D-007
-- **Related requirements:** —
-- **Related questions:** —
+- **Related requirements:** R3
+- **Related questions:** Q2 (texture redistribution — scopes *which* assets ship, not the posture)
 - **Related decisions:** enforced through the seams named by D-004
-  (enforcement doctrine); where a paired data repository is adopted, its
-  adoption ADR records the artifact-side implementation
+  (enforcement doctrine); no paired data repository is adopted (see
+  Reversibility for the named reactivation trigger)
 
-<!-- BLUEPRINT: finalize this decision at bootstrap. Choose ONE posture per
-modules/README.md → "Binary policy" (strict/split, in-repo assets, or
-strict-without-split), rewrite the Decision section below to state the
-chosen posture as decided (drop the alternative), reconcile the Context,
-Consequences, and Related-decisions lines with the chosen posture (e.g.
-the data-repo references, under a posture without one), flip Status to
-✅ Decided, and update the registry row (docs/decisions/index.md) to match.
-Wire the same choice into .claude/asset-dirs.txt and the CLAUDE.md
-hard-rule bullet — all in the same commit. Flipping to ✅ is itself a
-hook-gated path to Decided (guard-adr.sh): first run /unlock-adr adr-0007,
-then make this finalization edit — see BOOTSTRAP.md step 4. -->
 
 ## Context
 
@@ -36,20 +25,26 @@ asset directory. The posture decides which of those applies where.
 
 ## Decision
 
-**Default posture — strict/split (🟡 until finalized at bootstrap):**
+**Posture — in-repo assets, narrowly sanctioned; plain git, no LFS; no
+paired data repository.**
 
-- **No binaries in this repository's history** — images, video, archives,
-  model weights, notebooks with outputs. `data/` is gitignored staging
-  only.
-- **Durable artifacts live outside source history** — in the paired data
-  repository where the data-repo module is applied (its adoption gets its
-  own ADR), or they are not kept.
-- **LFS patterns, where needed, are configured *before* any matching binary
-  exists** — LFS-after-the-fact still leaves blobs in history.
-- **The alternative posture — in-repo assets** — sanctions named asset
-  directories (listed one per line in `.claude/asset-dirs.txt`, LFS for
-  large or authored types) while generated artifacts still stay out. A
-  project choosing it rewrites this section at bootstrap accordingly.
+- **Two sanctioned asset prefixes, nothing else:** `unity/` (authored Unity
+  project assets: textures, models, fonts) and `docs/assets/` (docs-site
+  media, kept small — advisory budget, single-digit MB). Both listed in
+  `.claude/asset-dirs.txt`.
+- **Plain git, no LFS — a measured choice, not an omission:** the authored
+  binary payload is ~18 MB and write-once (the Unity project serializes
+  Force-Text, so scenes/prefabs/materials are diffable YAML, not binaries);
+  LFS's churn benefit does not apply to write-once assets, while its
+  metered bandwidth quota on a public repository is a documented
+  failure mode (every external clone bills the owner's free quota).
+- **Generated artifacts never enter history, anywhere:** WebGL app builds
+  ship as GitHub Release assets (the runner fetches them); run outputs,
+  datasets, and model weights stay out of git entirely. This is the clause
+  that ended the pre-v2 era's repeated build commits — the dominant weight
+  in both historical repositories.
+- **No paired data repository** — nothing durable needs one yet; the
+  reactivation trigger is named under Reversibility.
 
 **Wiring (posture-independent):** the sanctioned-directory list lives in
 exactly one data file, `.claude/asset-dirs.txt`, read by both enforcement
@@ -73,8 +68,9 @@ exist yet.
 
 - Clones stay lean indefinitely; history never needs a rewrite to shed
   weight — which keeps the append-only history rule (D-003) affordable.
-- Run artifacts get a real home (the data repo) instead of a tolerated
-  corner of source history.
+- Publishable artifacts (app builds) get a real distribution channel —
+  Release assets — instead of a tolerated corner of source history; run
+  outputs have deliberately no in-repo home.
 - Asset-native projects pay one bootstrap decision (name the sanctioned
   directories) instead of fighting the gate per-PR.
 - The occasional legitimate one-off costs an explicit `allow-binaries`
@@ -93,6 +89,12 @@ exist yet.
   the exception explicit.
 
 ## Reversibility / notes
+
+- **Named reactivation triggers:** adopt LFS only if a single needed asset
+  exceeds ~50 MB or authored-asset churn becomes sustained; propose a
+  data-repo ADR when the first durable dataset/results drop must be
+  publicly versioned (roughly >10 MB). Until a trigger fires, revisiting
+  this posture is out of scope.
 
 - The posture is revisable by superseding ADR at any time; because both
   enforcement points read the single seam file, rewiring a posture change

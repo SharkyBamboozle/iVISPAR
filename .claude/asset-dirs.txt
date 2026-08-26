@@ -7,7 +7,8 @@
 #   - .claude/hooks/guard-git.sh        (edit-time guard)
 #   - .github/workflows/repo-hygiene.yml (CI backstop)
 #
-# BLUEPRINT: binary policy (modules/README.md) — for the in-repo-assets
-# posture, list the sanctioned prefixes here, e.g.:
-#   assets/
-#   static/
+# In-repo assets posture (D-007): authored Unity project assets and
+# docs-site media. Generated artifacts (WebGL builds, run outputs,
+# datasets, weights) are NEVER committed — builds ship as Release assets.
+unity/
+docs/assets/

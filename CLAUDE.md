@@ -12,12 +12,12 @@ path.*
 
 - Never push to `main`, and never commit directly to `main` or `development`.
   All work: feature branch → PR into `development`. Never merge your own PR.
-- Never commit binary files outside the sanctioned asset directory — D-007.
-  Authored Unity assets live ONLY under `unity/` (plain git, no LFS);
-  generated artifacts — WebGL builds, run outputs, datasets, model weights —
-  are never committed anywhere (app builds ship as GitHub Release assets).
-  If a task seems to need a committed binary elsewhere, stop and name the
-  file + size.
+- Never commit binary files outside the sanctioned asset dirs — D-007.
+  Authored binaries live ONLY under `unity/` and `docs/assets/` (plain git,
+  no LFS); generated artifacts — WebGL builds, run outputs, datasets, model
+  weights — are never committed anywhere (app builds ship as GitHub Release
+  assets). If a task seems to need a committed binary elsewhere, stop and
+  name the file + size.
 - Never force-push, rewrite published history, or delete branches you did not
   create in this session.
 - Never manually close or delete a GitHub issue — close authority is the

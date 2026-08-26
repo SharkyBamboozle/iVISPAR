@@ -45,3 +45,7 @@ verify:
 	python3 scripts/check_ci_gates.py
 	python3 scripts/check_docs_truth.py --self-test
 	python3 scripts/check_docs_truth.py
+	@# python-package module (D-008): lint + tests. python3 -m binds to the
+	@# interpreter the package was installed into.
+	cd python && python3 -m ruff check .
+	cd python && python3 -m pytest -q

@@ -120,6 +120,7 @@ nav:
           - "ADR-0005 — Testing policy": decisions/adr-0005-testing-policy.md
           - "ADR-0006 — Verification & honesty": decisions/adr-0006-verification-and-honesty.md
           - "ADR-0007 — Binary hygiene": decisions/adr-0007-binary-hygiene.md
+          - "ADR-0008 — Python package layout": decisions/adr-0008-python-package-layout.md
       - Records:
           - Epics:
               - records/epics/index.md

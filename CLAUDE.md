@@ -117,6 +117,9 @@ Build/preview: `docs/process/contributing.md` → *Building the docs locally*.
   space (`working/`).
 - `scripts/` — repo tooling (see `scripts/README.md`); lasting product value
   never lives here.
+- `python/` — the installable `ivispar` package (src layout; D-008). Setup:
+  `pip install -e "python[dev]"`; test/lint: `pytest` / `ruff check` (in
+  `make verify`).
 - `LICENSE` — MIT © 2024 Julius Mayer.
 
 ## Conventions

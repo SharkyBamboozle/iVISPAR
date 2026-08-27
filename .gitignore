@@ -1,6 +1,27 @@
-# Config files and experiment data
+# OS / editor junk
 .DS_Store
-.idea
+Thumbs.db
+
+# Python & tooling (modules extend this per project)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# MkDocs build output
+site/
+
+# Session-local unlock tokens for the Decided-ADR edit lock (/unlock-adr,
+# guard-adr.sh — ADR-0004/D-004). Machine state with a 1h read-time TTL:
+# committing it would ship stale token state into every clone. The rest of
+# .claude/working/ stays trackable (working docs may land on feature
+# branches; /handoff archives them).
+.claude/working/UNLOCKED_ADRS
+
+# Local data staging: runs, bundles, checkpoints — never committed.
+# Durable artifacts never enter git — app builds ship as Release assets
+# (D-007); this directory is a gitignored local staging area only.
 data/*
-!/data/Instructions
-!/data/Params

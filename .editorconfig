@@ -1,0 +1,25 @@
+# Cross-editor whitespace/indent baseline so humans and agents produce
+# noise-free diffs. Non-obvious lines carry their reason inline (D-004).
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+# Markdown treats trailing double-spaces as hard line breaks — never strip.
+trim_trailing_whitespace = false
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml,json}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+# make requires literal tabs in recipes.
+indent_style = tab

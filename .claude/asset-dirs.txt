@@ -1,0 +1,14 @@
+# Sanctioned binary-asset directory prefixes — one per line, ending in "/";
+# lines starting with "#" are comments. Empty (no entries) = the strict/split
+# posture: no binaries anywhere in this repo.
+#
+# SINGLE SOURCE for the binary posture's directory list, read by BOTH
+# enforcement points (one datum, one parser, both layers — D-004):
+#   - .claude/hooks/guard-git.sh        (edit-time guard)
+#   - .github/workflows/repo-hygiene.yml (CI backstop)
+#
+# In-repo assets posture (D-007): authored Unity project assets and
+# docs-site media. Generated artifacts (WebGL builds, run outputs,
+# datasets, weights) are NEVER committed — builds ship as Release assets.
+unity/
+docs/assets/

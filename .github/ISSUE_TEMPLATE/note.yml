@@ -1,0 +1,39 @@
+# Note form — the subtlest convention, encoded at the point of use: a note is
+# NEVER a sub-issue (it would leave the epic perpetually unfinished).
+# CLI equivalent: docs/.templates/note-issue-body.md.
+name: Note (finding / observation)
+description: A finding that is NOT a build task. Cross-linked to its epic — never attached as a sub-issue.
+title: "note: <finding>"
+labels: [note]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **After filing:** add a one-line entry to the epic's *Related notes & findings*
+        section. Do **not** attach this as a sub-issue. Notes are triaged at epic
+        closeout (resolved / applied / moot / re-homed / kept in index).
+  - type: input
+    id: provenance
+    attributes:
+      label: Provenance
+      description: Where this surfaced and which epic it belongs to.
+      placeholder: "Found during #NN / run <id> (Epic #MM)"
+    validations:
+      required: true
+  - type: textarea
+    id: finding
+    attributes:
+      label: The finding
+      description: What was observed, where (run/commit/doc), and the evidence. Add a caveat if a number shouldn't be over-read.
+    validations:
+      required: true
+  - type: textarea
+    id: implication
+    attributes:
+      label: Why it matters later
+      description: What this might change — a D-xxx? a Q##? scope? List options; none is decided here.
+  - type: input
+    id: triage
+    attributes:
+      label: Triage trigger
+      placeholder: "Triage when <successor epic / named trigger> arrives"

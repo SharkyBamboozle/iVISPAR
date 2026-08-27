@@ -1,0 +1,3 @@
+# Blank issues stay enabled — the forms encode the epic/task/note conventions
+# for the common cases; freeform remains available for everything else.
+blank_issues_enabled: true

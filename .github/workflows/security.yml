@@ -1,0 +1,58 @@
+name: Security
+
+# Two fail-closed gates (D-004), each on every PR **plus a weekly cron** —
+# leaks and vulnerability advisories arrive on their own clock, not the
+# repo's, so a PR-only gate structurally misses advisories published against
+# an already-committed state.
+#
+#   secret-scan — gitleaks with a version-pinned binary (no marketplace
+#     action, no license key), extend-default rules, and a convention-scoped
+#     allowlist (.gitleaks.toml — read its header before touching it).
+#     Scans the working tree: current exposure; a secret already burned into
+#     history is a rotate-and-rewrite response, not a merge-gate concern.
+#
+#   dependency-audit — pip-audit over the docs toolchain, the template's
+#     only pinned dependencies. Seeded projects extend this job with their
+#     own ecosystem's auditor (npm audit, cargo audit, osv-scanner, ...).
+on:
+  pull_request:
+  schedule:
+    - cron: "0 7 * * 1" # Mondays 07:00 UTC — the weekly sweep
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    env:
+      GITLEAKS_VERSION: "8.18.4" # version-pinned binary (D-004: no floating tools in gates)
+    steps:
+      - uses: actions/checkout@v7
+      - name: Scan working tree for secrets (gitleaks, fail-closed)
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            -o /tmp/gitleaks.tgz
+          tar -xzf /tmp/gitleaks.tgz -C /tmp gitleaks
+          if ! /tmp/gitleaks detect --no-git --source . --config .gitleaks.toml --redact --no-banner; then
+            echo "::error::gitleaks found secret-shaped content. Remove the secret AND rotate it; for a deliberate test canary, follow the naming convention in .gitleaks.toml — never allowlist a genuine finding."
+            exit 1
+          fi
+          echo "No secrets found."
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Audit docs toolchain (pip-audit, fail on any known vuln)
+        run: |
+          pip install -q pip-audit
+          if ! pip-audit -r docs/requirements.txt; then
+            echo "::error::Known vulnerability in the docs toolchain (docs/requirements.txt). Bump the pinned version — or record a deliberate, itemized deferral per the exception-ledger rules (D-004)."
+            exit 1
+          fi

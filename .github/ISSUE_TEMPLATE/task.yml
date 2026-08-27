@@ -1,0 +1,54 @@
+# Build-task form — a concrete, completable deliverable that counts toward an
+# epic's completion. Attach it to the epic as a NATIVE sub-issue after
+# creating it. CLI equivalent: docs/.templates/task-issue-body.md.
+name: Build task
+description: A concrete deliverable for an epic. Attach as a native sub-issue after creating.
+title: "<Epic short-name> — <task>"
+# Auto-label for symmetry with epic.yml/note.yml (labels.yml carries the
+# taxonomy). NOT load-bearing for the issue-link-guard, which keys on
+# epic/note only.
+labels: [task]
+body:
+  - type: input
+    id: thesis
+    attributes:
+      label: Payoff
+      description: One bold sentence — what this task delivers.
+    validations:
+      required: true
+  - type: input
+    id: parent
+    attributes:
+      label: Parent epic / dependencies / governing decision
+      placeholder: "Epic #NN · depends on #MM · governed by D-0NN"
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is in — the narrowest slice that delivers the payoff.
+    validations:
+      required: true
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: Deliverables
+      description: Task-list boxes — tick each the moment its artifact lands; the issue-link-guard blocks a `Closes` while boxes are unchecked or absent.
+      value: |
+        - [ ]
+        - [ ] **Readout** posted on this issue, cross-linked to the epic — results live on the tracker; heavy artifacts live outside git (Release assets — D-007).
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable conditions as task-list boxes, including any gate ("X must pass before Y starts").
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: nonscope
+    attributes:
+      label: Non-scope (deferred)
+      description: What this task deliberately does not do, and where each deferred item lives.

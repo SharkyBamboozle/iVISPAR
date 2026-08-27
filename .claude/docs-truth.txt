@@ -1,0 +1,9 @@
+# Config seam for the flag/env-var citation lane of the docs truth-checker
+# (scripts/check_docs_truth.py, part of `make verify` — D-004/ADR-0004).
+#
+# Modes: `mode: configured` verifies cited flags/env vars against the code
+# under `code-root:` (repeatable; add `env-prefix:` / `command:` when docs
+# start citing them); `mode: off <reason>` is the explicit advisory opt-out
+# (D-004). Resolved at bootstrap: configured against the ivispar package.
+mode: configured
+code-root: python/src

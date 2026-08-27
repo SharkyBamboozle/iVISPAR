@@ -1,0 +1,101 @@
+name: Documentation
+
+# BUILD  = the canonical verification entrypoint (`make verify`): strict
+#          docs build (fails on broken links) + the CI meta-gate
+#          (scripts/check_ci_gates.py, D-004). Publishes nothing. Runs on
+#          every push and every PR — this is the merge gate that makes the
+#          docs' cross-reference web and the gate wiring machine-enforced.
+# DEPLOY = publish the built site to GitHub Pages. Runs on pushes to
+#          `development` and `main` — a merge into EITHER updates the live
+#          site — and only when the repository variable DEPLOY_DOCS is "true".
+#          Publishing is OPT-IN and default-OFF: DEPLOY_DOCS is set true
+#          only when scripts/github_setup.sh is run with --deploy-docs.
+#
+# One-time setup — scripts/github_setup.sh does all of this, but ONLY under its
+# --deploy-docs opt-in (the default leaves publishing off and creates no Pages
+# site):
+#   - Settings -> Pages -> Source = "GitHub Actions"
+#   - Environment github-pages -> deployment branch policy must allow
+#     `development` as well as `main` (otherwise the deploy job is rejected
+#     for any non-default branch — a silent-breakage trap)
+#   - Repository variable DEPLOY_DOCS=true
+
+on:
+  push:
+    branches:
+      - main
+      - development
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  issues: read # docs-truth issue-state lane (check_docs_truth.py) reads issue state via gh (D-004)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r docs/requirements.txt
+      # make verify runs ruff + pytest (python-package module, D-008)
+      - run: pip install -e "python[dev]"
+      - name: Verify (strict docs build + CI meta-gate)
+        env:
+          GH_TOKEN: ${{ github.token }} # arms check_docs_truth's issue-state lane in CI (D-004)
+        run: make verify
+      - name: Upload Pages artifact
+        if: >-
+          github.event_name == 'push' &&
+          (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main') &&
+          vars.DEPLOY_DOCS == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    # A single Pages site serves one version at a time, so deploys are
+    # serialized (concurrency below) and last-write-wins: whichever branch
+    # merged most recently is live.
+    if: >-
+      github.event_name == 'push' &&
+      (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/main') &&
+      vars.DEPLOY_DOCS == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # GitHub's Pages backend intermittently returns a terminal
+      # "Deployment failed, try again later." at the status-polling stage — a
+      # transient on GitHub's side, not a build error (the artifact is already
+      # uploaded). deploy-pages' own error tolerance doesn't cover a terminal
+      # failed status, so retry the whole action up to 3 times with a pause.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+      - name: Pause before retry 1
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 20
+      - name: Deploy to GitHub Pages (retry 1)
+        id: deployment_retry1
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+      - name: Pause before retry 2
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
+        run: sleep 30
+      - name: Deploy to GitHub Pages (retry 2)
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry1.outcome == 'failure'
+        uses: actions/deploy-pages@v5

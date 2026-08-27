@@ -1,0 +1,60 @@
+name: Issue link guard
+
+# A closing keyword (Closes/Fixes/Resolves) in a PR body, PR title, or commit
+# message auto-closes its target when the PR merges into `development` — the
+# integration branch is the repo default (scripts/github_setup.sh), so every
+# integration PR is a live close surface, and GitHub ignores qualifiers:
+# "Closes #7 (partial)" still closes #7. This required check enforces the
+# close-direction of the linking rule
+# (docs/process/opening-a-pr.md): a closing reference
+# fails while its target is not completion-ready — an `epic`-labeled issue
+# with open sub-issues (only the closeout PR, every sub-issue closed, may
+# keyword-close it), or any other issue whose body still carries unchecked
+# deliverable boxes (close only what is complete; argue exceptions with the
+# trailer). A server-side check binds every contributor and agent, hooks
+# installed or not (D-004).
+#
+# The decision logic lives in a script so it is unit-testable with a mocked
+# gh (scripts/issue_link_decision.sh, scripts/test_issue_link_guard.sh) —
+# the workflow just supplies the inputs. Override for a deliberate
+# exception: a 'Skip-Issue-Link-Guard: <reason>' commit trailer.
+#
+# scripts/github_setup.sh registers this job as a required check on both
+# `development` and `main`; scripts/check_ci_gates.py pins the `types:`
+# list below (REQUIRED_PR_TYPES).
+on:
+  pull_request:
+    # `edited` re-runs the gate when the PR body is edited after opening (a
+    # closing keyword added post-CI) and when the PR is retargeted; the
+    # default types omit it.
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  issue-link-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Closing keywords target only issues this PR completes
+        env:
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          # Untrusted text reaches the script via env, never via template
+          # interpolation into the run block.
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Capture first: a failed git log must fail the job, never present
+          # an empty commit set as a clean pass (same rule as adr-gates.yml).
+          COMMITS="$(git log --format=%B "$BASE".."$HEAD")"
+          export COMMITS
+          bash scripts/issue_link_decision.sh

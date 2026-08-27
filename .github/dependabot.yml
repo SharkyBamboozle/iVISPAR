@@ -1,0 +1,31 @@
+# Keeps the enforcement toolchain patched: CI gates that run on stale
+# actions or a stale docs toolchain rot silently — a quiet contradiction of
+# the enforcement-layering doctrine (D-004).
+#
+# target-branch: Dependabot always reads THIS file from the default branch,
+# but scans manifests and opens its PRs against `development` — the
+# integration branch that work flows through (CLAUDE.md → Repo workflow).
+# groups: bundle every update in an ecosystem into ONE PR per run (one
+# branch, separate commits per dependency, a single PR) to cut review noise.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: development
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: pip
+    # docs/requirements.txt — the mkdocs toolchain the docs gate runs on.
+    directory: /docs
+    target-branch: development
+    schedule:
+      interval: weekly
+    groups:
+      pip:
+        patterns:
+          - "*"

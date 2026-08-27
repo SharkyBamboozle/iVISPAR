@@ -1,0 +1,74 @@
+name: ADR gates
+
+# Enforcement for the ADR process (D-004; docs/process/writing-adrs.md):
+#
+#   registry-sync — an ADR page change must update the decisions registry
+#     (docs/decisions/index.md) in the same diff, mechanizing the existing
+#     rule "update its ADR AND the registry row together". Override for
+#     typo-only page fixes: a 'Skip-Registry-Sync: <reason>' commit trailer.
+#
+#   decided-adr-unlock — any PATH to a ✅ Decided page requires an
+#     'Unlock-ADR: <adr-id> — <reason>' trailer: creating one already Decided
+#     (the new-file gap), promoting 🟡→✅, a maintenance edit, deleting or
+#     renaming it. Pairs with the edit-time lock (.claude/hooks/guard-adr.sh);
+#     CI is the layer that binds every client, hooks or not. Creating or
+#     editing a 🟡 Proposed page needs no trailer — Decided is the human-gated
+#     state, so drafting is free and only reaching/leaving it is challenged.
+#     Logic lives in scripts/adr_unlock_decision.sh so it is hermetically
+#     testable (scripts/test_adr_unlock_decision.sh, in `make verify`; D-005).
+#
+#   Stable-ID integrity (duplicate D-### IDs / ADR file numbers, registry ↔
+#   page status drift, nav bijection) is enforced by the docs-truth
+#   consistency lane inside `make verify` (scripts/check_docs_truth.py),
+#   which the Documentation workflow runs on every PR — not duplicated here.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  registry-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: ADR page change requires a registry change in the same diff
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Capture first: a failed git diff must fail the job, never present
+          # an empty work-set as a clean pass.
+          changed=$(git diff --name-only "$BASE" "$HEAD")
+          adrs=$(printf '%s\n' "$changed" | grep -E '^docs/decisions/adr-.*\.md$' || true)
+          if [ -z "$adrs" ]; then
+            echo "No ADR pages changed."; exit 0
+          fi
+          if printf '%s\n' "$changed" | grep -qx 'docs/decisions/index.md'; then
+            echo "Registry changed alongside ADR page(s) — OK."; exit 0
+          fi
+          if git log --format=%B "$BASE".."$HEAD" | grep -qE '^Skip-Registry-Sync:[[:space:]]*[^[:space:]]'; then
+            echo "Skip-Registry-Sync trailer present — OK."; exit 0
+          fi
+          echo "::error::ADR page(s) changed without updating docs/decisions/index.md in the same diff."
+          printf 'ADR pages changed:\n%s\n\n' "$adrs"
+          echo "Fix: update the registry row (statement/status) in this PR — or, for a"
+          echo "typo-only page fix, add to any commit message in this PR:"
+          echo "    Skip-Registry-Sync: <one-line reason>"
+          exit 1
+
+  decided-adr-unlock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Every path to a Decided ADR carries an Unlock-ADR trailer
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        # Logic + both-ways regression suite live in scripts/ (D-005) so the
+        # gate is testable, not buried in inline YAML (same split as the branch-flow guard).
+        run: bash scripts/adr_unlock_decision.sh

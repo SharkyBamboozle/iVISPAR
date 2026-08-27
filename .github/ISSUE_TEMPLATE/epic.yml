@@ -1,0 +1,64 @@
+# Epic form — the form fields ARE the convention
+# (docs/process/running-epics.md). Agents using the CLI take the same structure
+# from docs/.templates/epic-issue-body.md with `gh issue create --body-file`.
+name: Epic
+description: A coherent body of work. Build tasks attach as native sub-issues; findings become `note` issues.
+title: "Epic: <name>"
+labels: [epic]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Conventions:** only *build tasks* become sub-issues (added incrementally);
+        findings are filed as **`note`** issues and listed under *Related notes* — never
+        as sub-issues. Create the epic's story page from
+        `docs/.templates/epic-page-template.md` at kickoff and add its row to
+        `docs/records/epics/index.md`.
+  - type: input
+    id: thesis
+    attributes:
+      label: Thesis & relation
+      description: One bold sentence — what this epic delivers — plus its relation to other epics (successor to / peer with an explicit boundary / supersedes / bridge before).
+      placeholder: "**Make X survive Y.** Direct successor to #NN — reuses A, changes exactly one thing: B."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this epic exists
+      description: The forcing problem; cite the triggering `note` issues by number.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Strands & build order
+      value: |
+        > **Living scope.** This body is reconciled with the sub-issues as they land.
+
+        ## Strands
+        - A —
+        - B —
+
+        ## Build order & dependencies
+        ```
+        #A → #B → {#C, #D}
+        ```
+  - type: textarea
+    id: nongoals
+    attributes:
+      label: Explicit non-goals (deferred)
+      description: Named exclusions, each with a pointer to where the deferred item lives — keeps the slice honest.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Related notes & findings
+      value: |
+        Durable index: `label:note`. Notes are listed here as they are filed — never as sub-issues.
+
+        - (none yet)
+  - type: input
+    id: home
+    attributes:
+      label: Home & relation
+      description: Where the code lives (directory / governing D-xxx); predecessor / peer / successor epics.

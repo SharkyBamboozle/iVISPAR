@@ -1,0 +1,59 @@
+name: Branch flow guard
+
+# GitHub branch protection cannot restrict a PR's SOURCE branch, so this
+# required check does it: only `development` may PR into `main` — the branch
+# model's promotion rule (CLAUDE.md → Repo workflow;
+# docs/process/pushing.md → Branch model). A server-side check binds
+# every contributor and agent, hooks installed or not (D-004).
+#
+# Pre-bootstrap grace: while the remote has no `development` branch yet
+# (template freshly seeded; scripts/github_setup.sh not run), any head is
+# allowed with a warning — the same demonstrably-un-bootstrapped logic as
+# guard-git.sh's birth-push rule. The guard arms itself the moment
+# `development` exists. Grace applies ONLY on a definitive 404; any other
+# gh error fails CLOSED. The decision logic lives in a script so it is
+# unit-testable with a mocked gh (scripts/branch_flow_decision.sh,
+# scripts/test_branch_flow_guard.sh) — the workflow just supplies the inputs.
+#
+# The sibling release-gate job guards the promotion's OTHER rule:
+# a PR into `main` carries its release caboose — the seam-named version
+# file (.claude/release.txt) bumped by exactly one semver step (the class
+# is the operator's decision at the /promote ritual's STOP; the gate
+# checks the arithmetic, not the approval, which is advisory per D-004)
+# and a release-log entry for the new version. Projects that do not
+# version their promotions declare 'mode: off <reason>' in the seam.
+# Logic in scripts/release_gate_decision.sh, unit-tested against fixture
+# repos (scripts/test_release_gate.sh).
+#
+# scripts/github_setup.sh registers both jobs as required checks on `main`.
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  flow-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Only same-repo development may PR into main
+        env:
+          HEAD: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: bash "$GITHUB_WORKSPACE/scripts/branch_flow_decision.sh"
+
+  release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Promotions carry their release caboose (bump + log entry)
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: bash "$GITHUB_WORKSPACE/scripts/release_gate_decision.sh"

@@ -1,0 +1,19 @@
+# Release seam — the single data file read by the release-gate CI job
+# (.github/workflows/branch-flow-guard.yml → scripts/release_gate_decision.sh)
+# and the /promote ritual. Names where THIS project keeps its version
+# and its release log, so the gate and the ritual work identically in the
+# blueprint and in every seeded project.
+#
+# Modes:
+#   mode: configured    — on every PR into main, the version file must be
+#                         bumped by exactly one semver step (patch/minor/
+#                         major — the class is the operator's decision, made
+#                         in /promote; the gate checks the arithmetic) and
+#                         the release log must carry an entry for the new
+#                         version.
+#   mode: off <reason>  — this project does not version its promotions; the
+#                         gate passes with a note. The reason is mandatory
+#                         (D-004 advisory declaration).
+mode: configured
+version-file: VERSION
+changelog: CHANGELOG.md

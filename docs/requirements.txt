@@ -1,0 +1,9 @@
+# Docs toolchain — install with: pip install -r docs/requirements.txt
+# Version floors the strict MkDocs build (`make verify`, docs.yml) depends on;
+# bumped by dependabot (D-004 — gate toolchain is pinned, not floating blindly).
+mkdocs-material>=9.7.7
+pymdown-extensions>=11.0.1
+# Direct dep: scripts/check_ci_gates.py (the D-004 meta-gate) imports PyYAML,
+# and its ImportError points users here — so name it, don't rely on mkdocs
+# pulling it in transitively.
+pyyaml>=6.0.3

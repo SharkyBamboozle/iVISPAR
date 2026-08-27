@@ -1,0 +1,9 @@
+# Line-ending pins for executable text. On a Windows clone with Git's default
+# core.autocrlf=true, checkout rewrites LF to CRLF: a CRLF shebang breaks the
+# interpreter ("/usr/bin/env bash\r": no such file), and CRLF inside the guard
+# hooks' embedded python heredocs would corrupt the byte-identical parser
+# region that scripts/test_guardlib.py pins. Pin LF at the repo layer so every
+# clone — and every project seeded from this template — checks out runnable
+# scripts regardless of the machine's autocrlf setting.
+*.sh text eol=lf
+*.py text eol=lf

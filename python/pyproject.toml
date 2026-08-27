@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ivispar"
+version = "0.0.1"
+description = "Interactive multi-modal benchmark for evaluating the visual-spatial reasoning of vision-language models acting as agents."
+requires-python = ">=3.11"
+# Runtime deps stay minimal; heavy/optional stacks go in extras below so the
+# core package installs anywhere.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+]
+# Domain extras land with the framework wave as optional groups (provider
+# SDKs, vision stacks) so the core package keeps installing anywhere.
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ivispar"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
